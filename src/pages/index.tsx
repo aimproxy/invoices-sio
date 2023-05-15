@@ -1,6 +1,54 @@
-import { Card, Title, Text, Tab, TabList, Grid } from "@tremor/react";
+import {Card, Title, Text, Tab, TabList, Grid, Metric, Col} from "@tremor/react";
+import {DocumentIcon} from '@heroicons/react/24/outline'
 
-import { useState } from "react";
+import {useCallback, useState} from "react";
+import {useDropzone} from "react-dropzone";
+
+const classNames = (...s: string[]) => s.filter(Boolean).join(' ');
+
+function SAFTDropzone() {
+    const onDrop = useCallback((acceptedFiles: any[]) => {
+        acceptedFiles.forEach((file) => {
+            const reader = new FileReader()
+
+            reader.onabort = () => console.log('file reading was aborted')
+            reader.onerror = () => console.log('file reading has failed')
+            reader.onload = () => {
+                // Do whatever you want with the file contents
+                const binaryStr = reader.result
+                console.log(binaryStr)
+            }
+            reader.readAsArrayBuffer(file)
+        })
+    }, [])
+    const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+
+    return (
+        <div className="mt-6" {...getRootProps()}>
+            <div className={classNames(
+                "mt-2 flex justify-center rounded-lg border border-solid px-6 py-10",
+                isDragActive ? 'border-emerald-400' : 'border-gray-200'
+            )}>
+                <div className="flex flex-col items-center">
+                    <DocumentIcon className="mx-auto h-12 w-12 text-gray-300" aria-hidden="true"/>
+                    <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                        <div className={classNames(
+                            'relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600',
+                            'focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600',
+                            'focus-within:ring-offset-2 hover:text-indigo-500'
+                        )}
+                        >
+                            <span>Upload a file</span>
+                            <input {...getInputProps()} className="sr-only"/>
+                        </div>
+                        <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs leading-5 text-gray-600">XML up to 10MB</p>
+                </div>
+            </div>
+        </div>
+    )
+}
 
 export default function Example() {
     const [selectedView, setSelectedView] = useState("1");
@@ -14,39 +62,41 @@ export default function Example() {
                 onValueChange={(value) => setSelectedView(value)}
                 className="mt-6"
             >
-                <Tab value="1" text="Dashboard" />
-                <Tab value="2" text="Importar SAF-T" />
+                <Tab value="1" text="Dashboard"/>
+                <Tab value="2" text="Importar SAF-T"/>
             </TabList>
 
             {selectedView === "1" ? (
-                <>
-                    <Grid numColsMd={2} numColsLg={3} className="gap-6 mt-6">
+                <div className="mt-6">
+                    <Grid numCols={1} numColsSm={2} numColsLg={3} className="gap-2">
+                        <Col numColSpan={1} numColSpanLg={2}>
+                            <Card>
+                                <Text>Title</Text>
+                                <Metric>KPI 1</Metric>
+                            </Card>
+                        </Col>
                         <Card>
-                            {/* Placeholder to set height */}
-                            <div className="h-28" />
+                            <Text>Title</Text>
+                            <Metric>KPI 2</Metric>
+                        </Card>
+                        <Col>
+                            <Card>
+                                <Text>Title</Text>
+                                <Metric>KPI 3</Metric>
+                            </Card>
+                        </Col>
+                        <Card>
+                            <Text>Title</Text>
+                            <Metric>KPI 4</Metric>
                         </Card>
                         <Card>
-                            {/* Placeholder to set height */}
-                            <div className="h-28" />
-                        </Card>
-                        <Card>
-                            {/* Placeholder to set height */}
-                            <div className="h-28" />
+                            <Text>Title</Text>
+                            <Metric>KPI 5</Metric>
                         </Card>
                     </Grid>
-
-                    <div className="mt-6">
-                        <Card>
-                            <div className="h-80" />
-                        </Card>
-                    </div>
-                </>
-            ) : (
-                <div className="mt-6">
-                    <Card>
-                        <div className="h-96" />
-                    </Card>
                 </div>
+            ) : (
+                <SAFTDropzone/>
             )}
         </main>
     );
