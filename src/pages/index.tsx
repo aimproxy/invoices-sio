@@ -7,21 +7,36 @@ import {useDropzone} from "react-dropzone";
 const classNames = (...s: string[]) => s.filter(Boolean).join(' ');
 
 function SAFTDropzone() {
+
     const onDrop = useCallback((acceptedFiles: any[]) => {
         acceptedFiles.forEach((file) => {
             const reader = new FileReader()
 
             reader.onabort = () => console.log('file reading was aborted')
             reader.onerror = () => console.log('file reading has failed')
-            reader.onload = () => {
+            reader.onload = async () => {
                 // Do whatever you want with the file contents
                 const binaryStr = reader.result
                 console.log(binaryStr)
+
+                // Make the file upload request
+                const response = await fetch('/api/saft', {
+                    method: 'POST',
+                    body: binaryStr,
+                });
+
+                // Handle the response from the backend
+                const data = await response.json();
+                console.log('Upload successful:', data);
             }
             reader.readAsArrayBuffer(file)
         })
     }, [])
-    const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+
+    const {getRootProps, getInputProps, isDragActive} = useDropzone({
+        onDrop,
+        accept: {'text/xml': ['.xml']}
+    })
 
     return (
         <div className="mt-6" {...getRootProps()}>
