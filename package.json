@@ -1,0 +1,33 @@
+{
+  "name": "sio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@tremor/react": "^2.1.0",
+    "@types/node": "18.15.10",
+    "@types/react": "18.0.29",
+    "@types/react-dom": "18.0.11",
+    "eslint": "8.36.0",
+    "eslint-config-next": "13.2.4",
+    "lodash.camelcase": "^4.3.0",
+    "formik": "^2.2.9",
+    "next": "13.2.4",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "typescript": "5.0.2",
+    "xml2js": "^0.4.23"
+  },
+  "devDependencies": {
+    "@types/lodash.camelcase": "^4.3.7",
+    "@types/xml2js": "^0.4.11",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.22",
+    "tailwindcss": "^3.3.1"
+  }
+}
