@@ -47,7 +47,8 @@ export interface InvoiceRaw {
     invoice_date: Date;
     invoice_type: string;
     self_billing_indicator: number;
-    cash_vat_scheme_indicator: number;
+    // it should be vat_schema but we cant parse uppercase's like VAT
+    cash_vatscheme_indicator: number;
     third_parties_billing_indicator: number;
     system_entry_date: Date;
     customer_id: number;

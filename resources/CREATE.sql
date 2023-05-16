@@ -49,7 +49,7 @@ CREATE TABLE invoice
     invoice_date                    DATE,
     invoice_type                    VARCHAR(50),
     self_billing_indicator          INT,
-    cash_vat_scheme_indicator       INT,
+    cash_vatscheme_indicator        INT,
     third_parties_billing_indicator INT,
     system_entry_date               TIMESTAMP,
     customer_id                     INT,
