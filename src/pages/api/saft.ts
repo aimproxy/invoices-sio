@@ -1,6 +1,6 @@
 import type {NextApiRequest, NextApiResponse} from 'next'
 import {parseStringPromise, processors} from 'xml2js'
-import postgres, {CustomerRaw} from "@sio/postgres";
+import postgres, {CustomerRaw, ProductRaw} from "@sio/postgres";
 
 function convertKeysToLowercase(obj: any) {
     const convertedObj: any = {};
@@ -15,7 +15,7 @@ function convertKeysToLowercase(obj: any) {
 }
 
 
-function mockCustomerTable(customer: SAFTCustomer) {
+function mockCustomerTable(customer: SAFTCustomer): CustomerRaw {
     const {
         BillingAddress,
         ShipToAddress,
@@ -48,7 +48,14 @@ function mockCustomerTable(customer: SAFTCustomer) {
         ...left
     }
 
-    return convertKeysToLowercase(beforeSQL) as CustomerRaw
+    return convertKeysToLowercase(beforeSQL)
+}
+
+function mockProductTable(product: SAFTProduct, i: number): ProductRaw {
+    return {
+        product_id: i,
+        ...convertKeysToLowercase(product)
+    }
 }
 
 
@@ -68,13 +75,14 @@ export default async function handler(
 
     const {Customer, Product} = parsedXml.AuditFile.MasterFiles
     const customers = Customer.map(mockCustomerTable)
+    const products = Product.map(mockProductTable)
 
-    const success = await postgres
-        .insertInto('customer')
-        .values(customers)
-        .executeTakeFirst();
+    const promises = await Promise.all([
+        postgres.insertInto('customer').values(customers).executeTakeFirst(),
+        postgres.insertInto('product').values(products).executeTakeFirst(),
+    ])
 
-    res.status(200).json({ok: true, sql: success})
+    res.status(200).json({ok: true, sql: promises})
 }
 
 interface SAFT {
