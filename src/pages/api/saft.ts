@@ -1,40 +1,204 @@
 import type {NextApiRequest, NextApiResponse} from 'next'
 import {parseStringPromise, processors} from 'xml2js'
-import camelCase from 'lodash.camelcase'
+import postgres, {CustomerRaw} from "@sio/postgres";
 
-const convertKeysToPlural = (name: string) => {
-    const keys = ['customer', 'product', 'invoice', 'line']
-
-    return keys.includes(name) ? `${name}s` : name;
+function convertKeysToLowercase(obj: any) {
+    const convertedObj: any = {};
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            const split = key.split(/(?<=[a-z])(?=[A-Z])/)
+            const lowercaseKey = split.join('_').toLowerCase()
+            convertedObj[lowercaseKey] = obj[key];
+        }
+    }
+    return convertedObj;
 }
+
+
+function mockCustomerTable(customer: SAFTCustomer) {
+    const {
+        BillingAddress,
+        ShipToAddress,
+        ...left
+    } = customer;
+
+    const {
+        AddressDetail: BillingAddressDetail,
+        City: BillingCity,
+        PostalCode: BillingPostalCode,
+        Country: BillingCountry,
+    } = BillingAddress
+
+    const {
+        AddressDetail: ShipToAddressDetail,
+        City: ShipToCity,
+        PostalCode: ShipToPostalCode,
+        Country: ShipToCountry,
+    } = ShipToAddress
+
+    const beforeSQL = {
+        BillingAddressDetail,
+        BillingCity,
+        BillingPostalCode,
+        BillingCountry,
+        ShipToAddressDetail,
+        ShipToCity,
+        ShipToPostalCode,
+        ShipToCountry,
+        ...left
+    }
+
+    return convertKeysToLowercase(beforeSQL) as CustomerRaw
+}
+
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<{ ok: boolean}>
+    res: NextApiResponse<{ ok: boolean, sql: any }>
 ) {
     const xml = req.body
 
-    const parsedXml = await parseStringPromise(xml, {
+    const parsedXml: { AuditFile: SAFT } = await parseStringPromise(xml, {
         explicitRoot: true, // Let the root node be in the result object
         explicitArray: false, // Disable automatic array creation
         mergeAttrs: true, // Merge objects with the same key into an array
-        trim: true, // Trim whitespaces
-        tagNameProcessors: [
-            camelCase,
-            convertKeysToPlural
-        ],
-        valueProcessors: [
-            processors.parseNumbers
-        ],
+        trim: true, // Trim space
+        valueProcessors: [processors.parseNumbers],
     });
 
-    const {customers, products} = parsedXml.auditFile.masterFiles
-    const {invoices} = parsedXml.auditFile.sourceDocuments.salesInvoices
+    const {Customer, Product} = parsedXml.AuditFile.MasterFiles
+    const customers = Customer.map(mockCustomerTable)
 
-    const arrayCustomers = [...customers]
-    const arrayInvoices = [...invoices]
-    const arrayProducts = [...products]
-    console.log(arrayCustomers, arrayInvoices, arrayProducts)
+    const success = await postgres
+        .insertInto('customer')
+        .values(customers)
+        .executeTakeFirst();
 
-    res.status(200).json({ok: true})
+    res.status(200).json({ok: true, sql: success})
 }
+
+interface SAFT {
+    Header: {
+        AuditFileVersion: string;
+        CompanyID: string;
+        TaxRegistrationNumber: string;
+        TaxAccountingBasis: string;
+        CompanyName: string;
+        BusinessName: string;
+        CompanyAddress: Address;
+        FiscalYear: string;
+        StartDate: string;
+        EndDate: string;
+        CurrencyCode: string;
+        DateCreated: string;
+        TaxEntity: string;
+        ProductCompanyTaxID: string;
+        SoftwareCertificateNumber: string;
+        ProductID: string;
+        ProductVersion: string;
+    };
+    MasterFiles: {
+        Customer: SAFTCustomer[];
+        Product: SAFTProduct[];
+        TaxTable: SAFTTaxTableEntry[];
+    };
+    SourceDocuments: {
+        SalesInvoices: SAFTInvoice[],
+        MovementOfGoods: {
+            NumberOfMovementLines: number;
+            TotalQuantityIssued: number;
+        },
+        WorkingDocuments: {
+            NumberOfEntries: number;
+            TotalDebit: number;
+            TotalCredit: number;
+        }, Payments: {
+            NumberOfEntries: number;
+            TotalDebit: number;
+            TotalCredit: number;
+        }
+    }
+}
+
+interface Address {
+    AddressDetail: string;
+    City: string;
+    PostalCode: string;
+    Country: string;
+}
+
+export interface SAFTCustomer {
+    CustomerID: number;
+    AccountID: string;
+    CustomerTaxID: number;
+    CompanyName: string;
+    BillingAddress: Address;
+    ShipToAddress: Address;
+    SelfBillingIndicator: number;
+}
+
+interface SAFTProduct {
+    ProductType: string;
+    ProductCode: string;
+    ProductDescription: string;
+    ProductNumberCode: string;
+}
+
+interface SAFTTaxTableEntry {
+    TaxType: string;
+    TaxCountryRegion: string;
+    TaxCode: string;
+    Description: string;
+    TaxPercentage: number;
+}
+
+interface SAFTInvoice {
+    InvoiceNo: string;
+    ATCUD: string;
+    DocumentStatus: {
+        InvoiceStatus: string;
+        InvoiceStatusDate: string;
+        SourceID: string;
+        SourceBilling: string;
+    };
+    Hash: string;
+    HashControl: string;
+    Period: string;
+    InvoiceDate: string;
+    InvoiceType: string;
+    SpecialRegimes: {
+        SelfBillingIndicator: number;
+        CashVATSchemeIndicator: number;
+        ThirdPartiesBillingIndicator: number;
+    };
+    SourceID: string;
+    SystemEntryDate: string;
+    CustomerID: number;
+    Line: {
+        LineNumber: number;
+        ProductCode: string;
+        ProductDescription: string;
+        Quantity: number;
+        UnitOfMeasure: string;
+        UnitPrice: string;
+        TaxPointDate: string;
+        References: {
+            Reference: string;
+        };
+        Description: string;
+        DebitAmount: string;
+        Tax: {
+            TaxType: string;
+            TaxCountryRegion: string;
+            TaxCode: string;
+            TaxPercentage: number;
+        };
+    };
+    DocumentTotals: {
+        TaxPayable: number;
+        NetTotal: string;
+        GrossTotal: string;
+    };
+}
+
+

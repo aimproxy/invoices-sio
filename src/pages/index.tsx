@@ -1,4 +1,4 @@
-import {Card, Title, Text, Tab, TabList, Grid, Metric, Col} from "@tremor/react";
+import {Card, Col, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
 import {DocumentIcon} from '@heroicons/react/24/outline'
 
 import {useCallback, useState} from "react";
@@ -65,7 +65,7 @@ function SAFTDropzone() {
     )
 }
 
-export default function Example() {
+export default function Home() {
     const [selectedView, setSelectedView] = useState("1");
     return (
         <main className={"max-w-7xl mx-auto pt-16 sm:pt-8 px-8"}>
