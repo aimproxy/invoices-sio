@@ -72,6 +72,7 @@ CREATE TABLE invoice_line
     tax_point_date      DATE,
     description         VARCHAR(255),
     credit_amount       DECIMAL(10, 2),
+    debit_amount        DECIMAL(10, 2),
     tax_id              INT,
     FOREIGN KEY (invoice_id) REFERENCES invoice (invoice_id),
     FOREIGN KEY (tax_id) REFERENCES tax_entry (tax_id)

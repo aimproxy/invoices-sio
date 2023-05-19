@@ -68,7 +68,8 @@ export interface InvoiceLineRaw {
     unit_price: number;
     tax_point_date: Date;
     description: string;
-    credit_amount: number;
+    credit_amount?: number;
+    debit_amount?: number;
     tax_id: number;
 }
 

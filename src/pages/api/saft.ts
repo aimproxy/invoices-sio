@@ -1,6 +1,6 @@
 import type {NextApiRequest, NextApiResponse} from 'next'
 import {parseStringPromise, processors} from 'xml2js'
-import postgres, {CustomerRaw, InvoiceRaw, ProductRaw} from "@sio/postgres";
+import postgres, {CustomerRaw, InvoiceLineRaw, InvoiceRaw, ProductRaw} from "@sio/postgres";
 
 function convertKeysToLowercase(obj: any) {
     const convertedObj: any = {};
@@ -59,14 +59,13 @@ function mockProductTable(product: SAFTProduct, i: number): ProductRaw {
 }
 
 function mockInvoiceTable(invoice: SAFTInvoice, i: number): InvoiceRaw {
-    // we perform delete in the middle of a loop to clean memory
-    // @ts-ignore
-    delete invoice.Line
 
     const {
         SpecialRegimes,
         DocumentTotals,
         DocumentStatus,
+        // Ignore invoice lines (DO NOT DELETE)
+        Line,
         ...left
     } = invoice
 
@@ -79,6 +78,19 @@ function mockInvoiceTable(invoice: SAFTInvoice, i: number): InvoiceRaw {
     }
 }
 
+function mockInvoiceLineTable(invoiceLine: { InvoiceId: number } & SAFTInvoiceLine, i: number): InvoiceLineRaw {
+    // references are not needed !!!!
+    // @ts-ignore
+    delete invoiceLine.References
+    // @ts-ignore
+    delete invoiceLine.Tax
+
+
+    return {
+        line_id: i,
+        ...convertKeysToLowercase(invoiceLine)
+    }
+}
 
 export default async function handler(
     req: NextApiRequest,
@@ -105,12 +117,25 @@ export default async function handler(
     const invoiceOrArray = parsedXml.AuditFile.SourceDocuments.SalesInvoices.Invoice
     const invoices = invoiceOrArray.map(mockInvoiceTable)
 
+    const invoiceLineOrArray: ({
+        InvoiceId: number
+    } & SAFTInvoiceLine)[] = parsedXml.AuditFile.SourceDocuments.SalesInvoices.Invoice.flatMap(
+        (invoice, i) =>
+            Array.isArray(invoice.Line) ?
+                invoice.Line.map(invoiceLine => ({
+                    InvoiceId: i,
+                    ...invoiceLine
+                })) : ({InvoiceId: i, ...invoice.Line}))
+
+    const invoiceLines = invoiceLineOrArray.map(mockInvoiceLineTable)
+
     const promises = await Promise.all([
         postgres.insertInto('customer').values(customers).executeTakeFirst(),
         postgres.insertInto('product').values(products).executeTakeFirst(),
         postgres.insertInto('invoice').values(invoices).executeTakeFirst(),
-        //postgres.insertInto('invoice_line').values(invoiceLines).executeTakeFirst(),
     ])
+
+    promises.push(await postgres.insertInto('invoice_line').values(invoiceLines).executeTakeFirst())
 
     res.status(200).json({ok: true, sql: promises})
 }
@@ -212,7 +237,7 @@ interface SAFTInvoice {
     SourceID: string;
     SystemEntryDate: string;
     CustomerID: number;
-    Line: SAFTInvoiceLine[];
+    Line: SAFTInvoiceLine[] | SAFTInvoiceLine;
     DocumentTotals: {
         TaxPayable: number;
         NetTotal: string;
@@ -232,7 +257,8 @@ interface SAFTInvoiceLine {
         Reference: string;
     };
     Description: string;
-    DebitAmount: string;
+    DebitAmount?: string;
+    CreditAmount?: string;
     Tax: {
         TaxType: string;
         TaxCountryRegion: string;
