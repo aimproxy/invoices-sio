@@ -130,12 +130,12 @@ export default async function handler(
     const invoiceLines = invoiceLineOrArray.map(mockInvoiceLineTable)
 
     const promises = await Promise.all([
-        postgres.insertInto('customer').values(customers).executeTakeFirst(),
-        postgres.insertInto('product').values(products).executeTakeFirst(),
-        postgres.insertInto('invoice').values(invoices).executeTakeFirst(),
+        postgres.insertInto('customer').values(customers).onConflict(ocb => ocb.doNothing()).executeTakeFirst(),
+        postgres.insertInto('product').values(products).onConflict(ocb => ocb.doNothing()).executeTakeFirst(),
+        postgres.insertInto('invoice').values(invoices).onConflict(ocb => ocb.doNothing()).executeTakeFirst(),
     ])
 
-    promises.push(await postgres.insertInto('invoice_line').values(invoiceLines).executeTakeFirst())
+    promises.push(await postgres.insertInto('invoice_line').values(invoiceLines).onConflict(ocb => ocb.doNothing()).executeTakeFirst())
 
     res.status(200).json({ok: true, sql: promises})
 }
