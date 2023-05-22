@@ -1,6 +1,6 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import {DOMParser} from 'xmldom';
-import postgres, {CustomerRaw, ProductRaw, TaxEntryRaw} from "@sio/postgres";
+import postgres, {CustomerRaw} from "@sio/postgres";
 
 export default async function handler(
     req: NextApiRequest,
@@ -12,22 +12,14 @@ export default async function handler(
     const doc = parser.parseFromString(xml, 'application/xml');
 
     const products = doc.getElementsByTagName('Product');
-    const productsBeforeSQL: ProductRaw[] = []
+    const productsBeforeSQL = []
     for (let i = 0; i < products.length; i++) {
-        const product = products[i];
-
-        const productType = product.getElementsByTagName('ProductType')[0].textContent!;
-        const productCode = product.getElementsByTagName('ProductCode')[0].textContent!;
-        const productDescription = product.getElementsByTagName('ProductDescription')[0].textContent!;
-        const productNumberCode = product.getElementsByTagName('ProductNumberCode')[0].textContent!;
-
-        productsBeforeSQL.push({
-            product_type: productType,
-            product_code: productCode,
-            product_description: productDescription,
-            product_number_code: productNumberCode
-        })
+        productsBeforeSQL.push(getElementsByTagNames(
+            products[i],
+            ['ProductType', 'ProductCode', 'ProductDescription', 'ProductNumberCode'])
+        )
     }
+    console.log(productsBeforeSQL)
 
     const customers = doc.getElementsByTagName('Customer');
     const customersBeforeSQL: CustomerRaw[] = []
@@ -68,24 +60,15 @@ export default async function handler(
     }
 
     const taxTable = doc.getElementsByTagName('TaxTable')[0].getElementsByTagName('TaxTableEntry')
-    const taxTableBeforeSQL: TaxEntryRaw[] = []
+    const taxTableBeforeSQL = []
 
     for (let i = 0; i < taxTable.length; i++) {
-        const taxTableEntry = taxTable[i]
-
-        const taxType = taxTableEntry.getElementsByTagName('TaxType')[0].textContent!
-        const taxCountryRegion = taxTableEntry.getElementsByTagName('TaxCountryRegion')[0].textContent!
-        const taxCode = taxTableEntry.getElementsByTagName('TaxCode')[0].textContent!
-        const description = taxTableEntry.getElementsByTagName('Description')[0].textContent!
-        const taxPercentage = Number.parseFloat(taxTableEntry.getElementsByTagName('TaxPercentage')[0].textContent!)
-
-        taxTableBeforeSQL.push({
-            description: description,
-            tax_code: taxCode,
-            tax_country_region: taxCountryRegion,
-            tax_percentage: taxPercentage,
-            tax_type: taxType
-        })
+        taxTableBeforeSQL.push(
+            getElementsByTagNames(
+                taxTable[i],
+                ['TaxType', 'TaxCountryRegion', 'TaxCode', 'Description', 'TaxPercentage']
+            )
+        )
     }
 
 
@@ -106,4 +89,25 @@ export default async function handler(
     }
 
     res.status(200).json({ok: true, pg})
+}
+
+const getElementsByTagNames = (element: Element, tags: string[]) => {
+    const serializedTags: { [key: string]: string } = {};
+
+    tags.forEach(tag => {
+        const serializedTagName = tag
+            .replace(/([a-z])([A-Z])/g, '$1_$2')
+            .toLowerCase();
+
+        serializedTags[serializedTagName] = element.getElementsByTagName(tag)[0].textContent!;
+    });
+
+    return serializedTags;
+}
+
+const getCustomerByTaxId = (taxId: number) => {
+    return postgres.selectFrom('customer')
+        .select('customer_id')
+        .where('customer_tax_id', '=', taxId)
+        .executeTakeFirst()
 }

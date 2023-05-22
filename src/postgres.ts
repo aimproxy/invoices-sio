@@ -1,6 +1,7 @@
 import {createKysely} from "@vercel/postgres-kysely";
 
 export interface CustomerRaw {
+    customer_id?: number;
     customer_tax_id: number;
     company_name: string;
     billing_address_detail: string;
@@ -14,14 +15,16 @@ export interface CustomerRaw {
     self_billing_indicator: number;
 }
 
-export interface ProductRaw {
+export interface ProductRaw extends Record<string, any> {
+    product_id?: number;
     product_type: string;
     product_code: string;
     product_description: string;
     product_number_code: string;
 }
 
-export interface TaxEntryRaw {
+export interface TaxEntryRaw extends Record<string, any> {
+    tax_id?: number;
     tax_type: string;
     tax_country_region: string;
     tax_code: string;
@@ -30,7 +33,7 @@ export interface TaxEntryRaw {
 }
 
 export interface InvoiceRaw {
-    invoice_id: number;
+    invoice_id?: number;
     invoice_no: string;
     atcud: string;
     invoice_status: string;
@@ -54,7 +57,7 @@ export interface InvoiceRaw {
 }
 
 export interface InvoiceLineRaw {
-    line_id: number;
+    line_id?: number;
     invoice_id: number;
     line_number: number;
     product_code: string;
