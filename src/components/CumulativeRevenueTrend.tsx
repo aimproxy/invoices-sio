@@ -26,7 +26,7 @@ const valueFormatterRelative = (number: number) =>
 
 export default function CumulativeRevenueTrend() {
     return (
-        <Card>
+        <Card className={"col-span-3"}>
             <Title>Cumulative Revenue Trend</Title>
             <Text>Whether the revenue is increasing, decreasing, or remaining stable</Text>
             <LineChart

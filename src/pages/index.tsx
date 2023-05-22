@@ -1,4 +1,4 @@
-import {Card, Col, DateRangePicker, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
+import {Card, DateRangePicker, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
 import {DocumentIcon} from '@heroicons/react/24/outline'
 
 import {useCallback, useState} from "react";
@@ -8,6 +8,8 @@ import AverageOrderValue from "@sio/components/AverageOrderValue";
 import CustomerLifetimeValue from "@sio/components/CustomerLifetimeValue";
 import RevenueBySegment from "@sio/components/RevenueBySegment";
 import NetGrossMargin from "@sio/components/NetGrossMargin";
+import TopProductsByRegion from "@sio/components/TopProductsByRegion";
+import Sales from "@sio/components/Sales";
 
 const classNames = (...s: (string | null)[]) => s.filter(Boolean).join(' ');
 
@@ -95,43 +97,27 @@ export default function Home() {
             </TabList>
 
             {selectedView === "1" ? (
-                <div className="mt-6">
-                    <Grid numCols={1} numColsLg={4} className="gap-6">
+                <div className="mt-6 mb-8 gap-6">
+                    <Grid numCols={1} numColsLg={5} className="gap-6">
                         <AverageOrderValue/>
                         <CustomerLifetimeValue/>
-                        <Col numColSpanLg={2}>
-                            <NetGrossMargin/>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <CumulativeRevenueTrend/>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <RevenueBySegment/>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 7</Metric>
-                            </Card>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 8</Metric>
-                            </Card>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 9</Metric>
-                            </Card>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 10</Metric>
-                            </Card>
-                        </Col>
+                        <Sales/>
+                        <NetGrossMargin/>
+                        <CumulativeRevenueTrend/>
+                        <TopProductsByRegion/>
+                        <Card className={"col-span-2"}>
+                            <Text>Title</Text>
+                            <Metric>KPI 6</Metric>
+                        </Card>
+                        <RevenueBySegment/>
+                        <Card className={"col-span-3"}>
+                            <Text>Title</Text>
+                            <Metric>KPI 7</Metric>
+                        </Card>
+                        <Card className={"col-span-2"}>
+                            <Text>Title</Text>
+                            <Metric>KPI 8</Metric>
+                        </Card>
                     </Grid>
                 </div>
             ) : (
