@@ -1,10 +1,15 @@
-import {Card, Col, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
+import {Card, Col, DateRangePicker, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
 import {DocumentIcon} from '@heroicons/react/24/outline'
 
 import {useCallback, useState} from "react";
 import {useDropzone} from "react-dropzone";
+import CumulativeRevenueTrend from "@sio/components/CumulativeRevenueTrend";
+import AverageOrderValue from "@sio/components/AverageOrderValue";
+import CustomerLifetimeValue from "@sio/components/CustomerLifetimeValue";
+import RevenueBySegment from "@sio/components/RevenueBySegment";
+import NetGrossMargin from "@sio/components/NetGrossMargin";
 
-const classNames = (...s: (string|null)[]) => s.filter(Boolean).join(' ');
+const classNames = (...s: (string | null)[]) => s.filter(Boolean).join(' ');
 
 const SAFTDropzone = () => {
 
@@ -70,9 +75,16 @@ export default function Home() {
     const [selectedView, setSelectedView] = useState("1");
     return (
         <main className={"max-w-[90rem] mx-auto pt-16 sm:pt-8 px-8"}>
-            <Title>Olá, Sales Manager X!</Title>
-            <Text>Aqui o especialista és sempre tu!</Text>
 
+            <div className="block sm:flex sm:justify-between">
+                <div>
+                    <Title>Olá, Sales Manager X!</Title>
+                    <Text>Aqui o especialista és sempre tu!</Text>
+                </div>
+                <div className="mt-4 sm:mt-0">
+                    <DateRangePicker/>
+                </div>
+            </div>
             <TabList
                 defaultValue="1"
                 onValueChange={(value) => setSelectedView(value)}
@@ -84,34 +96,17 @@ export default function Home() {
 
             {selectedView === "1" ? (
                 <div className="mt-6">
-                    <Grid numCols={1} numColsSm={2} numColsLg={4} className="gap-6">
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 1</Metric>
-                            </Card>
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 2</Metric>
-                            </Card>
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 3</Metric>
-                            </Card>
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 4</Metric>
-                            </Card>
+                    <Grid numCols={1} numColsLg={4} className="gap-6">
+                        <AverageOrderValue/>
+                        <CustomerLifetimeValue/>
                         <Col numColSpanLg={2}>
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 5</Metric>
-                            </Card>
+                            <NetGrossMargin/>
                         </Col>
                         <Col numColSpanLg={2}>
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 6</Metric>
-                            </Card>
+                            <CumulativeRevenueTrend/>
+                        </Col>
+                        <Col numColSpanLg={2}>
+                            <RevenueBySegment/>
                         </Col>
                         <Col numColSpanLg={2}>
                             <Card>
