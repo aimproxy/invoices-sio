@@ -1,6 +1,6 @@
 import {createKysely} from "@vercel/postgres-kysely";
 
-export interface CustomerRaw {
+export interface CustomerRaw extends Record<string, any> {
     customer_id?: number;
     customer_tax_id: number;
     company_name: string;
