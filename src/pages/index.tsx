@@ -33,7 +33,7 @@ function SAFTDropzone() {
         })
     }, [])
 
-    const {getRootProps, getInputProps, isDragAccept, isDragReject, isFocused, isFileDialogActive} = useDropzone({
+    const {getRootProps, getInputProps, isDragAccept, isDragReject} = useDropzone({
         onDrop,
         accept: {'text/xml': ['.xml']}
     })
