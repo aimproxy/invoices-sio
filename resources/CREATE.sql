@@ -27,7 +27,7 @@ CREATE TABLE tax_entry
 (
     tax_id             BIGSERIAL PRIMARY KEY,
     tax_type           VARCHAR(50),
-    tax_country_region VARCHAR(2),
+    tax_country_region VARCHAR(5),
     tax_code           VARCHAR(50),
     description        VARCHAR(255),
     tax_percentage     DECIMAL(5, 2)

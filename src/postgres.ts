@@ -22,7 +22,6 @@ export interface ProductRaw {
 }
 
 export interface TaxEntryRaw {
-    tax_id: number;
     tax_type: string;
     tax_country_region: string;
     tax_code: string;

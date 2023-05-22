@@ -1,6 +1,6 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import {DOMParser} from 'xmldom';
-import postgres, {CustomerRaw, ProductRaw} from "@sio/postgres";
+import postgres, {CustomerRaw, ProductRaw, TaxEntryRaw} from "@sio/postgres";
 
 export default async function handler(
     req: NextApiRequest,
@@ -67,9 +67,32 @@ export default async function handler(
         });
     }
 
+    const taxTable = doc.getElementsByTagName('TaxTable')[0].getElementsByTagName('TaxTableEntry')
+    const taxTableBeforeSQL: TaxEntryRaw[] = []
+
+    for (let i = 0; i < taxTable.length; i++) {
+        const taxTableEntry = taxTable[i]
+
+        const taxType = taxTableEntry.getElementsByTagName('TaxType')[0].textContent!
+        const taxCountryRegion = taxTableEntry.getElementsByTagName('TaxCountryRegion')[0].textContent!
+        const taxCode = taxTableEntry.getElementsByTagName('TaxCode')[0].textContent!
+        const description = taxTableEntry.getElementsByTagName('Description')[0].textContent!
+        const taxPercentage = Number.parseFloat(taxTableEntry.getElementsByTagName('TaxPercentage')[0].textContent!)
+
+        taxTableBeforeSQL.push({
+            description: description,
+            tax_code: taxCode,
+            tax_country_region: taxCountryRegion,
+            tax_percentage: taxPercentage,
+            tax_type: taxType
+        })
+    }
+
+
     const pg = await Promise.all([
         postgres.insertInto('product').values(productsBeforeSQL).onConflict(ocb => ocb.doNothing()).executeTakeFirst(),
         postgres.insertInto('customer').values(customersBeforeSQL).onConflict(ocb => ocb.doNothing()).executeTakeFirst(),
+        postgres.insertInto('tax_entry').values(taxTableBeforeSQL).onConflict(ocb => ocb.doNothing()).executeTakeFirst(),
     ])
 
     const invoices = doc.getElementsByTagName('Invoice');
