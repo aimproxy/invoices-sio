@@ -1,6 +1,6 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import {DOMParser} from 'xmldom';
-import postgres, {CustomerRaw} from "@sio/postgres";
+import postgres from "@sio/postgres";
 
 export default async function handler(
     req: NextApiRequest,
@@ -22,41 +22,26 @@ export default async function handler(
     console.log(productsBeforeSQL)
 
     const customers = doc.getElementsByTagName('Customer');
-    const customersBeforeSQL: CustomerRaw[] = []
+    const customersBeforeSQL = []
     for (let i = 0; i < customers.length; i++) {
+
         const customer = customers[i];
-
-        const customerTaxId = Number(customer.getAttribute('CustomerTaxID'));
-        const companyElement = customer.getElementsByTagName('CompanyName')[0];
-        const companyName = companyElement.textContent;
-
         const billingAddressElement = customer.getElementsByTagName('BillingAddress')[0];
-        const billingAddressDetail = billingAddressElement.getElementsByTagName('AddressDetail')[0].textContent;
-        const billingCity = billingAddressElement.getElementsByTagName('City')[0].textContent;
-        const billingPostalCode = billingAddressElement.getElementsByTagName('PostalCode')[0].textContent;
-        const billingCountry = billingAddressElement.getElementsByTagName('Country')[0].textContent;
-
         const shipToAddressElement = customer.getElementsByTagName('ShipToAddress')[0];
-        const shipToAddressDetail = shipToAddressElement.getElementsByTagName('AddressDetail')[0].textContent;
-        const shipToCity = shipToAddressElement.getElementsByTagName('City')[0].textContent;
-        const shipToPostalCode = shipToAddressElement.getElementsByTagName('PostalCode')[0].textContent;
-        const shipToCountry = shipToAddressElement.getElementsByTagName('Country')[0].textContent;
 
-        const selfBillingIndicator = Number(customer.getElementsByTagName('SelfBillingIndicator')[0].textContent);
+        const {
+            customer_tax_id,
+            self_billing_indicator,
+            ...left
+        } = getElementsByTagNames(customer, ['CompanyName', 'CustomerTaxID', 'SelfBillingIndicator'])
 
         customersBeforeSQL.push({
-            customer_tax_id: customerTaxId,
-            company_name: companyName!,
-            billing_address_detail: billingAddressDetail!,
-            billing_city: billingCity!,
-            billing_postal_code: billingPostalCode!,
-            billing_country: billingCountry!,
-            ship_to_address_detail: shipToAddressDetail!,
-            ship_to_city: shipToCity!,
-            ship_to_postal_code: shipToPostalCode!,
-            ship_to_country: shipToCountry!,
-            self_billing_indicator: selfBillingIndicator!,
-        });
+            customer_tax_id: Number(customer_tax_id),
+            self_billing_indicator: Number(self_billing_indicator),
+            ...left,
+            ...getElementsByTagNames(billingAddressElement, ['AddressDetail', 'City', 'PostalCode', 'Country'], 'billing'),
+            ...getElementsByTagNames(shipToAddressElement, ['AddressDetail', 'City', 'PostalCode', 'Country'], 'ship_to')
+        })
     }
 
     const taxTable = doc.getElementsByTagName('TaxTable')[0].getElementsByTagName('TaxTableEntry')
@@ -102,7 +87,7 @@ export default async function handler(
     res.status(200).json({ok: true, pg})
 }
 
-const getElementsByTagNames = (element: Element, tags: string[]) => {
+const getElementsByTagNames = (element: Element, tags: string[], prefix?: string) => {
     const serializedTags: { [key: string]: string } = {};
 
     tags.forEach(tag => {
@@ -110,7 +95,9 @@ const getElementsByTagNames = (element: Element, tags: string[]) => {
             .replace(/([a-z])([A-Z])/g, '$1_$2')
             .toLowerCase();
 
-        serializedTags[serializedTagName] = element.getElementsByTagName(tag)[0].textContent!;
+        const tagName = prefix ? `${prefix}_${serializedTagName}` : serializedTagName
+
+        serializedTags[tagName] = element.getElementsByTagName(tag)[0].textContent!;
     });
 
     return serializedTags;
