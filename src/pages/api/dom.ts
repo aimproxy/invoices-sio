@@ -71,7 +71,6 @@ export default async function handler(
         )
     }
 
-
     const pg = await Promise.all([
         postgres.insertInto('product').values(productsBeforeSQL).onConflict(ocb => ocb.doNothing()).executeTakeFirst(),
         postgres.insertInto('customer').values(customersBeforeSQL).onConflict(ocb => ocb.doNothing()).executeTakeFirst(),
@@ -80,9 +79,21 @@ export default async function handler(
 
     const invoices = doc.getElementsByTagName('Invoice');
     for (let i = 0; i < invoices.length; i++) {
-        const invoice = invoices[i];
+        const rawInvoice = invoices[i]
+        const invoice = getElementsByTagNames(rawInvoice, [
+            'InvoiceNo', 'ATCUD', 'InvoiceStatus',
+            'InvoiceStatusDate', 'Hash', 'Period',
+            'InvoiceDate', 'InvoiceType', 'SystemEntryDate',
+            'CustomerID', 'TaxPayable', 'NetTotal', 'GrossTotal'
+        ])
 
-        const lines = invoice.getElementsByTagName('Line');
+        const documentTotals = getElementsByTagNames(
+            rawInvoice.getElementsByTagName('DocumentTotals')[0],
+            ['TaxPayable', 'NetTotal', 'GrossTotal'])
+
+        console.log(invoice)
+
+        const lines = rawInvoice.getElementsByTagName('Line');
         for (let j = 0; j < lines.length; j++) {
             const line = lines[j];
         }
