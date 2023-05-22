@@ -1,7 +1,26 @@
+CREATE TABLE company
+(
+    company_id              BIGSERIAL PRIMARY KEY,
+    tax_registration_number INT UNIQUE,
+    company_name            VARCHAR(255),
+    currency_code           VARCHAR(3)
+);
+
+CREATE TABLE fiscal_year
+(
+    fiscal_year_id BIGSERIAL PRIMARY KEY,
+    fiscal_year    INT UNIQUE,
+    start_date     DATE,
+    end_date       DATE,
+    date_created   DATE,
+    company_id     BIGSERIAL,
+    FOREIGN KEY (company_id) REFERENCES company (company_id)
+);
+
 CREATE TABLE customer
 (
     customer_id            BIGSERIAL PRIMARY KEY,
-    customer_tax_id        INT,
+    customer_tax_id        INT UNIQUE,
     company_name           VARCHAR(255),
     billing_address_detail VARCHAR(255),
     billing_city           VARCHAR(255),

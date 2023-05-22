@@ -1,5 +1,22 @@
 import {createKysely} from "@vercel/postgres-kysely";
 
+export interface CompanyRaw extends Record<string, any> {
+    company_id?: number
+    original_company_id: number
+    tax_registration_number: number
+    company_name: string
+    currency_code: string
+}
+
+export interface FiscalYearRaw extends Record<string, any> {
+    fiscal_year_id?: number
+    fiscal_year: number
+    start_date: string
+    end_date: string
+    date_created: string
+    company_id: number
+}
+
 export interface CustomerRaw extends Record<string, any> {
     customer_id?: number;
     customer_tax_id: number;
@@ -74,6 +91,8 @@ export interface InvoiceLineRaw {
 
 
 interface DatabaseSchema {
+    company: CompanyRaw;
+    fiscal_year: FiscalYearRaw;
     customer: CustomerRaw;
     product: ProductRaw;
     tax_entry: TaxEntryRaw;

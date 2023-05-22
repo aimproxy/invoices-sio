@@ -11,6 +11,20 @@ export default async function handler(
     const parser = new DOMParser();
     const doc = parser.parseFromString(xml, 'application/xml');
 
+    const header = doc.getElementsByTagName('Header')[0];
+    const company = getElementsByTagNames(
+        header, ['CompanyID', 'TaxRegistrationNumber', 'CompanyName', 'CurrencyCode']
+    )
+
+    const fiscalYear = {
+        company_id: company.company_id,
+        ...getElementsByTagNames(header, ['FiscalYear', 'StartDate', 'EndDate', 'DateCreated'])
+    }
+
+    // because the fiscal year has a foreign key with a company, this should run sequentially
+    await postgres.insertInto('company').values(company).executeTakeFirst();
+    await postgres.insertInto('fiscal_year').values(fiscalYear).executeTakeFirst();
+
     const products = doc.getElementsByTagName('Product');
     const productsBeforeSQL = []
     for (let i = 0; i < products.length; i++) {
@@ -19,12 +33,10 @@ export default async function handler(
             ['ProductType', 'ProductCode', 'ProductDescription', 'ProductNumberCode'])
         )
     }
-    console.log(productsBeforeSQL)
 
     const customers = doc.getElementsByTagName('Customer');
     const customersBeforeSQL = []
     for (let i = 0; i < customers.length; i++) {
-
         const customer = customers[i];
         const billingAddressElement = customer.getElementsByTagName('BillingAddress')[0];
         const shipToAddressElement = customer.getElementsByTagName('ShipToAddress')[0];
@@ -57,9 +69,9 @@ export default async function handler(
     }
 
     const pg = await Promise.all([
-        postgres.insertInto('product').values(productsBeforeSQL).onConflict(ocb => ocb.doNothing()).executeTakeFirst(),
-        postgres.insertInto('customer').values(customersBeforeSQL).onConflict(ocb => ocb.doNothing()).executeTakeFirst(),
-        postgres.insertInto('tax_entry').values(taxTableBeforeSQL).onConflict(ocb => ocb.doNothing()).executeTakeFirst(),
+        postgres.insertInto('product').values(productsBeforeSQL).executeTakeFirst(),
+        postgres.insertInto('customer').values(customersBeforeSQL).executeTakeFirst(),
+        postgres.insertInto('tax_entry').values(taxTableBeforeSQL).executeTakeFirst(),
     ])
 
     const invoices = doc.getElementsByTagName('Invoice');
@@ -75,8 +87,6 @@ export default async function handler(
         const documentTotals = getElementsByTagNames(
             rawInvoice.getElementsByTagName('DocumentTotals')[0],
             ['TaxPayable', 'NetTotal', 'GrossTotal'])
-
-        console.log(invoice)
 
         const lines = rawInvoice.getElementsByTagName('Line');
         for (let j = 0; j < lines.length; j++) {
