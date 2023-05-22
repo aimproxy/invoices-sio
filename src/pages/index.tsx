@@ -1,4 +1,4 @@
-import {Card, Col, DateRangePicker, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
+import {Card, DateRangePicker, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
 import {DocumentIcon} from '@heroicons/react/24/outline'
 
 import {useCallback, useState} from "react";
@@ -95,43 +95,29 @@ export default function Home() {
             </TabList>
 
             {selectedView === "1" ? (
-                <div className="mt-6">
+                <div className="mt-6 mb-8">
                     <Grid numCols={1} numColsLg={4} className="gap-6">
                         <AverageOrderValue/>
                         <CustomerLifetimeValue/>
-                        <Col numColSpanLg={2}>
-                            <NetGrossMargin/>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <CumulativeRevenueTrend/>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <RevenueBySegment/>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 7</Metric>
-                            </Card>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 8</Metric>
-                            </Card>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 9</Metric>
-                            </Card>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 10</Metric>
-                            </Card>
-                        </Col>
+                        <NetGrossMargin/>
+                        <CumulativeRevenueTrend/>
+                        <RevenueBySegment/>
+                        <Card className={"col-span-2"}>
+                            <Text>Title</Text>
+                            <Metric>KPI 6</Metric>
+                        </Card>
+                        <Card className={"col-span-2"}>
+                            <Text>Title</Text>
+                            <Metric>KPI 7</Metric>
+                        </Card>
+                        <Card className={"col-span-2"}>
+                            <Text>Title</Text>
+                            <Metric>KPI 8</Metric>
+                        </Card>
+                        <Card className={"col-span-2"}>
+                            <Text>Title</Text>
+                            <Metric>KPI 9</Metric>
+                        </Card>
                     </Grid>
                 </div>
             ) : (
