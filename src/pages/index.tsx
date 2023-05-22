@@ -1,12 +1,17 @@
-import {Card, Col, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
+import {Card, Col, DateRangePicker, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
 import {DocumentIcon} from '@heroicons/react/24/outline'
 
 import {useCallback, useState} from "react";
 import {useDropzone} from "react-dropzone";
+import CumulativeRevenueTrend from "@sio/components/CumulativeRevenueTrend";
+import AverageOrderValue from "@sio/components/AverageOrderValue";
+import CustomerLifetimeValue from "@sio/components/CustomerLifetimeValue";
+import RevenueBySegment from "@sio/components/RevenueBySegment";
+import NetGrossMargin from "@sio/components/NetGrossMargin";
 
-const classNames = (...s: string[]) => s.filter(Boolean).join(' ');
+const classNames = (...s: (string | null)[]) => s.filter(Boolean).join(' ');
 
-function SAFTDropzone() {
+const SAFTDropzone = () => {
 
     const onDrop = useCallback((acceptedFiles: any[]) => {
         acceptedFiles.forEach((file) => {
@@ -20,7 +25,7 @@ function SAFTDropzone() {
                 console.log(binaryStr)
 
                 // Make the file upload request
-                const response = await fetch('/api/saft', {
+                const response = await fetch('/api/dom', {
                     method: 'POST',
                     body: binaryStr,
                 });
@@ -33,7 +38,7 @@ function SAFTDropzone() {
         })
     }, [])
 
-    const {getRootProps, getInputProps, isDragActive} = useDropzone({
+    const {getRootProps, getInputProps, isDragAccept, isDragReject} = useDropzone({
         onDrop,
         accept: {'text/xml': ['.xml']}
     })
@@ -41,8 +46,9 @@ function SAFTDropzone() {
     return (
         <div className="mt-6" {...getRootProps()}>
             <div className={classNames(
-                "mt-2 flex justify-center rounded-lg border border-solid px-6 py-10",
-                isDragActive ? 'border-emerald-400' : 'border-gray-200'
+                "mt-2 flex justify-center rounded-lg border-2 border-solid hover:border-indigo-400 cursor-pointer transition-all px-6 py-10 bg-white",
+                isDragAccept ? 'border-emerald-400' : null,
+                isDragReject ? 'border-red-400' : null
             )}>
                 <div className="flex flex-col items-center">
                     <DocumentIcon className="mx-auto h-12 w-12 text-gray-300" aria-hidden="true"/>
@@ -68,10 +74,17 @@ function SAFTDropzone() {
 export default function Home() {
     const [selectedView, setSelectedView] = useState("1");
     return (
-        <main className={"max-w-7xl mx-auto pt-16 sm:pt-8 px-8"}>
-            <Title>Olá, Sales Manager X!</Title>
-            <Text>Aqui o especialista és sempre tu!</Text>
+        <main className={"max-w-[90rem] mx-auto pt-16 sm:pt-8 px-8"}>
 
+            <div className="block sm:flex sm:justify-between">
+                <div>
+                    <Title>Olá, Sales Manager X!</Title>
+                    <Text>Aqui o especialista és sempre tu!</Text>
+                </div>
+                <div className="mt-4 sm:mt-0">
+                    <DateRangePicker/>
+                </div>
+            </div>
             <TabList
                 defaultValue="1"
                 onValueChange={(value) => setSelectedView(value)}
@@ -83,31 +96,42 @@ export default function Home() {
 
             {selectedView === "1" ? (
                 <div className="mt-6">
-                    <Grid numCols={1} numColsSm={2} numColsLg={3} className="gap-2">
-                        <Col numColSpan={1} numColSpanLg={2}>
+                    <Grid numCols={1} numColsLg={4} className="gap-6">
+                        <AverageOrderValue/>
+                        <CustomerLifetimeValue/>
+                        <Col numColSpanLg={2}>
+                            <NetGrossMargin/>
+                        </Col>
+                        <Col numColSpanLg={2}>
+                            <CumulativeRevenueTrend/>
+                        </Col>
+                        <Col numColSpanLg={2}>
+                            <RevenueBySegment/>
+                        </Col>
+                        <Col numColSpanLg={2}>
                             <Card>
                                 <Text>Title</Text>
-                                <Metric>KPI 1</Metric>
+                                <Metric>KPI 7</Metric>
                             </Card>
                         </Col>
-                        <Card>
-                            <Text>Title</Text>
-                            <Metric>KPI 2</Metric>
-                        </Card>
-                        <Col>
+                        <Col numColSpanLg={2}>
                             <Card>
                                 <Text>Title</Text>
-                                <Metric>KPI 3</Metric>
+                                <Metric>KPI 8</Metric>
                             </Card>
                         </Col>
-                        <Card>
-                            <Text>Title</Text>
-                            <Metric>KPI 4</Metric>
-                        </Card>
-                        <Card>
-                            <Text>Title</Text>
-                            <Metric>KPI 5</Metric>
-                        </Card>
+                        <Col numColSpanLg={2}>
+                            <Card>
+                                <Text>Title</Text>
+                                <Metric>KPI 9</Metric>
+                            </Card>
+                        </Col>
+                        <Col numColSpanLg={2}>
+                            <Card>
+                                <Text>Title</Text>
+                                <Metric>KPI 10</Metric>
+                            </Card>
+                        </Col>
                     </Grid>
                 </div>
             ) : (
