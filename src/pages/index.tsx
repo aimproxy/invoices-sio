@@ -6,7 +6,7 @@ import {useDropzone} from "react-dropzone";
 
 const classNames = (...s: string[]) => s.filter(Boolean).join(' ');
 
-function SAFTDropzone() {
+const SAFTDropzone = () => {
 
     const onDrop = useCallback((acceptedFiles: any[]) => {
         acceptedFiles.forEach((file) => {
@@ -20,7 +20,7 @@ function SAFTDropzone() {
                 console.log(binaryStr)
 
                 // Make the file upload request
-                const response = await fetch('/api/saft', {
+                const response = await fetch('/api/dom', {
                     method: 'POST',
                     body: binaryStr,
                 });

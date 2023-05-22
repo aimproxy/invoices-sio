@@ -17,7 +17,6 @@ export interface CustomerRaw {
 }
 
 export interface ProductRaw {
-    product_id: number;
     product_type: string;
     product_code: string;
     product_description: string;
