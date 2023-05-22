@@ -1,8 +1,6 @@
 import {createKysely} from "@vercel/postgres-kysely";
 
 export interface CustomerRaw {
-    customer_id: number;
-    account_id: string;
     customer_tax_id: number;
     company_name: string;
     billing_address_detail: string;
