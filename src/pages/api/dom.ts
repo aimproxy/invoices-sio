@@ -1,6 +1,6 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import {DOMParser} from 'xmldom';
-import postgres, {CustomerRaw} from "@sio/postgres";
+import postgres from "@sio/postgres";
 
 export default async function handler(
     req: NextApiRequest,
@@ -11,78 +11,90 @@ export default async function handler(
     const parser = new DOMParser();
     const doc = parser.parseFromString(xml, 'application/xml');
 
+    const header = doc.getElementsByTagName('Header')[0];
+    const company = getElementsByTagNames(
+        header, ['CompanyID', 'TaxRegistrationNumber', 'CompanyName', 'CurrencyCode']
+    )
+
+    const fiscalYear = {
+        company_id: company.company_id,
+        ...getElementsByTagNames(header, ['FiscalYear', 'StartDate', 'EndDate', 'DateCreated'])
+    }
+
+    // because the fiscal year has a foreign key with a company, this should run sequentially
+    await postgres.insertInto('company').values(company).executeTakeFirst();
+    await postgres.insertInto('fiscal_year').values(fiscalYear).executeTakeFirst();
+
     const products = doc.getElementsByTagName('Product');
     const productsBeforeSQL = []
     for (let i = 0; i < products.length; i++) {
-        productsBeforeSQL.push(getElementsByTagNames(
-            products[i],
-            ['ProductType', 'ProductCode', 'ProductDescription', 'ProductNumberCode'])
-        )
+        const product = products[i];
+        productsBeforeSQL.push({
+            company_id: company.company_id,
+            ...getElementsByTagNames(
+                product,
+                ['ProductType', 'ProductCode', 'ProductDescription', 'ProductNumberCode'])
+        })
     }
-    console.log(productsBeforeSQL)
 
     const customers = doc.getElementsByTagName('Customer');
-    const customersBeforeSQL: CustomerRaw[] = []
+    const customersBeforeSQL = []
     for (let i = 0; i < customers.length; i++) {
         const customer = customers[i];
-
-        const customerTaxId = Number(customer.getAttribute('CustomerTaxID'));
-        const companyElement = customer.getElementsByTagName('CompanyName')[0];
-        const companyName = companyElement.textContent;
-
         const billingAddressElement = customer.getElementsByTagName('BillingAddress')[0];
-        const billingAddressDetail = billingAddressElement.getElementsByTagName('AddressDetail')[0].textContent;
-        const billingCity = billingAddressElement.getElementsByTagName('City')[0].textContent;
-        const billingPostalCode = billingAddressElement.getElementsByTagName('PostalCode')[0].textContent;
-        const billingCountry = billingAddressElement.getElementsByTagName('Country')[0].textContent;
-
         const shipToAddressElement = customer.getElementsByTagName('ShipToAddress')[0];
-        const shipToAddressDetail = shipToAddressElement.getElementsByTagName('AddressDetail')[0].textContent;
-        const shipToCity = shipToAddressElement.getElementsByTagName('City')[0].textContent;
-        const shipToPostalCode = shipToAddressElement.getElementsByTagName('PostalCode')[0].textContent;
-        const shipToCountry = shipToAddressElement.getElementsByTagName('Country')[0].textContent;
 
-        const selfBillingIndicator = Number(customer.getElementsByTagName('SelfBillingIndicator')[0].textContent);
+        const {
+            customer_tax_id,
+            self_billing_indicator,
+            ...left
+        } = getElementsByTagNames(customer, ['CompanyName', 'CustomerTaxID', 'SelfBillingIndicator'])
 
         customersBeforeSQL.push({
-            customer_tax_id: customerTaxId,
-            company_name: companyName!,
-            billing_address_detail: billingAddressDetail!,
-            billing_city: billingCity!,
-            billing_postal_code: billingPostalCode!,
-            billing_country: billingCountry!,
-            ship_to_address_detail: shipToAddressDetail!,
-            ship_to_city: shipToCity!,
-            ship_to_postal_code: shipToPostalCode!,
-            ship_to_country: shipToCountry!,
-            self_billing_indicator: selfBillingIndicator!,
-        });
+            company_id: company.company_id,
+            customer_tax_id: Number(customer_tax_id),
+            self_billing_indicator: Number(self_billing_indicator),
+            ...left,
+            ...getElementsByTagNames(billingAddressElement, ['AddressDetail', 'City', 'PostalCode', 'Country'], 'billing'),
+            ...getElementsByTagNames(shipToAddressElement, ['AddressDetail', 'City', 'PostalCode', 'Country'], 'ship_to')
+        })
     }
 
     const taxTable = doc.getElementsByTagName('TaxTable')[0].getElementsByTagName('TaxTableEntry')
     const taxTableBeforeSQL = []
 
     for (let i = 0; i < taxTable.length; i++) {
-        taxTableBeforeSQL.push(
-            getElementsByTagNames(
-                taxTable[i],
+        const taxEntry = taxTable[i]
+        taxTableBeforeSQL.push({
+            company_id: company.company_id,
+            ...getElementsByTagNames(
+                taxEntry,
                 ['TaxType', 'TaxCountryRegion', 'TaxCode', 'Description', 'TaxPercentage']
             )
-        )
+        })
     }
 
-
     const pg = await Promise.all([
-        postgres.insertInto('product').values(productsBeforeSQL).onConflict(ocb => ocb.doNothing()).executeTakeFirst(),
-        postgres.insertInto('customer').values(customersBeforeSQL).onConflict(ocb => ocb.doNothing()).executeTakeFirst(),
-        postgres.insertInto('tax_entry').values(taxTableBeforeSQL).onConflict(ocb => ocb.doNothing()).executeTakeFirst(),
+        postgres.insertInto('product').values(productsBeforeSQL).executeTakeFirst(),
+        postgres.insertInto('customer').values(customersBeforeSQL).executeTakeFirst(),
+        postgres.insertInto('tax_entry').values(taxTableBeforeSQL).executeTakeFirst(),
     ])
 
     const invoices = doc.getElementsByTagName('Invoice');
     for (let i = 0; i < invoices.length; i++) {
-        const invoice = invoices[i];
+        const rawInvoice = invoices[i]
+        const invoice = getElementsByTagNames(rawInvoice, [
+            'InvoiceNo', 'ATCUD', 'InvoiceStatus',
+            'InvoiceStatusDate', 'Hash', 'Period',
+            'InvoiceDate', 'InvoiceType', 'SystemEntryDate',
+            'CustomerID', 'TaxPayable', 'NetTotal', 'GrossTotal'
+        ])
 
-        const lines = invoice.getElementsByTagName('Line');
+        const documentTotals = getElementsByTagNames(
+            rawInvoice.getElementsByTagName('DocumentTotals')[0],
+            ['TaxPayable', 'NetTotal', 'GrossTotal'])
+
+        const lines = rawInvoice.getElementsByTagName('Line');
         for (let j = 0; j < lines.length; j++) {
             const line = lines[j];
         }
@@ -91,7 +103,7 @@ export default async function handler(
     res.status(200).json({ok: true, pg})
 }
 
-const getElementsByTagNames = (element: Element, tags: string[]) => {
+const getElementsByTagNames = (element: Element, tags: string[], prefix?: string) => {
     const serializedTags: { [key: string]: string } = {};
 
     tags.forEach(tag => {
@@ -99,7 +111,9 @@ const getElementsByTagNames = (element: Element, tags: string[]) => {
             .replace(/([a-z])([A-Z])/g, '$1_$2')
             .toLowerCase();
 
-        serializedTags[serializedTagName] = element.getElementsByTagName(tag)[0].textContent!;
+        const tagName = prefix ? `${prefix}_${serializedTagName}` : serializedTagName
+
+        serializedTags[tagName] = element.getElementsByTagName(tag)[0].textContent!;
     });
 
     return serializedTags;

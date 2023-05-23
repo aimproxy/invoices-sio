@@ -1,90 +1,65 @@
-import {Card, Col, DateRangePicker, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
-import {DocumentIcon} from '@heroicons/react/24/outline'
+import type {GetServerSideProps, InferGetServerSidePropsType} from 'next';
+import {Card, Dropdown, DropdownItem, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
 
-import {useCallback, useState} from "react";
-import {useDropzone} from "react-dropzone";
+import {useCallback, useMemo, useState} from "react";
 import CumulativeRevenueTrend from "@sio/components/CumulativeRevenueTrend";
 import AverageOrderValue from "@sio/components/AverageOrderValue";
 import CustomerLifetimeValue from "@sio/components/CustomerLifetimeValue";
 import RevenueBySegment from "@sio/components/RevenueBySegment";
 import NetGrossMargin from "@sio/components/NetGrossMargin";
+import TopProductsByRegion from "@sio/components/TopProductsByRegion";
+import Sales from "@sio/components/Sales";
+import SAFTDropzone from "@sio/components/SAFTDropzone";
+import postgres from "@sio/postgres";
 
-const classNames = (...s: (string | null)[]) => s.filter(Boolean).join(' ');
+export default function Home({companies, years}: InferGetServerSidePropsType<typeof getServerSideProps>) {
 
-const SAFTDropzone = () => {
+    const [selectedView, setSelectedView] = useState("1");
 
-    const onDrop = useCallback((acceptedFiles: any[]) => {
-        acceptedFiles.forEach((file) => {
-            const reader = new FileReader()
+    const [selectedCompany, setSelectedCompany] = useState(companies[0].companyId)
 
-            reader.onabort = () => console.log('file reading was aborted')
-            reader.onerror = () => console.log('file reading has failed')
-            reader.onload = async () => {
-                // Do whatever you want with the file contents
-                const binaryStr = reader.result
-                console.log(binaryStr)
+    const companyYears = useMemo(() => years[selectedCompany], [selectedCompany, years])
+    const [selectedFiscalYear, setSelectedFiscalYear] = useState(companyYears[0].fiscalYear)
 
-                // Make the file upload request
-                const response = await fetch('/api/dom', {
-                    method: 'POST',
-                    body: binaryStr,
-                });
+    const setSelectedCompanyHandler = useCallback((value: string) => setSelectedCompany(value), []);
+    const setSelectedFiscalYearHandler = useCallback((value: string) => setSelectedFiscalYear(value), []);
 
-                // Handle the response from the backend
-                const data = await response.json();
-                console.log('Upload successful:', data);
-            }
-            reader.readAsArrayBuffer(file)
-        })
-    }, [])
 
-    const {getRootProps, getInputProps, isDragAccept, isDragReject} = useDropzone({
-        onDrop,
-        accept: {'text/xml': ['.xml']}
-    })
-
-    return (
-        <div className="mt-6" {...getRootProps()}>
-            <div className={classNames(
-                "mt-2 flex justify-center rounded-lg border-2 border-solid hover:border-indigo-400 cursor-pointer transition-all px-6 py-10 bg-white",
-                isDragAccept ? 'border-emerald-400' : null,
-                isDragReject ? 'border-red-400' : null
-            )}>
-                <div className="flex flex-col items-center">
-                    <DocumentIcon className="mx-auto h-12 w-12 text-gray-300" aria-hidden="true"/>
-                    <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                        <div className={classNames(
-                            'relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600',
-                            'focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600',
-                            'focus-within:ring-offset-2 hover:text-indigo-500'
-                        )}
+    const headerMarkup = (
+        <div className="block sm:flex sm:justify-between">
+            <div>
+                <Title>Olá, {selectedCompany ?? 'Demo'}!</Title>
+                <Text>Aqui o especialista és sempre tu!</Text>
+            </div>
+            <div className="flex flex-row space-x-4 mt-4 sm:mt-0">
+                {selectedView == "1" && (
+                    <>
+                        <Dropdown
+                            value={selectedCompany}
+                            onValueChange={setSelectedCompanyHandler}
+                            placeholder="Select Company"
                         >
-                            <span>Upload a file</span>
-                            <input {...getInputProps()} className="sr-only"/>
-                        </div>
-                        <p className="pl-1">or drag and drop</p>
-                    </div>
-                    <p className="text-xs leading-5 text-gray-600">XML up to 10MB</p>
-                </div>
+                            {companies.map((company, k) => (
+                                <DropdownItem value={company.companyId} text={company.companyName} key={k}/>
+                            ))}
+                        </Dropdown>
+                        <Dropdown
+                            value={selectedFiscalYear}
+                            onValueChange={setSelectedFiscalYearHandler}
+                            placeholder="Select Fiscal Year">
+                            {companyYears.map((year, k) => (
+                                <DropdownItem value={year.fiscalYear} text={year.fiscalYear} key={k}/>
+                            ))}
+                        </Dropdown>
+                    </>
+                )}
             </div>
         </div>
     )
-}
 
-export default function Home() {
-    const [selectedView, setSelectedView] = useState("1");
     return (
         <main className={"max-w-[90rem] mx-auto pt-16 sm:pt-8 px-8"}>
-
-            <div className="block sm:flex sm:justify-between">
-                <div>
-                    <Title>Olá, Sales Manager X!</Title>
-                    <Text>Aqui o especialista és sempre tu!</Text>
-                </div>
-                <div className="mt-4 sm:mt-0">
-                    <DateRangePicker/>
-                </div>
-            </div>
+            {headerMarkup}
             <TabList
                 defaultValue="1"
                 onValueChange={(value) => setSelectedView(value)}
@@ -95,43 +70,27 @@ export default function Home() {
             </TabList>
 
             {selectedView === "1" ? (
-                <div className="mt-6">
-                    <Grid numCols={1} numColsLg={4} className="gap-6">
+                <div className="mt-6 mb-8 gap-6">
+                    <Grid numCols={1} numColsLg={5} className="gap-6">
                         <AverageOrderValue/>
                         <CustomerLifetimeValue/>
-                        <Col numColSpanLg={2}>
-                            <NetGrossMargin/>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <CumulativeRevenueTrend/>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <RevenueBySegment/>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 7</Metric>
-                            </Card>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 8</Metric>
-                            </Card>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 9</Metric>
-                            </Card>
-                        </Col>
-                        <Col numColSpanLg={2}>
-                            <Card>
-                                <Text>Title</Text>
-                                <Metric>KPI 10</Metric>
-                            </Card>
-                        </Col>
+                        <Sales/>
+                        <NetGrossMargin/>
+                        <CumulativeRevenueTrend/>
+                        <TopProductsByRegion/>
+                        <Card className={"col-span-2"}>
+                            <Text>Title</Text>
+                            <Metric>KPI 6</Metric>
+                        </Card>
+                        <RevenueBySegment/>
+                        <Card className={"col-span-3"}>
+                            <Text>Title</Text>
+                            <Metric>KPI 7</Metric>
+                        </Card>
+                        <Card className={"col-span-2"}>
+                            <Text>Title</Text>
+                            <Metric>KPI 8</Metric>
+                        </Card>
                     </Grid>
                 </div>
             ) : (
@@ -139,4 +98,43 @@ export default function Home() {
             )}
         </main>
     );
+}
+
+type FiscalYearDict = { [key: string]: { fiscalYear: string; startDate: string; endDate: string }[] }
+
+export const getServerSideProps: GetServerSideProps<{
+    companies: { companyId: string, companyName: string }[],
+    years: FiscalYearDict
+}> = async () => {
+    const sql = await postgres
+        .selectFrom('company')
+        .innerJoin('fiscal_year', 'fiscal_year.company_id', 'company.company_id')
+        .select([
+            'company.company_id', 'company.company_name',
+            'fiscal_year.fiscal_year', 'fiscal_year.start_date', 'fiscal_year.end_date'
+        ])
+        .execute();
+
+    const years = sql.reduce((result, company) => {
+        const {company_id, fiscal_year, start_date, end_date} = company;
+
+        if (!result[company_id]) {
+            result[company_id] = [];
+        }
+
+        result[company_id].push({
+            startDate: start_date.toISOString(),
+            endDate: end_date.toISOString(),
+            fiscalYear: fiscal_year
+        });
+
+        return result;
+    }, {} as FiscalYearDict);
+
+    const companies = Array.from(new Set(sql.map(company => ({
+        companyId: company.company_id,
+        companyName: company.company_name
+    }))));
+
+    return {props: {companies, years}};
 }
