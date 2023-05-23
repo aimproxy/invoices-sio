@@ -28,10 +28,13 @@ export default async function handler(
     const products = doc.getElementsByTagName('Product');
     const productsBeforeSQL = []
     for (let i = 0; i < products.length; i++) {
-        productsBeforeSQL.push(getElementsByTagNames(
-            products[i],
-            ['ProductType', 'ProductCode', 'ProductDescription', 'ProductNumberCode'])
-        )
+        const product = products[i];
+        productsBeforeSQL.push({
+            company_id: company.company_id,
+            ...getElementsByTagNames(
+                product,
+                ['ProductType', 'ProductCode', 'ProductDescription', 'ProductNumberCode'])
+        })
     }
 
     const customers = doc.getElementsByTagName('Customer');
@@ -48,6 +51,7 @@ export default async function handler(
         } = getElementsByTagNames(customer, ['CompanyName', 'CustomerTaxID', 'SelfBillingIndicator'])
 
         customersBeforeSQL.push({
+            company_id: company.company_id,
             customer_tax_id: Number(customer_tax_id),
             self_billing_indicator: Number(self_billing_indicator),
             ...left,
@@ -60,12 +64,14 @@ export default async function handler(
     const taxTableBeforeSQL = []
 
     for (let i = 0; i < taxTable.length; i++) {
-        taxTableBeforeSQL.push(
-            getElementsByTagNames(
-                taxTable[i],
+        const taxEntry = taxTable[i]
+        taxTableBeforeSQL.push({
+            company_id: company.company_id,
+            ...getElementsByTagNames(
+                taxEntry,
                 ['TaxType', 'TaxCountryRegion', 'TaxCode', 'Description', 'TaxPercentage']
             )
-        )
+        })
     }
 
     const pg = await Promise.all([
