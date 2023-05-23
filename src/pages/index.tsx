@@ -1,8 +1,7 @@
-import {Card, DateRangePicker, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
-import {DocumentIcon} from '@heroicons/react/24/outline'
+import type {GetServerSideProps, InferGetServerSidePropsType} from 'next';
+import {Card, DateRangePicker, Dropdown, DropdownItem, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
 
 import {useCallback, useState} from "react";
-import {useDropzone} from "react-dropzone";
 import CumulativeRevenueTrend from "@sio/components/CumulativeRevenueTrend";
 import AverageOrderValue from "@sio/components/AverageOrderValue";
 import CustomerLifetimeValue from "@sio/components/CustomerLifetimeValue";
@@ -10,83 +9,43 @@ import RevenueBySegment from "@sio/components/RevenueBySegment";
 import NetGrossMargin from "@sio/components/NetGrossMargin";
 import TopProductsByRegion from "@sio/components/TopProductsByRegion";
 import Sales from "@sio/components/Sales";
+import SAFTDropzone from "@sio/components/SAFTDropzone";
+import postgres from "@sio/postgres";
 
-const classNames = (...s: (string | null)[]) => s.filter(Boolean).join(' ');
+export default function Home({companies}: InferGetServerSidePropsType<typeof getServerSideProps>) {
 
-const SAFTDropzone = () => {
+    const [selectedCompany, setSelectedCompany] = useState<CompanyWithFiscalYear>(companies[0])
+    const [selectedView, setSelectedView] = useState("1");
 
-    const onDrop = useCallback((acceptedFiles: any[]) => {
-        acceptedFiles.forEach((file) => {
-            const reader = new FileReader()
+    const setSelectedCompanyHandler = useCallback((value: string) => {
+        const company = companies.filter(company => company.company_id == Number(value))[0]
+        setSelectedCompany(company)
+    }, [companies]);
 
-            reader.onabort = () => console.log('file reading was aborted')
-            reader.onerror = () => console.log('file reading has failed')
-            reader.onload = async () => {
-                // Do whatever you want with the file contents
-                const binaryStr = reader.result
-                console.log(binaryStr)
 
-                // Make the file upload request
-                const response = await fetch('/api/dom', {
-                    method: 'POST',
-                    body: binaryStr,
-                });
-
-                // Handle the response from the backend
-                const data = await response.json();
-                console.log('Upload successful:', data);
-            }
-            reader.readAsArrayBuffer(file)
-        })
-    }, [])
-
-    const {getRootProps, getInputProps, isDragAccept, isDragReject} = useDropzone({
-        onDrop,
-        accept: {'text/xml': ['.xml']}
-    })
-
-    return (
-        <div className="mt-6" {...getRootProps()}>
-            <div className={classNames(
-                "mt-2 flex justify-center rounded-lg border-2 border-solid hover:border-indigo-400 cursor-pointer transition-all px-6 py-10 bg-white",
-                isDragAccept ? 'border-emerald-400' : null,
-                isDragReject ? 'border-red-400' : null
-            )}>
-                <div className="flex flex-col items-center">
-                    <DocumentIcon className="mx-auto h-12 w-12 text-gray-300" aria-hidden="true"/>
-                    <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                        <div className={classNames(
-                            'relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600',
-                            'focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600',
-                            'focus-within:ring-offset-2 hover:text-indigo-500'
-                        )}
-                        >
-                            <span>Upload a file</span>
-                            <input {...getInputProps()} className="sr-only"/>
-                        </div>
-                        <p className="pl-1">or drag and drop</p>
-                    </div>
-                    <p className="text-xs leading-5 text-gray-600">XML up to 10MB</p>
-                </div>
+    const headerMarkup = (
+        <div className="block sm:flex sm:justify-between">
+            <div>
+                <Title>Olá, {selectedCompany?.company_name ?? 'Demo'}!</Title>
+                <Text>Aqui o especialista és sempre tu!</Text>
+            </div>
+            <div className="flex flex-row space-x-4 mt-4 sm:mt-0">
+                <Dropdown
+                    onValueChange={setSelectedCompanyHandler}
+                    placeholder="Select Company"
+                >
+                    {companies.map((company, k) => (
+                        <DropdownItem value={String(company.company_id)} text={company.company_name} key={k}/>
+                    ))}
+                </Dropdown>
+                {selectedView == "1" && <DateRangePicker/>}
             </div>
         </div>
     )
-}
 
-export default function Home() {
-    const [selectedView, setSelectedView] = useState("1");
     return (
         <main className={"max-w-[90rem] mx-auto pt-16 sm:pt-8 px-8"}>
-
-            <div className="block sm:flex sm:justify-between">
-                <div>
-                    <Title>Olá, Sales Manager X!</Title>
-                    <Text>Aqui o especialista és sempre tu!</Text>
-                </div>
-                <div className="mt-4 sm:mt-0">
-                    <DateRangePicker/>
-                </div>
-            </div>
+            {headerMarkup}
             <TabList
                 defaultValue="1"
                 onValueChange={(value) => setSelectedView(value)}
@@ -125,4 +84,34 @@ export default function Home() {
             )}
         </main>
     );
+}
+
+interface CompanyWithFiscalYear extends Record<string, any> {
+    company_id: number,
+    company_name: string,
+    fiscal_year: number,
+    start_date: string,
+    end_date: string
+}
+
+export const getServerSideProps: GetServerSideProps<{
+    companies: CompanyWithFiscalYear[]
+}> = async () => {
+    const companies = await postgres
+        .selectFrom('company')
+        .innerJoin('fiscal_year', 'fiscal_year.company_id', 'company.company_id')
+        .select([
+            'company.company_id', 'company.company_name',
+            'fiscal_year.fiscal_year', 'fiscal_year.start_date', 'fiscal_year.end_date'
+        ])
+        .execute();
+
+    const serializedCompanies = companies.map((company) => ({
+        ...company,
+        start_date: company.start_date.toISOString(), // Convert to string
+        end_date: company.end_date.toISOString() // Convert to string
+    }));
+
+
+    return {props: {companies: serializedCompanies}};
 }
