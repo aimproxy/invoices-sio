@@ -13,32 +13,32 @@ import SAFTDropzone from "@sio/components/SAFTDropzone";
 import postgres from "@sio/postgres";
 
 export default function Home({companies}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-
-    const [selectedCompany, setSelectedCompany] = useState<CompanyWithFiscalYear>(companies[0])
+    const [selectedCompany, setSelectedCompany] = useState<string | undefined>()
     const [selectedView, setSelectedView] = useState("1");
 
-    const setSelectedCompanyHandler = useCallback((value: string) => {
-        const company = companies.filter(company => company.company_id == Number(value))[0]
-        setSelectedCompany(company)
-    }, [companies]);
-
+    const setSelectedCompanyHandler = useCallback((value: string) => setSelectedCompany(value), []);
 
     const headerMarkup = (
         <div className="block sm:flex sm:justify-between">
             <div>
-                <Title>Olá, {selectedCompany?.company_name ?? 'Demo'}!</Title>
+                <Title>Olá, {selectedCompany ?? 'Demo'}!</Title>
                 <Text>Aqui o especialista és sempre tu!</Text>
             </div>
             <div className="flex flex-row space-x-4 mt-4 sm:mt-0">
-                <Dropdown
-                    onValueChange={setSelectedCompanyHandler}
-                    placeholder="Select Company"
-                >
-                    {companies.map((company, k) => (
-                        <DropdownItem value={String(company.company_id)} text={company.company_name} key={k}/>
-                    ))}
-                </Dropdown>
-                {selectedView == "1" && <DateRangePicker/>}
+                {selectedView == "1" && (
+                    <>
+                        <Dropdown
+                            value={selectedCompany}
+                            onValueChange={setSelectedCompanyHandler}
+                            placeholder="Select Company"
+                        >
+                            {companies.map((company, k) => (
+                                <DropdownItem value={company.company_name} text={company.company_name} key={k}/>
+                            ))}
+                        </Dropdown>
+                        <DateRangePicker/>
+                    </>
+                )}
             </div>
         </div>
     )
