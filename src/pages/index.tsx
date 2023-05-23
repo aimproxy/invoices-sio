@@ -1,7 +1,7 @@
 import type {GetServerSideProps, InferGetServerSidePropsType} from 'next';
-import {Card, DateRangePicker, Dropdown, DropdownItem, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
+import {Card, Dropdown, DropdownItem, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
 
-import {useCallback, useState} from "react";
+import {useCallback, useMemo, useState} from "react";
 import CumulativeRevenueTrend from "@sio/components/CumulativeRevenueTrend";
 import AverageOrderValue from "@sio/components/AverageOrderValue";
 import CustomerLifetimeValue from "@sio/components/CustomerLifetimeValue";
@@ -12,11 +12,18 @@ import Sales from "@sio/components/Sales";
 import SAFTDropzone from "@sio/components/SAFTDropzone";
 import postgres from "@sio/postgres";
 
-export default function Home({companies}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-    const [selectedCompany, setSelectedCompany] = useState<string | undefined>()
+export default function Home({companies, years}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+
     const [selectedView, setSelectedView] = useState("1");
 
+    const [selectedCompany, setSelectedCompany] = useState(companies[0].companyId)
+
+    const companyYears = useMemo(() => years[selectedCompany], [selectedCompany, years])
+    const [selectedFiscalYear, setSelectedFiscalYear] = useState(companyYears[0].fiscalYear)
+
     const setSelectedCompanyHandler = useCallback((value: string) => setSelectedCompany(value), []);
+    const setSelectedFiscalYearHandler = useCallback((value: string) => setSelectedFiscalYear(value), []);
+
 
     const headerMarkup = (
         <div className="block sm:flex sm:justify-between">
@@ -33,10 +40,17 @@ export default function Home({companies}: InferGetServerSidePropsType<typeof get
                             placeholder="Select Company"
                         >
                             {companies.map((company, k) => (
-                                <DropdownItem value={company.company_name} text={company.company_name} key={k}/>
+                                <DropdownItem value={company.companyId} text={company.companyName} key={k}/>
                             ))}
                         </Dropdown>
-                        <DateRangePicker/>
+                        <Dropdown
+                            value={selectedFiscalYear}
+                            onValueChange={setSelectedFiscalYearHandler}
+                            placeholder="Select Fiscal Year">
+                            {companyYears.map((year, k) => (
+                                <DropdownItem value={year.fiscalYear} text={year.fiscalYear} key={k}/>
+                            ))}
+                        </Dropdown>
                     </>
                 )}
             </div>
@@ -86,18 +100,13 @@ export default function Home({companies}: InferGetServerSidePropsType<typeof get
     );
 }
 
-interface CompanyWithFiscalYear extends Record<string, any> {
-    company_id: number,
-    company_name: string,
-    fiscal_year: number,
-    start_date: string,
-    end_date: string
-}
+type FiscalYearDict = { [key: string]: { fiscalYear: string; startDate: string; endDate: string }[] }
 
 export const getServerSideProps: GetServerSideProps<{
-    companies: CompanyWithFiscalYear[]
+    companies: { companyId: string, companyName: string }[],
+    years: FiscalYearDict
 }> = async () => {
-    const companies = await postgres
+    const sql = await postgres
         .selectFrom('company')
         .innerJoin('fiscal_year', 'fiscal_year.company_id', 'company.company_id')
         .select([
@@ -106,12 +115,26 @@ export const getServerSideProps: GetServerSideProps<{
         ])
         .execute();
 
-    const serializedCompanies = companies.map((company) => ({
-        ...company,
-        start_date: company.start_date.toISOString(), // Convert to string
-        end_date: company.end_date.toISOString() // Convert to string
-    }));
+    const years = sql.reduce((result, company) => {
+        const {company_id, fiscal_year, start_date, end_date} = company;
 
+        if (!result[company_id]) {
+            result[company_id] = [];
+        }
 
-    return {props: {companies: serializedCompanies}};
+        result[company_id].push({
+            startDate: start_date.toISOString(),
+            endDate: end_date.toISOString(),
+            fiscalYear: fiscal_year
+        });
+
+        return result;
+    }, {} as FiscalYearDict);
+
+    const companies = Array.from(new Set(sql.map(company => ({
+        companyId: company.company_id,
+        companyName: company.company_name
+    }))));
+
+    return {props: {companies, years}};
 }
