@@ -50,42 +50,31 @@ CREATE TABLE product
 CREATE TABLE invoice
 (
     invoice_id          BIGSERIAL PRIMARY KEY,
-    invoice_no          VARCHAR(50),
+    invoice_no          VARCHAR(255),
     atcud               VARCHAR(50),
+    hash                varchar(255),
     invoice_status      VARCHAR(50),
     invoice_status_date TIMESTAMP,
-    source_id           INT,
-    source_billing      VARCHAR(50),
-    hash                VARCHAR(255),
-    hash_control        INT,
-    period              INT,
     invoice_date        DATE,
     invoice_type        VARCHAR(50),
     system_entry_date   TIMESTAMP,
-    customer_id         BIGSERIAL,
+    customer_id         INT,
     tax_payable         DECIMAL(10, 2),
     net_total           DECIMAL(10, 2),
     gross_total         DECIMAL(10, 2),
-    company_id          BIGSERIAL,
-    FOREIGN KEY (company_id) REFERENCES company (company_id),
-    FOREIGN KEY (customer_id) REFERENCES customer (customer_id)
+    fiscal_year         INT
 );
 
 CREATE TABLE invoice_line
 (
     line_id         BIGSERIAL PRIMARY KEY,
-    invoice_id      BIGSERIAL,
-    product_id      BIGSERIAL,
-    line_number     INT,
+    product_code    VARCHAR(255),
+    invoice_hash    VARCHAR(255),
     quantity        DECIMAL(10, 2),
     unit_of_measure VARCHAR(50),
     unit_price      DECIMAL(18, 5),
     tax_point_date  DATE,
     description     VARCHAR(255),
     credit_amount   DECIMAL(10, 2),
-    debit_amount    DECIMAL(10, 2),
-    tax_id          BIGSERIAL,
-    FOREIGN KEY (invoice_id) REFERENCES invoice (invoice_id),
-    FOREIGN KEY (product_id) REFERENCES product (product_id),
-    FOREIGN KEY (tax_id) REFERENCES tax_entry (tax_id)
+    debit_amount    DECIMAL(10, 2)
 );

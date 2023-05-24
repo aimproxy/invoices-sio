@@ -1,8 +1,6 @@
 import {createKysely} from "@vercel/postgres-kysely";
 import {Generated} from "kysely";
 
-export type InvoiceRaw = Omit<Invoice, 'invoice_id'>
-
 export interface Company extends Record<string, any> {
     company_id: Generated<number>;
     tax_registration_number: number
@@ -45,55 +43,34 @@ export interface Product extends Record<string, any> {
     company_id: number;
 }
 
-export interface TaxEntry extends Record<string, any> {
-    tax_id: Generated<number>;
-    tax_type: string;
-    tax_country_region: string;
-    tax_code: string;
-    description: string;
-    tax_percentage: number;
-    company_id: number;
-}
-
 export interface Invoice extends Record<string, any> {
-    invoice_id: Generated<number>;
-    invoice_no: string;
-    atcud: string;
-    invoice_status: string;
-    invoice_status_date: Date;
-    source_id: number;
-    source_billing: string;
-    hash: string;
-    hash_control: number;
-    period: number;
-    invoice_date: Date;
-    invoice_type: string;
-    self_billing_indicator: number;
-    // it should be vat_schema but we cant parse uppercase's like VAT
-    cash_vatscheme_indicator: number;
-    third_parties_billing_indicator: number;
-    system_entry_date: Date;
-    customer_id: number;
-    tax_payable: number;
-    net_total: number;
-    gross_total: number;
-    company_id: number;
+    invoice_id: Generated<number>
+    invoice_no: string
+    atcud: string
+    hash: string
+    invoice_status: string
+    invoice_status_date: Date
+    invoice_date: Date
+    invoice_type: string
+    system_entry_date: Date
+    customer_id: number
+    tax_payable: number
+    net_total: number
+    gross_total: number
+    fiscal_year: number
 }
 
 export interface InvoiceLine extends Record<string, any> {
-    line_id: Generated<number>;
-    invoice_id: number;
-    line_number: number;
-    product_code: string;
-    product_description: string;
-    quantity: number;
-    unit_of_measure: string;
-    unit_price: number;
-    tax_point_date: Date;
-    description: string;
-    credit_amount?: number;
-    debit_amount?: number;
-    tax_id: number;
+    line_id: Generated<number>
+    invoice_hash: string
+    product_code: number
+    quantity: number
+    unit_of_measure: string
+    unit_price: number
+    tax_point_date: Date
+    description: string
+    credit_amount?: number
+    debit_amount?: number
 }
 
 
