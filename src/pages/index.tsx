@@ -122,8 +122,8 @@ export const getServerSideProps: GetServerSideProps<{
         }
 
         result[company_id].push({
-            startDate: start_date.toISOString(),
-            endDate: end_date.toISOString(),
+            startDate: start_date.toString(),
+            endDate: end_date.toString(),
             fiscalYear: fiscal_year
         });
 

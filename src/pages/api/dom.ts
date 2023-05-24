@@ -4,7 +4,7 @@ import postgres from "@sio/postgres";
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<{ ok: boolean, pg: any }>
+    res: NextApiResponse<{ ok: boolean, e?: any }>
 ) {
     const xml = req.body
 
@@ -12,35 +12,52 @@ export default async function handler(
     const doc = parser.parseFromString(xml, 'application/xml');
 
     const header = doc.getElementsByTagName('Header')[0];
-    const company = getElementsByTagNames(
-        header, ['CompanyID', 'TaxRegistrationNumber', 'CompanyName', 'CurrencyCode']
-    )
+    const companyMetadata = getElementsByTagNames(header, [
+        'CompanyID', 'TaxRegistrationNumber',
+        'CompanyName', 'CurrencyCode'
+    ])
 
-    const fiscalYear = {
-        company_id: company.company_id,
-        ...getElementsByTagNames(header, ['FiscalYear', 'StartDate', 'EndDate', 'DateCreated'])
+    const fiscalYearMetadata: { [key: string]: any } = {
+        company_id: companyMetadata.company_id,
+        ...getElementsByTagNames(header, [
+            'FiscalYear', 'StartDate',
+            'EndDate', 'DateCreated'
+        ])
     }
 
-    // because the fiscal year has a foreign key with a company, this should run sequentially
-    await postgres.insertInto('company').values(company).executeTakeFirst();
-    await postgres.insertInto('fiscal_year').values(fiscalYear).executeTakeFirst();
+    try {
+        await postgres
+            .insertInto('company')
+            .values(companyMetadata)
+            .onConflict(oc =>
+                oc.column('tax_registration_number').doUpdateSet({
+                    tax_registration_number: companyMetadata.tax_registration_number
+                })
+            )
+            .executeTakeFirstOrThrow()
+    } catch (e) {
+        console.error(e)
+        return res.status(400).json({ok: false, e})
+    }
 
-    const products = doc.getElementsByTagName('Product');
-    const productsBeforeSQL = []
-    for (let i = 0; i < products.length; i++) {
-        const product = products[i];
-        productsBeforeSQL.push({
-            company_id: company.company_id,
-            ...getElementsByTagNames(
-                product,
-                ['ProductType', 'ProductCode', 'ProductDescription', 'ProductNumberCode'])
+    const productMetadata = doc.getElementsByTagName('Product');
+    const products = []
+    for (let i = 0; i < productMetadata.length; i++) {
+        const product = productMetadata[i];
+        products.push({
+            company_id: companyMetadata.company_id,
+            ...getElementsByTagNames(product, [
+                    'ProductType', 'ProductCode',
+                    'ProductDescription', 'ProductNumberCode'
+                ]
+            )
         })
     }
 
-    const customers = doc.getElementsByTagName('Customer');
-    const customersBeforeSQL = []
-    for (let i = 0; i < customers.length; i++) {
-        const customer = customers[i];
+    const customerMetadata = doc.getElementsByTagName('Customer');
+    const customers = []
+    for (let i = 0; i < customerMetadata.length; i++) {
+        const customer = customerMetadata[i];
         const billingAddressElement = customer.getElementsByTagName('BillingAddress')[0];
         const shipToAddressElement = customer.getElementsByTagName('ShipToAddress')[0];
 
@@ -49,87 +66,121 @@ export default async function handler(
             customer_tax_id,
             self_billing_indicator,
             ...left
-        } = getElementsByTagNames(customer, ['CustomerID', 'CompanyName', 'CustomerTaxID', 'SelfBillingIndicator'])
+        } = getElementsByTagNames(customer, [
+            'CustomerID', 'CompanyName',
+            'CustomerTaxID', 'SelfBillingIndicator'
+        ])
 
-        customersBeforeSQL.push({
+        customers.push({
             saft_customer_id: customer_id,
-            company_id: company.company_id,
+            company_id: companyMetadata.company_id,
             customer_tax_id: Number(customer_tax_id),
             self_billing_indicator: Number(self_billing_indicator),
             ...left,
-            ...getElementsByTagNames(billingAddressElement, ['AddressDetail', 'City', 'PostalCode', 'Country'], 'billing'),
-            ...getElementsByTagNames(shipToAddressElement, ['AddressDetail', 'City', 'PostalCode', 'Country'], 'ship_to')
+            ...getElementsByTagNames(billingAddressElement, [
+                'AddressDetail', 'City',
+                'PostalCode', 'Country'
+            ], 'billing'),
+            ...getElementsByTagNames(shipToAddressElement, [
+                'AddressDetail', 'City',
+                'PostalCode', 'Country'
+            ], 'ship_to')
         })
     }
-
-    const taxTable = doc.getElementsByTagName('TaxTable')[0].getElementsByTagName('TaxTableEntry')
-    const taxTableBeforeSQL = []
-
-    for (let i = 0; i < taxTable.length; i++) {
-        const taxEntry = taxTable[i]
-        taxTableBeforeSQL.push({
-            company_id: company.company_id,
-            ...getElementsByTagNames(
-                taxEntry,
-                ['TaxType', 'TaxCountryRegion', 'TaxCode', 'Description', 'TaxPercentage']
-            )
-        })
-    }
-
-    const pg = await Promise.all([
-        postgres.insertInto('product').values(productsBeforeSQL).executeTakeFirst(),
-        postgres.insertInto('customer').values(customersBeforeSQL).executeTakeFirst(),
-        postgres.insertInto('tax_entry').values(taxTableBeforeSQL).executeTakeFirst(),
-    ])
 
     const invoiceElement = doc.getElementsByTagName('Invoice');
     const invoices = []
 
+    const invoiceLinesElements: { hash: string, line: Element }[] = []
+
     for (let i = 0; i < invoiceElement.length; i++) {
         const rawInvoice = invoiceElement[i]
         const invoice = getElementsByTagNames(rawInvoice, [
-            'InvoiceNo', 'ATCUD', 'InvoiceStatus',
-            'InvoiceStatusDate', 'Hash', 'Period',
-            'InvoiceDate', 'InvoiceType', 'SystemEntryDate',
-            'CustomerID', 'TaxPayable', 'NetTotal', 'GrossTotal'
+            'InvoiceNo', 'ATCUD', 'Hash', 'InvoiceStatus',
+            'InvoiceStatusDate', 'InvoiceDate', 'InvoiceType',
+            'SystemEntryDate', 'CustomerID', 'TaxPayable',
+            'NetTotal', 'GrossTotal'
         ])
 
         const documentTotals = getElementsByTagNames(
             rawInvoice.getElementsByTagName('DocumentTotals')[0],
-            ['TaxPayable', 'NetTotal', 'GrossTotal'])
-
+            ['TaxPayable', 'NetTotal', 'GrossTotal']
+        )
 
         invoices.push({
+            fiscal_year: fiscalYearMetadata.fiscal_year,
             ...invoice,
             ...documentTotals
         })
+
+        const line = rawInvoice.getElementsByTagName('Line')[0]
+        invoiceLinesElements.push({
+            hash: invoice.hash,
+            line
+        })
     }
 
-    /*
-    subquery
-        db.with('jennifer', (db) => db
-      .selectFrom('person')
-      .where('first_name', '=', 'Jennifer')
-      .select(['id', 'first_name', 'gender'])
-      .limit(1)
-    ).insertInto('pet').values((eb) => ({
-      owner_id: eb.selectFrom('jennifer').select('id'),
-      name: eb.selectFrom('jennifer').select('first_name'),
-      species: 'cat',
-    }))
+    const invoiceLines = []
+    for (let i = 0; i < invoiceLinesElements.length; i++) {
+        const {hash, line} = invoiceLinesElements[i]
+        const invoiceLine = getElementsByTagNames(line, [
+            'ProductCode', 'Quantity', 'UnitOfMeasure',
+            'UnitPrice', 'TaxPointDate', 'Description',
+        ])
 
-    const result = await db
-  .insertInto('person')
-  .values((eb) => ({
-    first_name: 'Jennifer',
-    last_name: sql`${'Ani'} || ${'ston'}`,
-    middle_name: eb.ref('first_name'),
-    age: eb.selectFrom('person').select(sql`avg(age)`),
-  }))
-  .executeTakeFirst()
-     */
+        invoiceLines.push({
+            invoice_hash: hash,
+            credit_amount: line.getElementsByTagName('CreditAmount')[0]?.textContent ?? null,
+            debit_amount: line.getElementsByTagName('DebitAmount')[0]?.textContent ?? null,
+            ...invoiceLine
+        })
+    }
 
-    res.status(200).json({ok: true, pg})
+    try {
+        await Promise.all([
+            // Insert Fiscal Year
+            postgres.insertInto('fiscal_year')
+                .values(fiscalYearMetadata)
+                .onConflict(oc => oc
+                    .column('fiscal_year')
+                    .doUpdateSet({
+                        fiscal_year: fiscalYearMetadata.fiscal_year
+                    })
+                )
+                .executeTakeFirstOrThrow(),
+
+            // Insert Products
+            postgres.insertInto('product')
+                .values(products)
+                .onConflict(oc => oc
+                    .column('product_code')
+                    .doUpdateSet(eb => ({
+                        product_code: eb.ref('excluded.product_code')
+                    }))
+                )
+                .executeTakeFirstOrThrow(),
+
+            // Insert Customers
+            postgres.insertInto('customer')
+                .values(customers)
+                .onConflict(oc => oc
+                    .column('customer_tax_id')
+                    .doUpdateSet(eb => ({
+                        customer_tax_id: eb.ref('excluded.customer_tax_id')
+                    }))
+                )
+                .executeTakeFirstOrThrow(),
+
+            // Insert Invoices
+            await postgres.insertInto('invoice').values(invoices).executeTakeFirstOrThrow(),
+            await postgres.insertInto('invoice_line').values(invoiceLines).executeTakeFirstOrThrow()
+        ])
+    } catch (e) {
+        console.error(e)
+        return res.status(400).json({ok: false, e})
+    }
+
+    return res.status(200).json({ok: true})
 }
 
 const getElementsByTagNames = (element: Element, tags: string[], prefix?: string) => {
@@ -146,11 +197,4 @@ const getElementsByTagNames = (element: Element, tags: string[], prefix?: string
     });
 
     return serializedTags;
-}
-
-const getCustomerByTaxId = (taxId: number) => {
-    return postgres.selectFrom('customer')
-        .select('customer_id')
-        .where('customer_tax_id', '=', taxId)
-        .executeTakeFirst()
 }

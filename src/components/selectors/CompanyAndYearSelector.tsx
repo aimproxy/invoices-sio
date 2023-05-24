@@ -7,10 +7,10 @@ const CompanyAndYearSelector = ({companies, years}: {
     years: { [_: string]: FiscalYear[] }
 }) => {
 
-    const [selectedCompany, setSelectedCompany] = useState(companies[0].companyId)
+    const [selectedCompany, setSelectedCompany] = useState(String(companies[0].companyId))
 
     const companyYears = useMemo(() => years[selectedCompany], [selectedCompany, years])
-    const [selectedFiscalYear, setSelectedFiscalYear] = useState(companyYears[0].fiscalYear)
+    const [selectedFiscalYear, setSelectedFiscalYear] = useState(String(companyYears[0].fiscalYear))
 
     const setSelectedCompanyHandler = useCallback((value: string) => setSelectedCompany(value), []);
     const setSelectedFiscalYearHandler = useCallback((value: string) => setSelectedFiscalYear(value), []);
@@ -23,7 +23,7 @@ const CompanyAndYearSelector = ({companies, years}: {
                 placeholder="Select Company"
             >
                 {companies.map((company, k) => (
-                    <DropdownItem value={company.companyId} text={company.companyName} key={k}/>
+                    <DropdownItem value={String(company.companyId)} text={company.companyName} key={k}/>
                 ))}
             </Dropdown>
             <Dropdown
@@ -31,7 +31,7 @@ const CompanyAndYearSelector = ({companies, years}: {
                 onValueChange={setSelectedFiscalYearHandler}
                 placeholder="Select Fiscal Year">
                 {companyYears.map((year, k) => (
-                    <DropdownItem value={year.fiscalYear} text={year.fiscalYear} key={k}/>
+                    <DropdownItem value={String(year.fiscalYear)} text={String(year.fiscalYear)} key={k}/>
                 ))}
             </Dropdown>
         </>
