@@ -40,22 +40,10 @@ CREATE TABLE product
 (
     product_id          BIGSERIAL PRIMARY KEY,
     product_type        VARCHAR(1),
-    product_code        VARCHAR(50),
+    product_code        VARCHAR(50) UNIQUE NOT NULL,
     product_description VARCHAR(255),
     product_number_code VARCHAR(50),
     company_id          BIGSERIAL,
-    FOREIGN KEY (company_id) REFERENCES company (company_id)
-);
-
-CREATE TABLE tax_entry
-(
-    tax_id             BIGSERIAL PRIMARY KEY,
-    tax_type           VARCHAR(50),
-    tax_country_region VARCHAR(5),
-    tax_code           VARCHAR(50),
-    description        VARCHAR(255),
-    tax_percentage     DECIMAL(5, 2),
-    company_id         BIGSERIAL,
     FOREIGN KEY (company_id) REFERENCES company (company_id)
 );
 

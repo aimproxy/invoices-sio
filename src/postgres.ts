@@ -1,22 +1,17 @@
 import {createKysely} from "@vercel/postgres-kysely";
+import {Generated} from "kysely";
 
-export type CompanyRaw = Omit<Company, 'company_id'>
-export type FiscalYearRaw = Omit<FiscalYear, 'fiscal_year_id'>
-export type CustomerRaw = Omit<Customer, 'customer_id'>
-export type ProductRaw = Omit<Product, 'product_id'>
-export type TaxEntryRaw = Omit<TaxEntry, 'tax_id'>
 export type InvoiceRaw = Omit<Invoice, 'invoice_id'>
-export type InvoiceLineRaw = Omit<InvoiceLine, 'line_id'>
 
 export interface Company extends Record<string, any> {
-    company_id: number
+    company_id: Generated<number>;
     tax_registration_number: number
     company_name: string
     currency_code: string
 }
 
 export interface FiscalYear extends Record<string, any> {
-    fiscal_year_id: number
+    fiscal_year_id: Generated<number>;
     fiscal_year: number
     start_date: string
     end_date: string
@@ -25,7 +20,7 @@ export interface FiscalYear extends Record<string, any> {
 }
 
 export interface Customer extends Record<string, any> {
-    customer_id: number;
+    customer_id: Generated<number>;
     customer_tax_id: number;
     company_name: string;
     billing_address_detail: string;
@@ -38,10 +33,11 @@ export interface Customer extends Record<string, any> {
     ship_to_country: string;
     self_billing_indicator: number;
     company_id: number;
+    saft_customer_id: number;
 }
 
 export interface Product extends Record<string, any> {
-    product_id: number;
+    product_id: Generated<number>;
     product_type: string;
     product_code: string;
     product_description: string;
@@ -50,7 +46,7 @@ export interface Product extends Record<string, any> {
 }
 
 export interface TaxEntry extends Record<string, any> {
-    tax_id: number;
+    tax_id: Generated<number>;
     tax_type: string;
     tax_country_region: string;
     tax_code: string;
@@ -59,8 +55,8 @@ export interface TaxEntry extends Record<string, any> {
     company_id: number;
 }
 
-export interface Invoice {
-    invoice_id: number;
+export interface Invoice extends Record<string, any> {
+    invoice_id: Generated<number>;
     invoice_no: string;
     atcud: string;
     invoice_status: string;
@@ -84,8 +80,8 @@ export interface Invoice {
     company_id: number;
 }
 
-export interface InvoiceLine {
-    line_id: number;
+export interface InvoiceLine extends Record<string, any> {
+    line_id: Generated<number>;
     invoice_id: number;
     line_number: number;
     product_code: string;
@@ -102,13 +98,12 @@ export interface InvoiceLine {
 
 
 interface DatabaseSchema {
-    company: CompanyRaw;
-    fiscal_year: FiscalYearRaw;
-    customer: CustomerRaw;
-    product: ProductRaw;
-    tax_entry: TaxEntryRaw;
-    invoice: InvoiceRaw;
-    invoice_line: InvoiceLineRaw;
+    company: Company;
+    fiscal_year: FiscalYear;
+    customer: Customer;
+    product: Product;
+    invoice: Invoice;
+    invoice_line: InvoiceLine;
 }
 
 

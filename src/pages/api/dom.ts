@@ -1,10 +1,10 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import {DOMParser} from 'xmldom';
-import postgres from "@sio/postgres";
+import postgres, {InvoiceRaw} from "@sio/postgres";
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<{ ok: boolean, pg: any }>
+    res: NextApiResponse<{ ok: boolean, e?: any }>
 ) {
     const xml = req.body
 
@@ -12,28 +12,36 @@ export default async function handler(
     const doc = parser.parseFromString(xml, 'application/xml');
 
     const header = doc.getElementsByTagName('Header')[0];
-    const company = getElementsByTagNames(
+    const companyMetadata = getElementsByTagNames(
         header, ['CompanyID', 'TaxRegistrationNumber', 'CompanyName', 'CurrencyCode']
     )
 
-    const fiscalYear = {
-        company_id: company.company_id,
+    const fiscalYearMetadata: { [key: string]: any } = {
+        company_id: companyMetadata.company_id,
         ...getElementsByTagNames(header, ['FiscalYear', 'StartDate', 'EndDate', 'DateCreated'])
     }
 
-    // because the fiscal year has a foreign key with a company, this should run sequentially
-    await postgres.insertInto('company').values(company).executeTakeFirst();
-    await postgres.insertInto('fiscal_year').values(fiscalYear).executeTakeFirst();
+    await postgres
+        .insertInto('company')
+        .values(companyMetadata)
+        .onConflict(oc =>
+            oc.column('tax_registration_number').doUpdateSet({
+                tax_registration_number: companyMetadata.tax_registration_number
+            })
+        )
+        .executeTakeFirstOrThrow()
+        .catch(e => _handleErrorOverHTTP(res, e))
 
-    const products = doc.getElementsByTagName('Product');
-    const productsBeforeSQL = []
-    for (let i = 0; i < products.length; i++) {
-        const product = products[i];
-        productsBeforeSQL.push({
-            company_id: company.company_id,
+    const productMetadata = doc.getElementsByTagName('Product');
+    const products = []
+    for (let i = 0; i < productMetadata.length; i++) {
+        const product = productMetadata[i];
+        products.push({
+            company_id: companyMetadata.company_id,
             ...getElementsByTagNames(
                 product,
-                ['ProductType', 'ProductCode', 'ProductDescription', 'ProductNumberCode'])
+                ['ProductType', 'ProductCode', 'ProductDescription', 'ProductNumberCode']
+            )
         })
     }
 
@@ -53,7 +61,7 @@ export default async function handler(
 
         customersBeforeSQL.push({
             saft_customer_id: customer_id,
-            company_id: company.company_id,
+            company_id: companyMetadata.company_id,
             customer_tax_id: Number(customer_tax_id),
             self_billing_indicator: Number(self_billing_indicator),
             ...left,
@@ -62,28 +70,50 @@ export default async function handler(
         })
     }
 
-    const taxTable = doc.getElementsByTagName('TaxTable')[0].getElementsByTagName('TaxTableEntry')
-    const taxTableBeforeSQL = []
-
-    for (let i = 0; i < taxTable.length; i++) {
-        const taxEntry = taxTable[i]
-        taxTableBeforeSQL.push({
-            company_id: company.company_id,
-            ...getElementsByTagNames(
-                taxEntry,
-                ['TaxType', 'TaxCountryRegion', 'TaxCode', 'Description', 'TaxPercentage']
+    const masterFilesInserts = await Promise.all([
+        // Insert Fiscal Year
+        postgres.insertInto('fiscal_year')
+            .values(fiscalYearMetadata)
+            .onConflict(oc => oc
+                .column('fiscal_year')
+                .doUpdateSet({
+                    fiscal_year: fiscalYearMetadata.fiscal_year
+                })
             )
-        })
-    }
+            .executeTakeFirstOrThrow()
+            .catch(e => _handleErrorOverHTTP(res, e)),
 
-    const pg = await Promise.all([
-        postgres.insertInto('product').values(productsBeforeSQL).executeTakeFirst(),
-        postgres.insertInto('customer').values(customersBeforeSQL).executeTakeFirst(),
-        postgres.insertInto('tax_entry').values(taxTableBeforeSQL).executeTakeFirst(),
+        // Insert Products
+        postgres.insertInto('product')
+            .values(products)
+            .returning(['product_id', 'product_code'])
+            .onConflict(oc => oc
+                .column('product_code')
+                .doUpdateSet(eb => ({
+                    product_code: eb.ref('excluded.product_code')
+                }))
+            )
+            .executeTakeFirstOrThrow()
+            .catch(e => _handleErrorOverHTTP(res, e)),
+
+        // Insert Customers
+        postgres.insertInto('customer')
+            .values(customersBeforeSQL)
+            .returning(['customer_id'])
+            .onConflict(oc => oc
+                .column('customer_tax_id')
+                .doUpdateSet(eb => ({
+                    customer_tax_id: eb.ref('excluded.customer_tax_id')
+                }))
+            )
+            .executeTakeFirstOrThrow()
+            .catch(e => _handleErrorOverHTTP(res, e)),
     ])
 
+    console.log(masterFilesInserts)
+
     const invoiceElement = doc.getElementsByTagName('Invoice');
-    const invoices = []
+    const invoices: InvoiceRaw[] = []
 
     for (let i = 0; i < invoiceElement.length; i++) {
         const rawInvoice = invoiceElement[i]
@@ -98,12 +128,18 @@ export default async function handler(
             rawInvoice.getElementsByTagName('DocumentTotals')[0],
             ['TaxPayable', 'NetTotal', 'GrossTotal'])
 
-
         invoices.push({
             ...invoice,
             ...documentTotals
         })
     }
+
+
+    /*
+    await postgres.insertInto('invoice')
+        .values(eb => ({
+            invoice_no
+        })) */
 
     /*
     subquery
@@ -119,17 +155,17 @@ export default async function handler(
     }))
 
     const result = await db
-  .insertInto('person')
-  .values((eb) => ({
+    .insertInto('person')
+    .values((eb) => ({
     first_name: 'Jennifer',
     last_name: sql`${'Ani'} || ${'ston'}`,
     middle_name: eb.ref('first_name'),
     age: eb.selectFrom('person').select(sql`avg(age)`),
-  }))
-  .executeTakeFirst()
+    }))
+    .executeTakeFirst()
      */
 
-    res.status(200).json({ok: true, pg})
+    res.status(200).json({ok: true})
 }
 
 const getElementsByTagNames = (element: Element, tags: string[], prefix?: string) => {
@@ -148,9 +184,4 @@ const getElementsByTagNames = (element: Element, tags: string[], prefix?: string
     return serializedTags;
 }
 
-const getCustomerByTaxId = (taxId: number) => {
-    return postgres.selectFrom('customer')
-        .select('customer_id')
-        .where('customer_tax_id', '=', taxId)
-        .executeTakeFirst()
-}
+const _handleErrorOverHTTP = (res: NextApiResponse, e: any) => res.status(400).json({ok: false, e})
