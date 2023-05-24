@@ -86,7 +86,7 @@ const valueFormatter = (number: number) =>
 
 export default function RevenueBySegment() {
     return (
-        <Card className={"col-span-3"}>
+        <Card>
             <Title>Revenue by Segment</Title>
             <Text>Distribution of one-time, loyal and recurrent customers</Text>
             <BarChart

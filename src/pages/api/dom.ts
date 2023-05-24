@@ -45,12 +45,14 @@ export default async function handler(
         const shipToAddressElement = customer.getElementsByTagName('ShipToAddress')[0];
 
         const {
+            customer_id,
             customer_tax_id,
             self_billing_indicator,
             ...left
-        } = getElementsByTagNames(customer, ['CompanyName', 'CustomerTaxID', 'SelfBillingIndicator'])
+        } = getElementsByTagNames(customer, ['CustomerID', 'CompanyName', 'CustomerTaxID', 'SelfBillingIndicator'])
 
         customersBeforeSQL.push({
+            saft_customer_id: customer_id,
             company_id: company.company_id,
             customer_tax_id: Number(customer_tax_id),
             self_billing_indicator: Number(self_billing_indicator),
@@ -80,9 +82,11 @@ export default async function handler(
         postgres.insertInto('tax_entry').values(taxTableBeforeSQL).executeTakeFirst(),
     ])
 
-    const invoices = doc.getElementsByTagName('Invoice');
-    for (let i = 0; i < invoices.length; i++) {
-        const rawInvoice = invoices[i]
+    const invoiceElement = doc.getElementsByTagName('Invoice');
+    const invoices = []
+
+    for (let i = 0; i < invoiceElement.length; i++) {
+        const rawInvoice = invoiceElement[i]
         const invoice = getElementsByTagNames(rawInvoice, [
             'InvoiceNo', 'ATCUD', 'InvoiceStatus',
             'InvoiceStatusDate', 'Hash', 'Period',
@@ -94,11 +98,36 @@ export default async function handler(
             rawInvoice.getElementsByTagName('DocumentTotals')[0],
             ['TaxPayable', 'NetTotal', 'GrossTotal'])
 
-        const lines = rawInvoice.getElementsByTagName('Line');
-        for (let j = 0; j < lines.length; j++) {
-            const line = lines[j];
-        }
+
+        invoices.push({
+            ...invoice,
+            ...documentTotals
+        })
     }
+
+    /*
+    subquery
+        db.with('jennifer', (db) => db
+      .selectFrom('person')
+      .where('first_name', '=', 'Jennifer')
+      .select(['id', 'first_name', 'gender'])
+      .limit(1)
+    ).insertInto('pet').values((eb) => ({
+      owner_id: eb.selectFrom('jennifer').select('id'),
+      name: eb.selectFrom('jennifer').select('first_name'),
+      species: 'cat',
+    }))
+
+    const result = await db
+  .insertInto('person')
+  .values((eb) => ({
+    first_name: 'Jennifer',
+    last_name: sql`${'Ani'} || ${'ston'}`,
+    middle_name: eb.ref('first_name'),
+    age: eb.selectFrom('person').select(sql`avg(age)`),
+  }))
+  .executeTakeFirst()
+     */
 
     res.status(200).json({ok: true, pg})
 }

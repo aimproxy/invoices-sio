@@ -2,7 +2,7 @@ import {Card, CategoryBar, Text, Title} from "@tremor/react";
 
 export default function NetGrossMargin() {
     return (
-        <Card className={"col-span-2"}>
+        <Card>
             <Title>Net Gross Margin</Title>
             <CategoryBar
                 className={"mt-4"}
