@@ -1,2 +1,2 @@
-export type Company = { companyId: string, companyName: string }
-export type FiscalYear = { fiscalYear: string; startDate: string; endDate: string }
+export type Company = { companyId: number, companyName: string }
+export type FiscalYear = { fiscalYear: number; startDate: string; endDate: string }
