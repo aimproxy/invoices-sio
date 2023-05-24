@@ -1,60 +1,81 @@
 import type {GetServerSideProps, InferGetServerSidePropsType} from 'next';
-import {Card, Dropdown, DropdownItem, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
-
-import {useCallback, useMemo, useState} from "react";
-import CumulativeRevenueTrend from "@sio/components/CumulativeRevenueTrend";
-import AverageOrderValue from "@sio/components/AverageOrderValue";
-import CustomerLifetimeValue from "@sio/components/CustomerLifetimeValue";
-import RevenueBySegment from "@sio/components/RevenueBySegment";
-import NetGrossMargin from "@sio/components/NetGrossMargin";
-import TopProductsByRegion from "@sio/components/TopProductsByRegion";
-import Sales from "@sio/components/Sales";
-import SAFTDropzone from "@sio/components/SAFTDropzone";
+import {Card, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
 import postgres from "@sio/postgres";
+import {useState} from "react";
+import {Company, FiscalYear} from "@sio/types";
+
+import SAFTDropzone from "@sio/components/SAFTDropzone";
+import CompanyAndYearSelector from "@sio/components/selectors/CompanyAndYearSelector";
+
+import CustomerLifetimeValue from "@sio/components/kpis/CustomerLifetimeValue";
+import AverageOrderValue from "@sio/components/kpis/AverageOrderValue";
+import RepeatPurchaseRate from "@sio/components/kpis/RepeatCustomerRate";
+
+import NetGrossMargin from "@sio/components/charts/NetGrossMargin";
+import CumulativeRevenueTrend from "@sio/components/charts/CumulativeRevenueTrend";
+import RevenueBySegment from "@sio/components/charts/RevenueBySegment";
+import TopProductsByUnitsSold from "@sio/components/charts/TopProductsByUnitsSold";
+import SalesByCountry from "@sio/components/charts/SalesByCountry";
+import SalesByCity from "@sio/components/charts/SalesByCity";
 
 export default function Home({companies, years}: InferGetServerSidePropsType<typeof getServerSideProps>) {
 
     const [selectedView, setSelectedView] = useState("1");
 
-    const [selectedCompany, setSelectedCompany] = useState(companies[0].companyId)
-
-    const companyYears = useMemo(() => years[selectedCompany], [selectedCompany, years])
-    const [selectedFiscalYear, setSelectedFiscalYear] = useState(companyYears[0].fiscalYear)
-
-    const setSelectedCompanyHandler = useCallback((value: string) => setSelectedCompany(value), []);
-    const setSelectedFiscalYearHandler = useCallback((value: string) => setSelectedFiscalYear(value), []);
-
-
     const headerMarkup = (
         <div className="block sm:flex sm:justify-between">
             <div>
-                <Title>Olá, {selectedCompany ?? 'Demo'}!</Title>
+                <Title>Olá, demo!</Title>
                 <Text>Aqui o especialista és sempre tu!</Text>
             </div>
             <div className="flex flex-row space-x-4 mt-4 sm:mt-0">
-                {selectedView == "1" && (
-                    <>
-                        <Dropdown
-                            value={selectedCompany}
-                            onValueChange={setSelectedCompanyHandler}
-                            placeholder="Select Company"
-                        >
-                            {companies.map((company, k) => (
-                                <DropdownItem value={company.companyId} text={company.companyName} key={k}/>
-                            ))}
-                        </Dropdown>
-                        <Dropdown
-                            value={selectedFiscalYear}
-                            onValueChange={setSelectedFiscalYearHandler}
-                            placeholder="Select Fiscal Year">
-                            {companyYears.map((year, k) => (
-                                <DropdownItem value={year.fiscalYear} text={year.fiscalYear} key={k}/>
-                            ))}
-                        </Dropdown>
-                    </>
-                )}
+                {(selectedView == "1" && companies.length > 0) &&
+                    <CompanyAndYearSelector companies={companies} years={years}/>}
             </div>
         </div>
+    )
+
+    const dashMarkup = (
+        <div className="space-y-4">
+            <Grid numCols={1} numColsLg={5} className="gap-6">
+                <AverageOrderValue/>
+                <CustomerLifetimeValue/>
+                <RepeatPurchaseRate/>
+                <div className={"col-span-2"}>
+                    <NetGrossMargin/>
+                </div>
+            </Grid>
+            <Grid numCols={1} numColsLg={2} className="gap-6">
+                <CumulativeRevenueTrend/>
+                <RevenueBySegment/>
+            </Grid>
+            <Grid numCols={1} numColsLg={2} className="gap-6">
+                <TopProductsByUnitsSold/>
+                <SalesByCountry/>
+            </Grid>
+            <Grid numCols={1} numColsLg={3} className="gap-6">
+                <Card>
+                    <Text>Title</Text>
+                    <Metric>KPI 7</Metric>
+                </Card>
+                <Card>
+                    <Text>Title</Text>
+                    <Metric>KPI 8</Metric>
+                </Card>
+                <SalesByCity/>
+            </Grid>
+        </div>
+    )
+
+    const emptyMarkup = (
+        <Card className="mt-6 h-96 flex flex-col justify-center items-center text-center">
+            <p className="text-6xl">🚧</p>
+            <h2 className="text-slate-700 text-xl font-extrabold mt-3 md:mt-5">There isn{'\''}t any data yet!</h2>
+            <p className="max-w-xl mx-auto text-slate-500 mt-3 md:mt-5 font-normal text-base sm:text-lg">
+                You can start by import a SAF-T XML file from the Portuguese Tax Authority
+                under the {'\"'}Import SAF-T{'\!'} tab ☝️!
+            </p>
+        </Card>
     )
 
     return (
@@ -71,27 +92,7 @@ export default function Home({companies, years}: InferGetServerSidePropsType<typ
 
             {selectedView === "1" ? (
                 <div className="mt-6 mb-8 gap-6">
-                    <Grid numCols={1} numColsLg={5} className="gap-6">
-                        <AverageOrderValue/>
-                        <CustomerLifetimeValue/>
-                        <Sales/>
-                        <NetGrossMargin/>
-                        <CumulativeRevenueTrend/>
-                        <TopProductsByRegion/>
-                        <Card className={"col-span-2"}>
-                            <Text>Title</Text>
-                            <Metric>KPI 6</Metric>
-                        </Card>
-                        <RevenueBySegment/>
-                        <Card className={"col-span-3"}>
-                            <Text>Title</Text>
-                            <Metric>KPI 7</Metric>
-                        </Card>
-                        <Card className={"col-span-2"}>
-                            <Text>Title</Text>
-                            <Metric>KPI 8</Metric>
-                        </Card>
-                    </Grid>
+                    {companies.length > 0 ? dashMarkup : emptyMarkup}
                 </div>
             ) : (
                 <SAFTDropzone/>
@@ -100,11 +101,9 @@ export default function Home({companies, years}: InferGetServerSidePropsType<typ
     );
 }
 
-type FiscalYearDict = { [key: string]: { fiscalYear: string; startDate: string; endDate: string }[] }
-
 export const getServerSideProps: GetServerSideProps<{
-    companies: { companyId: string, companyName: string }[],
-    years: FiscalYearDict
+    companies: Company[],
+    years: { [key: string]: FiscalYear[] }
 }> = async () => {
     const sql = await postgres
         .selectFrom('company')
@@ -129,7 +128,7 @@ export const getServerSideProps: GetServerSideProps<{
         });
 
         return result;
-    }, {} as FiscalYearDict);
+    }, {} as { [key: string]: FiscalYear[] });
 
     const companies = Array.from(new Set(sql.map(company => ({
         companyId: company.company_id,

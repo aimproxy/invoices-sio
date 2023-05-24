@@ -32,6 +32,7 @@ CREATE TABLE customer
     ship_to_country        VARCHAR(2),
     self_billing_indicator INT,
     company_id             BIGSERIAL,
+    saft_customer_id       INT,
     FOREIGN KEY (company_id) REFERENCES company (company_id)
 );
 
