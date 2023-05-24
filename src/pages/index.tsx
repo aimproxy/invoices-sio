@@ -14,9 +14,10 @@ import RepeatPurchaseRate from "@sio/components/kpis/RepeatCustomerRate";
 import NetGrossMargin from "@sio/components/charts/NetGrossMargin";
 import CumulativeRevenueTrend from "@sio/components/charts/CumulativeRevenueTrend";
 import RevenueBySegment from "@sio/components/charts/RevenueBySegment";
-import TopProductsByUnitsSold from "@sio/components/charts/TopProductsByUnitsSold";
+import Sales from "@sio/components/charts/Sales";
 import SalesByCountry from "@sio/components/charts/SalesByCountry";
 import SalesByCity from "@sio/components/charts/SalesByCity";
+import RevenueOverTime from "@sio/components/charts/RevenueOverTime";
 
 export default function Home({companies, years}: InferGetServerSidePropsType<typeof getServerSideProps>) {
 
@@ -45,24 +46,23 @@ export default function Home({companies, years}: InferGetServerSidePropsType<typ
                     <NetGrossMargin/>
                 </div>
             </Grid>
+            <Grid numCols={1} numColsLg={3} className="gap-6">
+                <div className={"col-span-2"}>
+                    <CumulativeRevenueTrend/>
+                </div>
+                <Sales/>
+            </Grid>
             <Grid numCols={1} numColsLg={2} className="gap-6">
-                <CumulativeRevenueTrend/>
+                <RevenueOverTime/>
                 <RevenueBySegment/>
             </Grid>
-            <Grid numCols={1} numColsLg={2} className="gap-6">
-                <TopProductsByUnitsSold/>
-                <SalesByCountry/>
-            </Grid>
             <Grid numCols={1} numColsLg={3} className="gap-6">
+                <SalesByCountry/>
+                <SalesByCity/>
                 <Card>
                     <Text>Title</Text>
                     <Metric>KPI 7</Metric>
                 </Card>
-                <Card>
-                    <Text>Title</Text>
-                    <Metric>KPI 8</Metric>
-                </Card>
-                <SalesByCity/>
             </Grid>
         </div>
     )
