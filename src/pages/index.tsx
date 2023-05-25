@@ -1,11 +1,11 @@
 import type {GetServerSideProps, InferGetServerSidePropsType} from 'next';
-import {Card, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
+import {Card, Grid, Metric, Tab, TabList, Text} from "@tremor/react";
 import postgres from "@sio/postgres";
 import {useState} from "react";
-import {Company, FiscalYear} from "@sio/types";
+import {CompanyMetadataResponse, FiscalYear} from "@sio/types";
 
 import SAFTDropzone from "@sio/components/SAFTDropzone";
-import CompanyAndYearSelector from "@sio/components/selectors/CompanyAndYearSelector";
+import CompanyAndYearSelector from "@sio/components/buttons/CompanyAndYearSelector";
 
 import CustomerLifetimeValue from "@sio/components/kpis/CustomerLifetimeValue";
 import AverageOrderValue from "@sio/components/kpis/AverageOrderValue";
@@ -18,6 +18,9 @@ import Sales from "@sio/components/charts/Sales";
 import SalesByCountry from "@sio/components/charts/SalesByCountry";
 import SalesByCity from "@sio/components/charts/SalesByCity";
 import RevenueOverTime from "@sio/components/charts/RevenueOverTime";
+import KpisProvider from "@sio/components/KpisProvider";
+import Welcome from "@sio/components/Welcome";
+import RunCalculationsButton from "@sio/components/buttons/RunCalculationsButton";
 
 export default function Home({companies, years}: InferGetServerSidePropsType<typeof getServerSideProps>) {
 
@@ -25,13 +28,14 @@ export default function Home({companies, years}: InferGetServerSidePropsType<typ
 
     const headerMarkup = (
         <div className="block sm:flex sm:justify-between">
-            <div>
-                <Title>Olá, demo!</Title>
-                <Text>Aqui o especialista és sempre tu!</Text>
-            </div>
-            <div className="flex flex-row space-x-4 mt-4 sm:mt-0">
+            <Welcome/>
+            <div className="flex flex-row space-x-4 items-center mt-4 sm:mt-0">
                 {(selectedView == "1" && companies.length > 0) &&
-                    <CompanyAndYearSelector companies={companies} years={years}/>}
+                    <>
+                        <CompanyAndYearSelector companies={companies} years={years}/>
+                        <RunCalculationsButton/>
+                    </>
+                }
             </div>
         </div>
     )
@@ -79,32 +83,31 @@ export default function Home({companies, years}: InferGetServerSidePropsType<typ
     )
 
     return (
-        <main className={"max-w-[90rem] mx-auto pt-16 sm:pt-8 px-8"}>
-            {headerMarkup}
-            <TabList
-                defaultValue="1"
-                onValueChange={(value) => setSelectedView(value)}
-                className="mt-6"
-            >
-                <Tab value="1" text="Dashboard"/>
-                <Tab value="2" text="Importar SAF-T"/>
-            </TabList>
+        <KpisProvider>
+            <main className={"max-w-[90rem] mx-auto pt-16 sm:pt-8 px-8"}>
+                {headerMarkup}
+                <TabList
+                    defaultValue="1"
+                    onValueChange={(value) => setSelectedView(value)}
+                    className="mt-6"
+                >
+                    <Tab value="1" text="Dashboard"/>
+                    <Tab value="2" text="Importar SAF-T"/>
+                </TabList>
 
-            {selectedView === "1" ? (
-                <div className="mt-6 mb-8 gap-6">
-                    {companies.length > 0 ? dashMarkup : emptyMarkup}
-                </div>
-            ) : (
-                <SAFTDropzone/>
-            )}
-        </main>
+                {selectedView === "1" ? (
+                    <div className="mt-6 mb-8 gap-6">
+                        {companies.length > 0 ? dashMarkup : emptyMarkup}
+                    </div>
+                ) : (
+                    <SAFTDropzone/>
+                )}
+            </main>
+        </KpisProvider>
     );
 }
 
-export const getServerSideProps: GetServerSideProps<{
-    companies: Company[],
-    years: { [key: string]: FiscalYear[] }
-}> = async () => {
+export const getServerSideProps: GetServerSideProps<CompanyMetadataResponse> = async () => {
     const sql = await postgres
         .selectFrom('company')
         .innerJoin('fiscal_year', 'fiscal_year.company_id', 'company.company_id')
