@@ -108,6 +108,7 @@ export default async function handler(
         )
 
         invoices.push({
+            company_id: companyMetadata.company_id,
             fiscal_year: fiscalYearMetadata.fiscal_year,
             ...invoice,
             ...documentTotals

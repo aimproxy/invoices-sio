@@ -15,6 +15,8 @@ export interface FiscalYear extends Record<string, any> {
     end_date: string
     date_created: string
     company_id: number
+    net_sales: number
+    gross_sales: number
 }
 
 export interface Customer extends Record<string, any> {
@@ -58,6 +60,7 @@ export interface Invoice extends Record<string, any> {
     net_total: number
     gross_total: number
     fiscal_year: number
+    company_id: number
 }
 
 export interface InvoiceLine extends Record<string, any> {
