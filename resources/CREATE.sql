@@ -14,6 +14,8 @@ CREATE TABLE fiscal_year
     end_date       DATE,
     date_created   DATE,
     company_id     BIGSERIAL,
+    net_sales      DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    gross_sales    DECIMAL(10, 2) NOT NULL DEFAULT 0,
     FOREIGN KEY (company_id) REFERENCES company (company_id)
 );
 
@@ -62,7 +64,9 @@ CREATE TABLE invoice
     tax_payable         DECIMAL(10, 2),
     net_total           DECIMAL(10, 2),
     gross_total         DECIMAL(10, 2),
-    fiscal_year         INT
+    fiscal_year         INT,
+    company_id          BIGSERIAL,
+    FOREIGN KEY (company_id) REFERENCES company (company_id)
 );
 
 CREATE TABLE invoice_line
