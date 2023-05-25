@@ -6,7 +6,8 @@ export default function AverageOrderValue() {
         <Card>
             <Title>AOV</Title>
             <Text>Average Order Value</Text>
-            <Metric className={"mt-4"}><TextSkeleton/></Metric>
+            <Metric className={"mt-4"}></Metric>
+            <TextSkeleton/>
         </Card>
     );
 }

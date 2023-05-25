@@ -1,9 +1,9 @@
 import {Dropdown, DropdownItem} from "@tremor/react";
 import {useContext, useMemo} from "react";
 import {KpisContext} from "@sio/components/KpisProvider";
-import {CompanyMetadataResponse} from "@sio/types";
+import {CompanyResponse} from "@sio/types";
 
-const CompanyAndYearSelector = ({companies, years}: CompanyMetadataResponse) => {
+const CompanyAndYearSelector = ({companies, years}: CompanyResponse) => {
     const {selectedCompany, setSelectedCompany, selectedYear, setSelectedYear} = useContext(KpisContext)
 
     const companyYears = useMemo(() => (selectedCompany && years[selectedCompany]) || [], [selectedCompany, years])

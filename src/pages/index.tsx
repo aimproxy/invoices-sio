@@ -1,8 +1,8 @@
 import type {GetServerSideProps, InferGetServerSidePropsType} from 'next';
 import {Card, Grid, Metric, Tab, TabList, Text} from "@tremor/react";
 import postgres from "@sio/postgres";
-import {Suspense, useState} from "react";
-import {CompanyMetadataResponse, FiscalYear} from "@sio/types";
+import {useState} from "react";
+import {CompanyResponse, FiscalYear} from "@sio/types";
 
 import SAFTDropzone from "@sio/components/SAFTDropzone";
 import CompanyAndYearSelector from "@sio/components/buttons/CompanyAndYearSelector";
@@ -47,11 +47,7 @@ export default function Home({companies, years}: InferGetServerSidePropsType<typ
                 <CustomerLifetimeValue/>
                 <RepeatPurchaseRate/>
                 <div className={"col-span-2"}>
-                    <Suspense fallback={<div></div>}>
-                        {/* @ts-expect-error Async Server Component */}
-                        <NetGrossMargin/>
-                    </Suspense>
-
+                    <NetGrossMargin/>
                 </div>
             </Grid>
             <Grid numCols={1} numColsLg={3} className="gap-6">
@@ -87,7 +83,7 @@ export default function Home({companies, years}: InferGetServerSidePropsType<typ
     )
 
     return (
-        <KpisProvider>
+        <KpisProvider companies={companies} years={years}>
             <main className={"max-w-[90rem] mx-auto pt-16 sm:pt-8 px-8"}>
                 {headerMarkup}
                 <TabList
@@ -111,12 +107,12 @@ export default function Home({companies, years}: InferGetServerSidePropsType<typ
     );
 }
 
-export const getServerSideProps: GetServerSideProps<CompanyMetadataResponse> = async () => {
+export const getServerSideProps: GetServerSideProps<CompanyResponse> = async () => {
     const sql = await postgres
         .selectFrom('company')
         .innerJoin('fiscal_year', 'fiscal_year.company_id', 'company.company_id')
         .select([
-            'company.company_id', 'company.company_name',
+            'company.company_id', 'company.company_name', 'company.currency_code',
             'fiscal_year.fiscal_year', 'fiscal_year.start_date', 'fiscal_year.end_date'
         ])
         .execute();
@@ -139,7 +135,8 @@ export const getServerSideProps: GetServerSideProps<CompanyMetadataResponse> = a
 
     const companies = Array.from(new Set(sql.map(company => ({
         companyId: company.company_id,
-        companyName: company.company_name
+        companyName: company.company_name,
+        currencyCode: company.currency_code
     }))));
 
     return {props: {companies, years}};
