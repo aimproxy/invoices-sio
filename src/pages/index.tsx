@@ -1,7 +1,7 @@
 import type {GetServerSideProps, InferGetServerSidePropsType} from 'next';
 import {Card, Grid, Metric, Tab, TabList, Text} from "@tremor/react";
 import postgres from "@sio/postgres";
-import {useState} from "react";
+import {Suspense, useState} from "react";
 import {CompanyMetadataResponse, FiscalYear} from "@sio/types";
 
 import SAFTDropzone from "@sio/components/SAFTDropzone";
@@ -47,7 +47,11 @@ export default function Home({companies, years}: InferGetServerSidePropsType<typ
                 <CustomerLifetimeValue/>
                 <RepeatPurchaseRate/>
                 <div className={"col-span-2"}>
-                    <NetGrossMargin/>
+                    <Suspense fallback={<div></div>}>
+                        {/* @ts-expect-error Async Server Component */}
+                        <NetGrossMargin/>
+                    </Suspense>
+
                 </div>
             </Grid>
             <Grid numCols={1} numColsLg={3} className="gap-6">
