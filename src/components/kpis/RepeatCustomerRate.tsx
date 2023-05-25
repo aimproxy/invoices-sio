@@ -1,8 +1,13 @@
-import BaseKPI from "@sio/components/primitives/BaseKPI";
+import {Card, Metric, Text, Title} from "@tremor/react";
+import TextSkeleton from "@sio/components/skeletons/TextSkeleton";
 
 export default function RepeatPurchaseRate() {
     // Repeat purchase rate = (Number of customers who made more than one purchase / Total number of customers) x 100
     return (
-        <BaseKPI title={"RPR"} description={"Repeat Purchase Rate"} metric={"2.4%"}/>
+        <Card>
+            <Title>RPR</Title>
+            <Text>Repeat Purchase Rate</Text>
+            <Metric className={"mt-4"}><TextSkeleton/></Metric>
+        </Card>
     );
 }

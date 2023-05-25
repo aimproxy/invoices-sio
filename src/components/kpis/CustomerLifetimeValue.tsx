@@ -1,8 +1,13 @@
-import BaseKPI from "@sio/components/primitives/BaseKPI";
+import {Card, Metric, Text, Title} from "@tremor/react";
+import TextSkeleton from "@sio/components/skeletons/TextSkeleton";
 
 export default function CustomerLifetimeValue() {
     // Customer lifetime value = Average order value x Average number of purchases x Average customer lifespan
     return (
-        <BaseKPI title={"LTV"} description={"Customer Lifetime Value"} metric={"23,44€"}/>
+        <Card>
+            <Title>LTV</Title>
+            <Text>Customer Lifetime Value</Text>
+            <Metric className={"mt-4"}><TextSkeleton/></Metric>
+        </Card>
     );
 }
