@@ -15,10 +15,11 @@ export type CompanyReturnType = InferResult<typeof companiesQuery>
 export const yearsQuery = postgres
     .selectFrom('fiscal_year')
     .select([
-        'fiscal_year.fiscal_year',
-        'fiscal_year.company_id',
-        'fiscal_year.net_sales',
-        'fiscal_year.gross_sales'
+            'fiscal_year.fiscal_year',
+            'fiscal_year.company_id',
+            'fiscal_year.net_sales',
+            'fiscal_year.gross_sales',
+            'fiscal_year.aov'
     ])
 
 export type YearsReturnType = InferResult<typeof yearsQuery>

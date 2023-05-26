@@ -19,12 +19,13 @@ export interface FiscalYearTable extends Record<string, any> {
     end_date: string
     date_created: string
     company_id: number
+    number_of_entries: number
+    aov: number
     net_sales: number
     gross_sales: number
 }
 
 export interface CustomerTable extends Record<string, any> {
-    customer_id: Generated<number>;
     customer_tax_id: number;
     company_name: string;
     billing_address_detail: string;
@@ -38,6 +39,13 @@ export interface CustomerTable extends Record<string, any> {
     self_billing_indicator: number;
     company_id: number;
     saft_customer_id: number;
+}
+
+export interface CustomerFiscalYearTable extends Record<string, any> {
+    customer_fiscal_year_id: Generated<number>
+    customer_tax_id: number
+    fiscal_year_id: number
+    invoices_count: number,
 }
 
 export interface ProductTable extends Record<string, any> {
@@ -59,7 +67,7 @@ export interface InvoiceTable extends Record<string, any> {
     invoice_date: Date
     invoice_type: string
     system_entry_date: Date
-    customer_id: number
+    saft_customer_id: number
     tax_payable: number
     net_total: number
     gross_total: number
@@ -85,6 +93,7 @@ interface DatabaseSchema {
     company: CompanyTable;
     fiscal_year: FiscalYearTable;
     customer: CustomerTable;
+    customer_fiscal_year: CustomerFiscalYearTable;
     product: ProductTable;
     invoice: InvoiceTable;
     invoice_line: InvoiceLine;

@@ -11,9 +11,22 @@ const inter = Inter({
     variable: '--font-inter',
 });
 
+const ReactQueryDevtoolsProduction = React.lazy(() =>
+    import('@tanstack/react-query-devtools/build/lib/index.prod.js').then(
+        (d) => ({
+            default: d.ReactQueryDevtools,
+        }),
+    ),
+)
+
 export default function App({Component, pageProps}: AppProps) {
     const [queryClient] = useState(() => new QueryClient())
+    const [showDevtools, setShowDevtools] = React.useState(true)
 
+    React.useEffect(() => {
+        // @ts-ignore
+        window.toggleDevtools = () => setShowDevtools((old) => !old)
+    }, [])
     return (
         <QueryClientProvider client={queryClient}>
             <Hydrate state={pageProps.dehydratedState}>
@@ -23,7 +36,12 @@ export default function App({Component, pageProps}: AppProps) {
                     </div>
                 </KpisProvider>
             </Hydrate>
-            <ReactQueryDevtools initialIsOpen={false}/>
+            <ReactQueryDevtools initialIsOpen/>
+            {showDevtools && (
+                <React.Suspense fallback={null}>
+                    <ReactQueryDevtoolsProduction/>
+                </React.Suspense>
+            )}
         </QueryClientProvider>
     )
 }

@@ -15,9 +15,8 @@ const SAFTDropzone = () => {
                 // Do whatever you want with the file contents
                 const binaryStr = reader.result
                 console.log(binaryStr)
-
                 // Make the file upload request
-                const response = await fetch('/api/dom', {
+                const response = await fetch('/api/saft/dom', {
                     method: 'POST',
                     body: binaryStr,
                 });

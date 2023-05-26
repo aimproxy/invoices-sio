@@ -10,7 +10,7 @@ interface RunCalculationsFetchProps {
 }
 
 const runCalculations = async ({company, year}: RunCalculationsFetchProps) => {
-    return await fetch(`/api/kpis?company_id=${company}&year=${year}`)
+    return await fetch(`/api/saft/kpis?company_id=${company}&year=${year}`)
 }
 
 interface RunCalculationsButtonProps {
@@ -30,6 +30,7 @@ const RunCalculationsButton = ({company}: RunCalculationsButtonProps) => {
         },
         onSettled: () => {
             queryClient.invalidateQueries({queryKey: ['kpis']}).then(console.log)
+            queryClient.invalidateQueries({queryKey: ['years', company]}).then(console.log)
         }
     });
 
