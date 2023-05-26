@@ -22,7 +22,7 @@ import {YearsReturnType} from "@sio/query";
 import RunCalculationsButton from "@sio/components/buttons/RunCalculationsButton";
 
 const fetchYears = async (company: string): Promise<YearsReturnType> => {
-    const res = await fetch(`http://localhost:3000/api/years?company=${company}`)
+    const res = await fetch(`/api/years?company=${company}`)
     return await res.json();
 }
 

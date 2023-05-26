@@ -8,7 +8,7 @@ import {MouseEvent, useState} from "react"
 import SAFTDropzone from "@sio/components/SAFTDropzone";
 
 const fetchCompanies = async (): Promise<CompanyReturnType> => {
-    const res = await fetch('http://localhost:3000/api/companies')
+    const res = await fetch('/api/companies')
     return await res.json();
 }
 
