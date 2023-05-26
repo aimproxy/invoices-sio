@@ -11,6 +11,7 @@ export default async function handler(
     const parser = new DOMParser();
     const doc = parser.parseFromString(xml, 'application/xml');
 
+    const salesInvoices = doc.getElementsByTagName('SalesInvoices')[0]
     const header = doc.getElementsByTagName('Header')[0];
     const companyMetadata = getElementsByTagNames(header, [
         'CompanyID', 'TaxRegistrationNumber',
@@ -22,7 +23,9 @@ export default async function handler(
         ...getElementsByTagNames(header, [
             'FiscalYear', 'StartDate',
             'EndDate', 'DateCreated'
-        ])
+        ]),
+        ...getElementsByTagNames(salesInvoices,
+            ['NumberOfEntries'])
     }
 
     try {

@@ -2,8 +2,6 @@ import type {GetServerSideProps, InferGetServerSidePropsType} from 'next';
 import {Card, Grid, Metric, Tab, TabList, Text} from "@tremor/react";
 import {useState} from "react";
 
-import SAFTDropzone from "@sio/components/SAFTDropzone";
-
 import CustomerLifetimeValue from "@sio/components/kpis/CustomerLifetimeValue";
 import AverageOrderValue from "@sio/components/kpis/AverageOrderValue";
 import RepeatPurchaseRate from "@sio/components/kpis/RepeatCustomerRate";
@@ -97,13 +95,11 @@ export default function Dashboard({company}: InferGetServerSidePropsType<typeof 
                 >
                     <Tab value="1" text="Dashboard"/>
                     <Tab value="2" text="Customers"/>
-                    <Tab value="3" text="Importar SAF-T"/>
                 </TabList>
 
                 <div className="mt-6 mb-8 gap-6">
                     {selectedView == "1" && <>{dashMarkup}</>}
                     {selectedView == "2" && <>{customersMarkup}</>}
-                    {selectedView == "3" && <SAFTDropzone/>}
                 </div>
             </main>
         </KpisProvider>
