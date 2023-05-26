@@ -2,8 +2,8 @@ import {createContext, Dispatch, PropsWithChildren, SetStateAction, useMemo, use
 import {FiscalYear} from "@sio/postgres";
 
 interface KpisContextValue {
-    selectedYear: Partial<FiscalYear> | undefined;
-    setSelectedYear: Dispatch<SetStateAction<Partial<FiscalYear> | undefined>>;
+    selectedYear: FiscalYear | undefined;
+    setSelectedYear: Dispatch<SetStateAction<FiscalYear | undefined>>;
 }
 
 const defaultContextValues: KpisContextValue = {
@@ -15,7 +15,7 @@ const defaultContextValues: KpisContextValue = {
 export const KpisContext = createContext<KpisContextValue>(defaultContextValues);
 
 const KpisProvider = ({children}: PropsWithChildren) => {
-    const [selectedYear, setSelectedYear] = useState<Partial<FiscalYear> | undefined>(undefined);
+    const [selectedYear, setSelectedYear] = useState<FiscalYear | undefined>(undefined);
 
     const inMemory = useMemo(() => ({
         selectedYear,

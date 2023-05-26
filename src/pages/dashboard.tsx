@@ -1,9 +1,10 @@
 import type {GetServerSideProps, InferGetServerSidePropsType} from 'next';
-import {Card, Grid, Metric, Text} from "@tremor/react";
+import {Card, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
+import {useRouter} from "next/router";
 
 import CustomerLifetimeValue from "@sio/components/kpis/CustomerLifetimeValue";
 import AverageOrderValue from "@sio/components/kpis/AverageOrderValue";
-import RepeatPurchaseRate from "@sio/components/kpis/RepeatCustomerRate";
+import RepeatPurchaseRate from "@sio/components/kpis/RepeatPurchaseRate";
 
 import CumulativeRevenueTrend from "@sio/components/charts/CumulativeRevenueTrend";
 import RevenueBySegment from "@sio/components/charts/RevenueBySegment";
@@ -16,25 +17,31 @@ import YearSelector from "@sio/components/selectors/YearSelector";
 
 import {dehydrate, QueryClient, useQuery} from "@tanstack/react-query";
 import {YearsReturnType} from "@sio/query";
-import RunCalculationsButton from "@sio/components/buttons/RunCalculationsButton";
-import KpisLayout from "@sio/components/KpisLayout";
-
+import {KpisContext} from "@sio/components/KpisProvider";
+import {useContext, useEffect} from "react";
 
 const fetchYears = async (company: string): Promise<YearsReturnType> => {
-    const res = await fetch(`http://localhost:3000/api/years?company=${company}`)
+    const res = await fetch(`/api/years?company=${company}`)
     return await res.json();
 }
 
 export default function Dashboard({company}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+    const router = useRouter()
+    const {setSelectedYear} = useContext(KpisContext)
+
     const {
         data: years,
-        isLoading: isLoadingYears,
-        isError: isErrorYears
-    } = useQuery({
-            queryKey: ['years', company],
-            queryFn: async () => await fetchYears(company)
+        isLoading,
+        isError
+    } = useQuery(['years', company], {
+        queryFn: async () => await fetchYears(company),
+    })
+
+    useEffect(() => {
+        if (!isLoading && !isError) {
+            setSelectedYear(years[0])
         }
-    )
+    }, [isLoading, isError, setSelectedYear, years])
 
     const dashMarkup = (
         <div className="space-y-4">
@@ -67,21 +74,35 @@ export default function Dashboard({company}: InferGetServerSidePropsType<typeof 
         </div>
     )
 
-    const layoutButtons = (
-        <>
-            <YearSelector years={years} loading={isLoadingYears} disabled={isErrorYears}/>
-            <RunCalculationsButton company={company}/>
-        </>
-    )
-
     return (
-        <KpisLayout buttons={layoutButtons}>
-            {dashMarkup}
-        </KpisLayout>
+        <main className="max-w-6xl mx-auto pt-16 sm:pt-8 px-8">
+            <div className="block sm:flex sm:justify-between">
+                <div className="flex flex-col">
+                    <Title>Olá, {company}!</Title>
+                    <Text>Aqui o especialista és sempre tu!</Text>
+                </div>
+                <YearSelector years={years} loading={isLoading} disabled={isError}/>
+            </div>
+            <TabList
+                value={router.route.replace('/', '')}
+                onValueChange={(value) => router.push({
+                    pathname: value,
+                    query: router.query,
+                })}
+                className="mt-6"
+            >
+                <Tab value="dashboard" text="Dashboard"/>
+                <Tab value="customers" text="Customers"/>
+            </TabList>
+
+            <div className="mt-6 mb-8 gap-6">
+                {dashMarkup}
+            </div>
+        </main>
     );
 }
 
-export const getServerSideProps: GetServerSideProps = async ({query}) => {
+export const getServerSideProps: GetServerSideProps<{ company: string }> = async ({query}) => {
     const {company} = query
 
     const queryClient = new QueryClient()

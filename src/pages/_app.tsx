@@ -27,11 +27,12 @@ export default function App({Component, pageProps}: AppProps) {
         // @ts-ignore
         window.toggleDevtools = () => setShowDevtools((old) => !old)
     }, [])
+
     return (
         <QueryClientProvider client={queryClient}>
             <Hydrate state={pageProps.dehydratedState}>
                 <KpisProvider>
-                    <div className={`${inter.className} font-sans`}>
+                    <div className={`${inter.variable} font-sans`}>
                         <Component {...pageProps} />
                     </div>
                 </KpisProvider>

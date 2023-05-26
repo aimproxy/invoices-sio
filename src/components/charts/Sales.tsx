@@ -44,7 +44,7 @@ export default function Sales() {
     return (
         <Card>
             <Title>Sales</Title>
-            <Flex justifyContent="start" className="space-x-1" alignItems="baseline">
+            <Flex justifyContent="start" className="space-x-1 mt-2" alignItems="baseline">
                 {selectedYear == undefined ? (
                     <TextSkeleton/>
                 ) : (

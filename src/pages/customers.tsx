@@ -1,11 +1,12 @@
 import {GetServerSideProps, InferGetServerSidePropsType} from "next";
 import {createColumnHelper} from "@tanstack/table-core";
 import Table from "@sio/components/Table";
-import KpisLayout from "@sio/components/KpisLayout";
 import {dehydrate, QueryClient, useQuery} from "@tanstack/react-query";
 import {CustomersReturnType} from "@sio/query";
 import {Customer} from "@sio/postgres";
 import ListSkeleton from "@sio/components/skeletons/ListSkeleton";
+import {Tab, TabList, Text, Title} from "@tremor/react";
+import {useRouter} from "next/router";
 
 const fetchCustomers = async (company: string): Promise<CustomersReturnType> => {
     const res = await fetch(`/api/customers?company=${company}`)
@@ -13,6 +14,8 @@ const fetchCustomers = async (company: string): Promise<CustomersReturnType> => 
 }
 
 export default function Customers({company}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+    const router = useRouter()
+
     const {
         data: customers,
         isLoading: isLoadingCustomers,
@@ -51,17 +54,37 @@ export default function Customers({company}: InferGetServerSidePropsType<typeof 
     const showMockTable = isLoadingCustomers || isErrorCustomers
 
     return (
-        <KpisLayout>
-            {showMockTable ? (
-                <ListSkeleton/>
-            ) : (
-                <Table columns={customerColumns} data={customers ?? []}/>
-            )}
-        </KpisLayout>
+        <main className="max-w-6xl mx-auto pt-16 sm:pt-8 px-8">
+            <div className="block sm:flex sm:justify-between">
+                <div className="flex flex-col">
+                    <Title>Olá, {company}!</Title>
+                    <Text>Aqui o especialista és sempre tu!</Text>
+                </div>
+            </div>
+            <TabList
+                value={router.route.replace('/', '')}
+                onValueChange={(value) => router.push({
+                    pathname: value,
+                    query: router.query,
+                })}
+                className="mt-6"
+            >
+                <Tab value="dashboard" text="Dashboard"/>
+                <Tab value="customers" text="Customers"/>
+            </TabList>
+
+            <div className="mt-6 mb-8 gap-6">
+                {showMockTable ? (
+                    <ListSkeleton/>
+                ) : (
+                    <Table columns={customerColumns} data={customers ?? []}/>
+                )}
+            </div>
+        </main>
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({query}) => {
+export const getServerSideProps: GetServerSideProps<{ company: string }> = async ({query}) => {
     const {company} = query
 
     const queryClient = new QueryClient()
