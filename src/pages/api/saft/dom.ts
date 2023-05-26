@@ -98,7 +98,10 @@ export default async function handler(
 
     for (let i = 0; i < invoiceElement.length; i++) {
         const rawInvoice = invoiceElement[i]
-        const invoice = getElementsByTagNames(rawInvoice, [
+        const {
+            customer_id,
+            ...left
+        } = getElementsByTagNames(rawInvoice, [
             'InvoiceNo', 'ATCUD', 'Hash', 'InvoiceStatus',
             'InvoiceStatusDate', 'InvoiceDate', 'InvoiceType',
             'SystemEntryDate', 'CustomerID', 'TaxPayable',
@@ -113,13 +116,14 @@ export default async function handler(
         invoices.push({
             company_id: companyMetadata.company_id,
             fiscal_year: fiscalYearMetadata.fiscal_year,
-            ...invoice,
+            saft_customer_id: customer_id,
+            ...left,
             ...documentTotals
         })
 
         const line = rawInvoice.getElementsByTagName('Line')[0]
         invoiceLinesElements.push({
-            hash: invoice.hash,
+            hash: left.hash,
             line
         })
     }
@@ -143,8 +147,12 @@ export default async function handler(
     try {
         await Promise.all([
             // Insert Fiscal Year
+            //TODO ver porque é que nao esta a dar replace ao customers_count quando o ficheiro é importado novamente!!!!!
             postgres.insertInto('fiscal_year')
-                .values(fiscalYearMetadata)
+                .values({
+                    customers_count: customers.length,
+                    ...fiscalYearMetadata
+                })
                 .onConflict(oc => oc
                     .column('fiscal_year')
                     .doUpdateSet({
@@ -179,6 +187,8 @@ export default async function handler(
             await postgres.insertInto('invoice').values(invoices).executeTakeFirstOrThrow(),
             await postgres.insertInto('invoice_line').values(invoiceLines).executeTakeFirstOrThrow()
         ])
+
+
     } catch (e) {
         console.error(e)
         return res.status(400).json({ok: false, e})

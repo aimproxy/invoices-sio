@@ -12,6 +12,7 @@
     "@heroicons/react": "^2.0.18",
     "@tanstack/react-query": "^4.29.7",
     "@tanstack/react-query-devtools": "^4.29.7",
+    "@tanstack/react-table": "^8.9.1",
     "@tremor/react": "^2.1.0",
     "@types/node": "18.15.10",
     "@types/react": "18.0.29",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@types/lodash.camelcase": "^4.3.7",
     "@types/lodash.lowercase": "^4.3.7",
+    "@types/react-table": "^7.7.14",
     "@types/uuid": "^9.0.1",
     "@types/xml2js": "^0.4.11",
     "@types/xmldom": "^0.1.31",

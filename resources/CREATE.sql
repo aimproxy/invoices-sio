@@ -15,6 +15,7 @@ CREATE TABLE fiscal_year
     date_created      DATE,
     company_id        BIGSERIAL,
     number_of_entries INT            NOT NULL DEFAULT 0,
+    customers_count   INT            NOT NULL DEFAULT 0,
     net_sales         DECIMAL(10, 2) NOT NULL DEFAULT 0,
     gross_sales       DECIMAL(10, 2) NOT NULL DEFAULT 0,
     aov               DECIMAL(10, 2) NOT NULL DEFAULT 0,
@@ -23,8 +24,7 @@ CREATE TABLE fiscal_year
 
 CREATE TABLE customer
 (
-    customer_id            BIGSERIAL PRIMARY KEY,
-    customer_tax_id        INT UNIQUE,
+    customer_tax_id        BIGSERIAL PRIMARY KEY UNIQUE,
     company_name           VARCHAR(255),
     billing_address_detail VARCHAR(255),
     billing_city           VARCHAR(255),
@@ -36,8 +36,18 @@ CREATE TABLE customer
     ship_to_country        VARCHAR(2),
     self_billing_indicator INT,
     company_id             BIGSERIAL,
-    saft_customer_id       INT,
+    saft_customer_id       INT UNIQUE,
     FOREIGN KEY (company_id) REFERENCES company (company_id)
+);
+
+CREATE TABLE customer_fiscal_year
+(
+    customer_fiscal_year_id BIGSERIAL PRIMARY KEY UNIQUE,
+    saft_customer_id        BIGSERIAL,
+    fiscal_year_id          BIGSERIAL,
+    invoices_count          INT NOT NULL DEFAULT 0,
+    FOREIGN KEY (saft_customer_id) REFERENCES customer (saft_customer_id),
+    FOREIGN KEY (fiscal_year_id) REFERENCES fiscal_year (fiscal_year_id)
 );
 
 CREATE TABLE product
@@ -62,7 +72,7 @@ CREATE TABLE invoice
     invoice_date        DATE,
     invoice_type        VARCHAR(50),
     system_entry_date   TIMESTAMP,
-    customer_id         INT,
+    saft_customer_id    INT,
     tax_payable         DECIMAL(10, 2),
     net_total           DECIMAL(10, 2),
     gross_total         DECIMAL(10, 2),

@@ -1,7 +1,7 @@
 import postgres from "@sio/postgres";
 import {InferResult} from "kysely";
 
-export const companyQuery = postgres
+export const companiesQuery = postgres
     .selectFrom('company')
     .select([
         'company.company_id',
@@ -10,7 +10,7 @@ export const companyQuery = postgres
         'company.tax_registration_number'
     ])
 
-export type CompanyReturnType = InferResult<typeof companyQuery>
+export type CompanyReturnType = InferResult<typeof companiesQuery>
 
 export const yearsQuery = postgres
     .selectFrom('fiscal_year')
@@ -23,3 +23,9 @@ export const yearsQuery = postgres
     ])
 
 export type YearsReturnType = InferResult<typeof yearsQuery>
+
+export const customersQuery = postgres
+    .selectFrom('customer')
+    .selectAll()
+
+export type CustomersReturnType = InferResult<typeof customersQuery>
