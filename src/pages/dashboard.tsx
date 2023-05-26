@@ -4,7 +4,7 @@ import {useState} from "react";
 
 import CustomerLifetimeValue from "@sio/components/kpis/CustomerLifetimeValue";
 import AverageOrderValue from "@sio/components/kpis/AverageOrderValue";
-import RepeatPurchaseRate from "@sio/components/kpis/RepeatCustomerRate";
+import RepeatPurchaseRate from "@sio/components/kpis/RepeatPurchaseRate";
 
 import CumulativeRevenueTrend from "@sio/components/charts/CumulativeRevenueTrend";
 import RevenueBySegment from "@sio/components/charts/RevenueBySegment";
