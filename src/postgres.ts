@@ -1,6 +1,7 @@
 import {createKysely} from "@vercel/postgres-kysely";
 import {Generated, Selectable} from "kysely";
 
+export type Customer = Selectable<CustomerTable>
 export type Company = Selectable<CompanyTable>
 export type FiscalYear = Selectable<FiscalYearTable>
 

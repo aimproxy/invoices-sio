@@ -39,8 +39,8 @@ export default function Home() {
                 {(isLoading || isError) && generateFakeCards}
 
                 {data?.map((company, k) => (
-                    <a href={`/dashboard?company=${company.company_id}`}
-                       onClick={(event) => handleClick(event, `/dashboard?company=${company.company_id}`)}
+                    <a href={`/dashboard?company=${company.company_id}&pid=0`}
+                       onClick={(event) => handleClick(event, `/dashboard?company=${company.company_id}&pid=0`)}
                        key={k}>
                         <Card className="h-22">
                             <Title>{company.company_name}</Title>

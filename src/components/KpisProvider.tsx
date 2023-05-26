@@ -14,12 +14,8 @@ const defaultContextValues: KpisContextValue = {
 
 export const KpisContext = createContext<KpisContextValue>(defaultContextValues);
 
-interface KpisProviderProps {
-    defaultYear: Partial<FiscalYear> | undefined
-}
-
-const KpisProvider = ({defaultYear, children}: PropsWithChildren<KpisProviderProps>) => {
-    const [selectedYear, setSelectedYear] = useState<Partial<FiscalYear> | undefined>(defaultYear);
+const KpisProvider = ({children}: PropsWithChildren) => {
+    const [selectedYear, setSelectedYear] = useState<Partial<FiscalYear> | undefined>(undefined);
 
     const inMemory = useMemo(() => ({
         selectedYear,

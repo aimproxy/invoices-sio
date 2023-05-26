@@ -1,12 +1,12 @@
 import {NextApiRequest, NextApiResponse} from "next";
-import {companyQuery} from "@sio/query";
+import {companiesQuery} from "@sio/query";
 
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
     try {
-        const companies = await companyQuery.execute()
+        const companies = await companiesQuery.execute()
 
         res.status(200).json(companies)
     } catch (e) {
