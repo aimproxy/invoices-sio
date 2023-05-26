@@ -1,17 +1,18 @@
 import {createContext, Dispatch, PropsWithChildren, SetStateAction, useMemo, useState} from "react";
+import {Company, FiscalYear} from "@sio/postgres";
 
 interface KpisContextValue {
-    selectedCompany: string;
-    setSelectedCompany: Dispatch<SetStateAction<string>>;
-    selectedYear: string;
-    setSelectedYear: Dispatch<SetStateAction<string>>;
+    selectedCompany: Partial<Company> | undefined;
+    setSelectedCompany: Dispatch<SetStateAction<Partial<Company> | undefined>>;
+    selectedYear: Partial<FiscalYear> | undefined;
+    setSelectedYear: Dispatch<SetStateAction<Partial<FiscalYear> | undefined>>;
 }
 
 const defaultContextValues: KpisContextValue = {
-    selectedCompany: '',
+    selectedCompany: undefined,
     setSelectedCompany: () => {
     },
-    selectedYear: '',
+    selectedYear: undefined,
     setSelectedYear: () => {
     },
 }
@@ -19,8 +20,8 @@ const defaultContextValues: KpisContextValue = {
 export const KpisContext = createContext<KpisContextValue>(defaultContextValues);
 
 const KpisProvider = ({children}: PropsWithChildren) => {
-    const [selectedCompany, setSelectedCompany] = useState<string>('');
-    const [selectedYear, setSelectedYear] = useState<string>('');
+    const [selectedCompany, setSelectedCompany] = useState<Partial<Company> | undefined>(undefined);
+    const [selectedYear, setSelectedYear] = useState<Partial<FiscalYear> | undefined>(undefined);
 
     const inMemory = useMemo(() => ({
         selectedCompany,

@@ -1,14 +1,17 @@
 import {createKysely} from "@vercel/postgres-kysely";
-import {Generated} from "kysely";
+import {Generated, Selectable} from "kysely";
 
-export interface Company extends Record<string, any> {
+export type Company = Selectable<CompanyTable>
+export type FiscalYear = Selectable<FiscalYearTable>
+
+export interface CompanyTable extends Record<string, any> {
     company_id: Generated<number>;
     tax_registration_number: number
     company_name: string
     currency_code: string
 }
 
-export interface FiscalYear extends Record<string, any> {
+export interface FiscalYearTable extends Record<string, any> {
     fiscal_year_id: Generated<number>;
     fiscal_year: number
     start_date: string
@@ -19,7 +22,7 @@ export interface FiscalYear extends Record<string, any> {
     gross_sales: number
 }
 
-export interface Customer extends Record<string, any> {
+export interface CustomerTable extends Record<string, any> {
     customer_id: Generated<number>;
     customer_tax_id: number;
     company_name: string;
@@ -36,7 +39,7 @@ export interface Customer extends Record<string, any> {
     saft_customer_id: number;
 }
 
-export interface Product extends Record<string, any> {
+export interface ProductTable extends Record<string, any> {
     product_id: Generated<number>;
     product_type: string;
     product_code: string;
@@ -45,7 +48,7 @@ export interface Product extends Record<string, any> {
     company_id: number;
 }
 
-export interface Invoice extends Record<string, any> {
+export interface InvoiceTable extends Record<string, any> {
     invoice_id: Generated<number>
     invoice_no: string
     atcud: string
@@ -78,11 +81,11 @@ export interface InvoiceLine extends Record<string, any> {
 
 
 interface DatabaseSchema {
-    company: Company;
-    fiscal_year: FiscalYear;
-    customer: Customer;
-    product: Product;
-    invoice: Invoice;
+    company: CompanyTable;
+    fiscal_year: FiscalYearTable;
+    customer: CustomerTable;
+    product: ProductTable;
+    invoice: InvoiceTable;
     invoice_line: InvoiceLine;
 }
 

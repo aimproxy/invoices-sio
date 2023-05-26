@@ -2,7 +2,7 @@ import type {AppProps} from 'next/app'
 import '../styles/globals.css'
 import {Inter} from 'next/font/google';
 import {Hydrate, QueryClient, QueryClientProvider,} from '@tanstack/react-query'
-import {ReactQueryDevtools} from '@tanstack/react-query/devtools';
+import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
 import React, {useState} from "react";
 
 const inter = Inter({

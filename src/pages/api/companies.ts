@@ -5,7 +5,11 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
-    const companies = await companyQuery.execute()
+    try {
+        const companies = await companyQuery.execute()
 
-    res.status(200).json(companies)
+        res.status(200).json(companies)
+    } catch (e) {
+        res.status(400).json(e)
+    }
 }

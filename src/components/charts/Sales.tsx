@@ -1,4 +1,7 @@
 import {Bold, Card, DonutChart, Flex, Legend, Metric, Text, Title} from "@tremor/react";
+import {useContext} from "react";
+import TextSkeleton from "@sio/components/skeletons/TextSkeleton";
+import {KpisContext} from "@sio/components/KpisProvider";
 
 const products = [
     {
@@ -36,12 +39,20 @@ const valueFormatter = (number: number) =>
     `$ ${Intl.NumberFormat("us").format(number).toString()}`;
 
 export default function Sales() {
+    const {selectedYear} = useContext(KpisContext)
+
     return (
         <Card>
             <Title>Sales</Title>
             <Flex justifyContent="start" className="space-x-1" alignItems="baseline">
-                <Metric>12,780€{' '}</Metric>
-                <Text>/{' '}19,800€</Text>
+                {selectedYear == undefined ? (
+                    <TextSkeleton/>
+                ) : (
+                    <>
+                        <Metric>{selectedYear?.net_sales}€{' '}</Metric>
+                        <Text>/{' '}{selectedYear?.gross_sales}€</Text>
+                    </>
+                )}
             </Flex>
             <Text className="mt-4">
                 <Bold>Top products by units sold</Bold>

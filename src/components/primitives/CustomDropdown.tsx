@@ -12,11 +12,11 @@ const CustomDropdown = ({
                         }: PropsWithChildren<CustomDropdownProps>) => {
 
     if (loading) {
-        return <Button loading={true}/>
+        return <Button loading={true} variant={'secondary'}/>
     }
 
     if (disabled) {
-        return <Button disabled={true}/>
+        return <Button disabled={true} variant={'secondary'}/>
     }
 
     return (

@@ -8,7 +8,6 @@ import CustomerLifetimeValue from "@sio/components/kpis/CustomerLifetimeValue";
 import AverageOrderValue from "@sio/components/kpis/AverageOrderValue";
 import RepeatPurchaseRate from "@sio/components/kpis/RepeatCustomerRate";
 
-import NetGrossMargin from "@sio/components/charts/NetGrossMargin";
 import CumulativeRevenueTrend from "@sio/components/charts/CumulativeRevenueTrend";
 import RevenueBySegment from "@sio/components/charts/RevenueBySegment";
 import Sales from "@sio/components/charts/Sales";
@@ -23,15 +22,16 @@ import YearSelector from "@sio/components/selectors/YearSelector";
 
 import {dehydrate, QueryClient, useQueries} from "@tanstack/react-query";
 import {CompanyReturnType, YearsReturnType} from "@sio/query";
+import RunCalculationsButton from "@sio/components/buttons/RunCalculationsButton";
 
 const fetchCompanies = async (): Promise<CompanyReturnType> => {
-    const res = await fetch('/api/companies')
-    return res.json();
+    const res = await fetch('http://localhost:3000/api/companies')
+    return await res.json();
 }
 
 const fetchYears = async (): Promise<YearsReturnType> => {
-    const res = await fetch('/api/years')
-    return res.json();
+    const res = await fetch('http://localhost:3000/api/years')
+    return await res.json();
 }
 
 export default function Home() {
@@ -54,13 +54,13 @@ export default function Home() {
     const {
         data: companies,
         isLoading: isLoadingCompanies,
-        error: hasErrorCompanies
+        isError: isErrorCompanies
     } = companiesRequest
 
     const {
         data: years,
         isLoading: isLoadingYears,
-        error: hasErrorYears
+        isError: isErrorYears
     } = yearsRequest
 
     const memoizedYears = useMemo(() => {
@@ -81,13 +81,15 @@ export default function Home() {
         <div className="block sm:flex sm:justify-between">
             <Welcome/>
             <div className="flex flex-row space-x-4 items-center mt-4 sm:mt-0">
-                <CompanySelector companies={companies ?? []}
+                <CompanySelector companies={companies}
                                  loading={isLoadingCompanies}
-                                 disabled={hasErrorCompanies != undefined}/>
+                                 disabled={isErrorCompanies}/>
 
-                <YearSelector years={memoizedYears ?? {}}
+                <YearSelector years={memoizedYears}
                               loading={isLoadingYears}
-                              disabled={hasErrorYears != undefined}/>
+                              disabled={isErrorYears}/>
+
+                <RunCalculationsButton/>
             </div>
         </div>
     )
@@ -99,7 +101,7 @@ export default function Home() {
                 <CustomerLifetimeValue/>
                 <RepeatPurchaseRate/>
                 <div className={"col-span-2"}>
-                    <NetGrossMargin/>
+                    <Card/>
                 </div>
             </Grid>
             <Grid numCols={1} numColsLg={3} className="gap-6">
@@ -121,17 +123,6 @@ export default function Home() {
                 </Card>
             </Grid>
         </div>
-    )
-
-    const emptyMarkup = (
-        <Card className="mt-6 h-96 flex flex-col justify-center items-center text-center">
-            <p className="text-6xl">🚧</p>
-            <h2 className="text-slate-700 text-xl font-extrabold mt-3 md:mt-5">There isn{'\''}t any data yet!</h2>
-            <p className="max-w-xl mx-auto text-slate-500 mt-3 md:mt-5 font-normal text-base sm:text-lg">
-                You can start by import a SAF-T XML file from the Portuguese Tax Authority
-                under the {'\"'}Import SAF-T{'\!'} tab ☝️!
-            </p>
-        </Card>
     )
 
     return (
