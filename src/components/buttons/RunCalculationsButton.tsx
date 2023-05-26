@@ -1,6 +1,6 @@
+import {useContext} from "react";
 import {Button} from "@tremor/react";
 import {CalculatorIcon} from "@heroicons/react/24/outline";
-import {useContext} from "react";
 import {KpisContext} from "@sio/components/KpisProvider";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 
@@ -13,9 +13,13 @@ const runCalculations = async ({company, year}: RunCalculationsFetchProps) => {
     return await fetch(`/api/kpis?company_id=${company}&year=${year}`)
 }
 
-const RunCalculationsButton = () => {
+interface RunCalculationsButtonProps {
+    company: number
+}
+
+const RunCalculationsButton = ({company}: RunCalculationsButtonProps) => {
     const queryClient = useQueryClient();
-    const {selectedCompany, selectedYear} = useContext(KpisContext)
+    const {selectedYear} = useContext(KpisContext)
 
     const {mutate, isLoading} = useMutation(runCalculations, {
         onSuccess: data => {
@@ -34,10 +38,10 @@ const RunCalculationsButton = () => {
                 loading={isLoading}
                 icon={CalculatorIcon}
                 color={"emerald"}
-                disabled={selectedCompany == undefined || selectedYear == undefined}
+                disabled={selectedYear == undefined}
                 onClick={() => mutate({
-                    company: String(selectedCompany.company_id),
-                    year: String(selectedYear.fiscal_year)
+                    company: String(company),
+                    year: String(selectedYear?.fiscal_year)
                 })}>
             Run Calculations
         </Button>

@@ -5,8 +5,12 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
+    const {company} = req.query
+
     try {
-        const years = await yearsQuery.execute()
+        const years = await yearsQuery
+            .where('fiscal_year.company_id', '=', Number(company))
+            .execute()
 
         res.status(200).json(years)
     } catch (e) {

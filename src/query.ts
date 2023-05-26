@@ -6,7 +6,8 @@ export const companyQuery = postgres
     .select([
         'company.company_id',
         'company.company_name',
-        'company.currency_code'
+        'company.currency_code',
+        'company.tax_registration_number'
     ])
 
 export type CompanyReturnType = InferResult<typeof companyQuery>
