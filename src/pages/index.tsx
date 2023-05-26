@@ -1,142 +1,82 @@
-import type {GetServerSideProps, InferGetServerSidePropsType} from 'next';
-import {Card, Grid, Metric, Tab, TabList, Text} from "@tremor/react";
-import postgres from "@sio/postgres";
-import {useState} from "react";
-import {CompanyMetadataResponse, FiscalYear} from "@sio/types";
-
+import {Card, Grid, Subtitle, Tab, TabList, Text, Title} from "@tremor/react";
+import {GetServerSideProps} from "next";
+import {dehydrate, QueryClient, useQuery} from "@tanstack/react-query";
+import {CompanyReturnType} from "@sio/query";
+import TextSkeleton from "@sio/components/skeletons/TextSkeleton";
+import {useRouter} from "next/router";
+import {MouseEvent, useState} from "react"
 import SAFTDropzone from "@sio/components/SAFTDropzone";
-import CompanyAndYearSelector from "@sio/components/buttons/CompanyAndYearSelector";
 
-import CustomerLifetimeValue from "@sio/components/kpis/CustomerLifetimeValue";
-import AverageOrderValue from "@sio/components/kpis/AverageOrderValue";
-import RepeatPurchaseRate from "@sio/components/kpis/RepeatCustomerRate";
+const fetchCompanies = async (): Promise<CompanyReturnType> => {
+    const res = await fetch('http://localhost:3000/api/companies')
+    return await res.json();
+}
 
-import NetGrossMargin from "@sio/components/charts/NetGrossMargin";
-import CumulativeRevenueTrend from "@sio/components/charts/CumulativeRevenueTrend";
-import RevenueBySegment from "@sio/components/charts/RevenueBySegment";
-import Sales from "@sio/components/charts/Sales";
-import SalesByCountry from "@sio/components/charts/SalesByCountry";
-import SalesByCity from "@sio/components/charts/SalesByCity";
-import RevenueOverTime from "@sio/components/charts/RevenueOverTime";
-import KpisProvider from "@sio/components/KpisProvider";
-import Welcome from "@sio/components/Welcome";
-import RunCalculationsButton from "@sio/components/buttons/RunCalculationsButton";
-
-export default function Home({companies, years}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-
+export default function Home() {
+    const router = useRouter();
     const [selectedView, setSelectedView] = useState("1");
 
-    const headerMarkup = (
-        <div className="block sm:flex sm:justify-between">
-            <Welcome/>
-            <div className="flex flex-row space-x-4 items-center mt-4 sm:mt-0">
-                {(selectedView == "1" && companies.length > 0) &&
-                    <>
-                        <CompanyAndYearSelector companies={companies} years={years}/>
-                        <RunCalculationsButton/>
-                    </>
-                }
-            </div>
-        </div>
-    )
+    const {data, isLoading, isError} = useQuery({
+        queryKey: ['companies'],
+        queryFn: fetchCompanies,
+    })
 
-    const dashMarkup = (
-        <div className="space-y-4">
-            <Grid numCols={1} numColsLg={5} className="gap-6">
-                <AverageOrderValue/>
-                <CustomerLifetimeValue/>
-                <RepeatPurchaseRate/>
-                <div className={"col-span-2"}>
-                    <NetGrossMargin/>
-                </div>
-            </Grid>
-            <Grid numCols={1} numColsLg={3} className="gap-6">
-                <div className={"col-span-2"}>
-                    <CumulativeRevenueTrend/>
-                </div>
-                <Sales/>
-            </Grid>
-            <Grid numCols={1} numColsLg={2} className="gap-6">
-                <RevenueOverTime/>
-                <RevenueBySegment/>
-            </Grid>
-            <Grid numCols={1} numColsLg={3} className="gap-6">
-                <SalesByCountry/>
-                <SalesByCity/>
-                <Card>
-                    <Text>Title</Text>
-                    <Metric>KPI 7</Metric>
-                </Card>
-            </Grid>
-        </div>
-    )
+    const handleClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
+        event.preventDefault();
+        router.push(href).then(console.info);
+    };
 
-    const emptyMarkup = (
-        <Card className="mt-6 h-96 flex flex-col justify-center items-center text-center">
-            <p className="text-6xl">🚧</p>
-            <h2 className="text-slate-700 text-xl font-extrabold mt-3 md:mt-5">There isn{'\''}t any data yet!</h2>
-            <p className="max-w-xl mx-auto text-slate-500 mt-3 md:mt-5 font-normal text-base sm:text-lg">
-                You can start by import a SAF-T XML file from the Portuguese Tax Authority
-                under the {'\"'}Import SAF-T{'\!'} tab ☝️!
-            </p>
+    const generateFakeCards = Array.from(Array(3).keys()).map((card, k) => (
+        <Card className="h-22" key={k}>
+            <TextSkeleton/>
         </Card>
-    )
+    ))
 
     return (
-        <KpisProvider>
-            <main className={"max-w-[90rem] mx-auto pt-16 sm:pt-8 px-8"}>
-                {headerMarkup}
-                <TabList
-                    defaultValue="1"
-                    onValueChange={(value) => setSelectedView(value)}
-                    className="mt-6"
-                >
-                    <Tab value="1" text="Dashboard"/>
-                    <Tab value="2" text="Importar SAF-T"/>
-                </TabList>
+        <main className={"max-w-6xl mx-auto pt-16 sm:pt-8 px-8"}>
+            <Title>Empresas</Title>
+            <Text>Começa por escolher uma empresa!</Text>
 
-                {selectedView === "1" ? (
-                    <div className="mt-6 mb-8 gap-6">
-                        {companies.length > 0 ? dashMarkup : emptyMarkup}
-                    </div>
-                ) : (
-                    <SAFTDropzone/>
-                )}
-            </main>
-        </KpisProvider>
+            <TabList
+                defaultValue="1"
+                onValueChange={(value) => setSelectedView(value)}
+                className="mt-6">
+                <Tab value="1" text="Empresas"/>
+                <Tab value="2" text="Importar SAF-T"/>
+            </TabList>
+            <div className="mt-6 mb-8 gap-6">
+                {selectedView == "1" &&
+                    <Grid numColsMd={4} className="mt-6 gap-6">
+                        {(isLoading || isError) && generateFakeCards}
+
+                        {data?.map((company, k) => (
+                            <a href={`/dashboard?company=${company.company_id}`}
+                               onClick={(event) => handleClick(event, `/dashboard?company=${company.company_id}`)}
+                               key={k}>
+                                <Card className="h-22">
+                                    <Title>{company.company_name}</Title>
+                                    <Subtitle>{company.tax_registration_number}</Subtitle>
+                                </Card>
+                            </a>
+                        ))}
+
+                        {(!isLoading || !isError) && generateFakeCards}
+                    </Grid>}
+                {selectedView == "2" && <SAFTDropzone/>}
+            </div>
+
+        </main>
     );
 }
 
-export const getServerSideProps: GetServerSideProps<CompanyMetadataResponse> = async () => {
-    const sql = await postgres
-        .selectFrom('company')
-        .innerJoin('fiscal_year', 'fiscal_year.company_id', 'company.company_id')
-        .select([
-            'company.company_id', 'company.company_name',
-            'fiscal_year.fiscal_year', 'fiscal_year.start_date', 'fiscal_year.end_date'
-        ])
-        .execute();
+export const getServerSideProps: GetServerSideProps = async () => {
+    const queryClient = new QueryClient()
 
-    const years = sql.reduce((result, company) => {
-        const {company_id, fiscal_year, start_date, end_date} = company;
+    await queryClient.prefetchQuery(['companies'], fetchCompanies)
 
-        if (!result[company_id]) {
-            result[company_id] = [];
-        }
-
-        result[company_id].push({
-            startDate: start_date.toString(),
-            endDate: end_date.toString(),
-            fiscalYear: fiscal_year
-        });
-
-        return result;
-    }, {} as { [key: string]: FiscalYear[] });
-
-    const companies = Array.from(new Set(sql.map(company => ({
-        companyId: company.company_id,
-        companyName: company.company_name
-    }))));
-
-    return {props: {companies, years}};
+    return {
+        props: {
+            dehydratedState: dehydrate(queryClient),
+        },
+    }
 }

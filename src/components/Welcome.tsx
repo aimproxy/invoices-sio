@@ -7,7 +7,7 @@ const Welcome = () => {
 
     return (
         <div className="flex flex-col">
-            <Title>Olá, {selectedCompany ?? 'Demo'}!</Title>
+            <Title>Olá, {selectedCompany?.company_name ?? 'Demo'}!</Title>
             <Text>Aqui o especialista és sempre tu!</Text>
         </div>
     )

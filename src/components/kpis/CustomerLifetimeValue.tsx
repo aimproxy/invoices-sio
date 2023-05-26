@@ -7,7 +7,8 @@ export default function CustomerLifetimeValue() {
         <Card>
             <Title>LTV</Title>
             <Text>Customer Lifetime Value</Text>
-            <Metric className={"mt-4"}><TextSkeleton/></Metric>
+            <Metric className={"mt-4"}></Metric>
+            <TextSkeleton/>
         </Card>
     );
 }

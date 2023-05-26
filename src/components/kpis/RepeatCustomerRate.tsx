@@ -7,7 +7,8 @@ export default function RepeatPurchaseRate() {
         <Card>
             <Title>RPR</Title>
             <Text>Repeat Purchase Rate</Text>
-            <Metric className={"mt-4"}><TextSkeleton/></Metric>
+            <Metric className={"mt-4"}></Metric>
+            <TextSkeleton/>
         </Card>
     );
 }

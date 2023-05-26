@@ -1,23 +1,49 @@
+import {useContext} from "react";
 import {Button} from "@tremor/react";
 import {CalculatorIcon} from "@heroicons/react/24/outline";
-import {useCallback, useContext} from "react";
 import {KpisContext} from "@sio/components/KpisProvider";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 
-const RunCalculationsButton = () => {
-    const {selectedCompany, selectedYear} = useContext(KpisContext)
+interface RunCalculationsFetchProps {
+    company: string
+    year: string
+}
 
-    const runCalculationsCallback = useCallback(async () => {
-        await fetch(`/api/kpis?company_id=${selectedCompany}&year=${selectedYear}`)
-            .then(s => console.log(s))
-            .catch(e => console.error(e))
-    }, [selectedCompany, selectedYear])
+const runCalculations = async ({company, year}: RunCalculationsFetchProps) => {
+    return await fetch(`/api/saft/kpis?company_id=${company}&year=${year}`)
+}
+
+interface RunCalculationsButtonProps {
+    company: number
+}
+
+const RunCalculationsButton = ({company}: RunCalculationsButtonProps) => {
+    const queryClient = useQueryClient();
+    const {selectedYear} = useContext(KpisContext)
+
+    const {mutate, isLoading} = useMutation(runCalculations, {
+        onSuccess: data => {
+            console.log(data);
+        },
+        onError: () => {
+            console.error("there was an error")
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({queryKey: ['kpis']}).then(console.log)
+            queryClient.invalidateQueries({queryKey: ['years', company]}).then(console.log)
+        }
+    });
 
     return (
         <Button size="sm"
+                loading={isLoading}
                 icon={CalculatorIcon}
                 color={"emerald"}
-                disabled={selectedCompany == undefined || selectedYear == undefined}
-                onClick={runCalculationsCallback}>
+                disabled={selectedYear == undefined}
+                onClick={() => mutate({
+                    company: String(company),
+                    year: String(selectedYear?.fiscal_year)
+                })}>
             Run Calculations
         </Button>
     )

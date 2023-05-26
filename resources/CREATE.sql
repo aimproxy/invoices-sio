@@ -8,14 +8,16 @@ CREATE TABLE company
 
 CREATE TABLE fiscal_year
 (
-    fiscal_year_id BIGSERIAL PRIMARY KEY,
-    fiscal_year    INT UNIQUE,
-    start_date     DATE,
-    end_date       DATE,
-    date_created   DATE,
-    company_id     BIGSERIAL,
-    net_sales      DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    gross_sales    DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    fiscal_year_id    BIGSERIAL PRIMARY KEY,
+    fiscal_year       INT UNIQUE,
+    start_date        DATE,
+    end_date          DATE,
+    date_created      DATE,
+    company_id        BIGSERIAL,
+    number_of_entries INT            NOT NULL DEFAULT 0,
+    net_sales         DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    gross_sales       DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    aov               DECIMAL(10, 2) NOT NULL DEFAULT 0,
     FOREIGN KEY (company_id) REFERENCES company (company_id)
 );
 
