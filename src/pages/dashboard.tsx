@@ -81,7 +81,10 @@ export default function Dashboard({company}: InferGetServerSidePropsType<typeof 
                     <Title>Olá, {company}!</Title>
                     <Text>Aqui o especialista és sempre tu!</Text>
                 </div>
-                <YearSelector years={years} loading={isLoading} disabled={isError}/>
+                <YearSelector company={company}
+                              years={years}
+                              loading={isLoading}
+                              disabled={isError}/>
             </div>
             <TabList
                 value={router.route.replace('/', '')}

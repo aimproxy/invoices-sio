@@ -13,7 +13,7 @@ const Table = <T, >({columns, data}: TableProps<T>) => {
     })
 
     return (
-        <div className="font-semibold border border-gray-200 shadow rounded-md">
+        <div className="border border-gray-200 shadow rounded-md">
             <table className="w-full whitespace-no-wrap overflow-hidden rounded-md">
                 <thead>
                 {table.getHeaderGroups().map(headerGroup => (

@@ -3,7 +3,7 @@ import {KpisContext} from "@sio/components/KpisProvider";
 import {Button, Dropdown, DropdownItem} from "@tremor/react";
 import {YearsReturnType} from "@sio/query";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {CalculatorIcon} from "@heroicons/react/24/outline";
+import {VariableIcon} from "@heroicons/react/24/solid";
 
 interface DoMathProps {
     company: string
@@ -15,12 +15,13 @@ const doMath = async ({company, year}: DoMathProps) => {
 }
 
 interface YearSelectorProps {
+    company: string
     years?: YearsReturnType
     loading: boolean
     disabled: boolean
 }
 
-const YearSelector = ({years, loading, disabled}: YearSelectorProps) => {
+const YearSelector = ({company, years, loading, disabled}: YearSelectorProps) => {
     const queryClient = useQueryClient();
 
     const {selectedYear, setSelectedYear} = useContext(KpisContext)
@@ -53,7 +54,7 @@ const YearSelector = ({years, loading, disabled}: YearSelectorProps) => {
     return (
         <div className="flex flex-row space-x-4 items-center mt-4 sm:mt-0">
             {showMockButton ? (
-                <Button size={"sm"} loading={loading} disabled={disabled} variant={'secondary'}/>
+                <Button loading={loading} disabled={disabled} size="sm" variant="secondary"/>
             ) : (
                 <Dropdown
                     value={String(selectedYear?.fiscal_year)}
@@ -65,7 +66,7 @@ const YearSelector = ({years, loading, disabled}: YearSelectorProps) => {
             <Button size="sm"
                     color="emerald"
                     loading={isLoading}
-                    icon={CalculatorIcon}
+                    icon={VariableIcon}
                     disabled={selectedYear == undefined}
                     onClick={() => mutate({
                         company: String(company),
