@@ -1,11 +1,8 @@
-import type {GetServerSideProps, InferGetServerSidePropsType} from 'next';
+import type {GetServerSideProps} from 'next';
 import {Card, Grid, Metric, Tab, TabList, Text} from "@tremor/react";
-import postgres from "@sio/postgres";
-import {useState} from "react";
-import {CompanyResponse, FiscalYear} from "@sio/types";
+import {useMemo, useState} from "react";
 
 import SAFTDropzone from "@sio/components/SAFTDropzone";
-import CompanyAndYearSelector from "@sio/components/buttons/CompanyAndYearSelector";
 
 import CustomerLifetimeValue from "@sio/components/kpis/CustomerLifetimeValue";
 import AverageOrderValue from "@sio/components/kpis/AverageOrderValue";
@@ -20,22 +17,77 @@ import SalesByCity from "@sio/components/charts/SalesByCity";
 import RevenueOverTime from "@sio/components/charts/RevenueOverTime";
 import KpisProvider from "@sio/components/KpisProvider";
 import Welcome from "@sio/components/Welcome";
-import RunCalculationsButton from "@sio/components/buttons/RunCalculationsButton";
 
-export default function Home({companies, years}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+import CompanySelector from "@sio/components/selectors/CompanySelector";
+import YearSelector from "@sio/components/selectors/YearSelector";
 
+import {dehydrate, QueryClient, useQueries} from "@tanstack/react-query";
+import {CompanyReturnType, YearsReturnType} from "@sio/query";
+
+const fetchCompanies = async (): Promise<CompanyReturnType> => {
+    const res = await fetch('/api/companies')
+    return res.json();
+}
+
+const fetchYears = async (): Promise<YearsReturnType> => {
+    const res = await fetch('/api/years')
+    return res.json();
+}
+
+export default function Home() {
     const [selectedView, setSelectedView] = useState("1");
+
+    const [companiesRequest, yearsRequest] = useQueries({
+            queries: [
+                {
+                    queryKey: ['companies'],
+                    queryFn: fetchCompanies,
+                },
+                {
+                    queryKey: ['years'],
+                    queryFn: fetchYears
+                }
+            ],
+        }
+    )
+
+    const {
+        data: companies,
+        isLoading: isLoadingCompanies,
+        error: hasErrorCompanies
+    } = companiesRequest
+
+    const {
+        data: years,
+        isLoading: isLoadingYears,
+        error: hasErrorYears
+    } = yearsRequest
+
+    const memoizedYears = useMemo(() => {
+        return years?.reduce((result, company) => {
+            const {company_id, ...left} = company;
+
+            if (!result[company_id]) {
+                result[company_id] = [];
+            }
+
+            result[company_id].push({company_id, ...left});
+
+            return result;
+        }, {} as { [key: string]: YearsReturnType });
+    }, [years])
 
     const headerMarkup = (
         <div className="block sm:flex sm:justify-between">
             <Welcome/>
             <div className="flex flex-row space-x-4 items-center mt-4 sm:mt-0">
-                {(selectedView == "1" && companies.length > 0) &&
-                    <>
-                        <CompanyAndYearSelector companies={companies} years={years}/>
-                        <RunCalculationsButton/>
-                    </>
-                }
+                <CompanySelector companies={companies ?? []}
+                                 loading={isLoadingCompanies}
+                                 disabled={hasErrorCompanies != undefined}/>
+
+                <YearSelector years={memoizedYears ?? {}}
+                              loading={isLoadingYears}
+                              disabled={hasErrorYears != undefined}/>
             </div>
         </div>
     )
@@ -83,7 +135,7 @@ export default function Home({companies, years}: InferGetServerSidePropsType<typ
     )
 
     return (
-        <KpisProvider companies={companies} years={years}>
+        <KpisProvider>
             <main className={"max-w-[90rem] mx-auto pt-16 sm:pt-8 px-8"}>
                 {headerMarkup}
                 <TabList
@@ -97,7 +149,7 @@ export default function Home({companies, years}: InferGetServerSidePropsType<typ
 
                 {selectedView === "1" ? (
                     <div className="mt-6 mb-8 gap-6">
-                        {companies.length > 0 ? dashMarkup : emptyMarkup}
+                        {dashMarkup}
                     </div>
                 ) : (
                     <SAFTDropzone/>
@@ -107,37 +159,15 @@ export default function Home({companies, years}: InferGetServerSidePropsType<typ
     );
 }
 
-export const getServerSideProps: GetServerSideProps<CompanyResponse> = async () => {
-    const sql = await postgres
-        .selectFrom('company')
-        .innerJoin('fiscal_year', 'fiscal_year.company_id', 'company.company_id')
-        .select([
-            'company.company_id', 'company.company_name', 'company.currency_code',
-            'fiscal_year.fiscal_year', 'fiscal_year.start_date', 'fiscal_year.end_date'
-        ])
-        .execute();
+export const getServerSideProps: GetServerSideProps = async () => {
+    const queryClient = new QueryClient()
 
-    const years = sql.reduce((result, company) => {
-        const {company_id, fiscal_year, start_date, end_date} = company;
+    await queryClient.prefetchQuery(['companies'], fetchCompanies)
+    await queryClient.prefetchQuery(['years'], fetchYears)
 
-        if (!result[company_id]) {
-            result[company_id] = [];
-        }
-
-        result[company_id].push({
-            startDate: start_date.toString(),
-            endDate: end_date.toString(),
-            fiscalYear: fiscal_year
-        });
-
-        return result;
-    }, {} as { [key: string]: FiscalYear[] });
-
-    const companies = Array.from(new Set(sql.map(company => ({
-        companyId: company.company_id,
-        companyName: company.company_name,
-        currencyCode: company.currency_code
-    }))));
-
-    return {props: {companies, years}};
+    return {
+        props: {
+            dehydratedState: dehydrate(queryClient),
+        },
+    }
 }

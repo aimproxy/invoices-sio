@@ -1,7 +1,6 @@
 import {Card, CategoryBar, Text, Title} from "@tremor/react";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useState} from "react";
 import {KpisContext} from "@sio/components/KpisProvider";
-import postgres from "@sio/postgres";
 import TextSkeleton from "@sio/components/skeletons/TextSkeleton";
 
 export default function NetGrossMargin() {
@@ -16,23 +15,6 @@ export default function NetGrossMargin() {
         POSTGRES_URL: process.env.POSTGRES_URL,
         POSTGRES_URL_NON_POOLING: process.env.POSTGRES_URL_NON_POOLING
     });
-
-    useEffect(() => {
-        postgres
-            .selectFrom("fiscal_year")
-            .select(["net_sales", "gross_sales"])
-            .where('company_id', '=', Number(selectedCompany))
-            .where('fiscal_year', '=', Number(selectedYear))
-            .limit(1)
-            .executeTakeFirst()
-            .then(sales => {
-                console.log(sales)
-                setNetSales(sales.net_sales)
-                setGrossSales(sales.gross_sales)
-            })
-            .catch(console.error)
-            .finally(() => setIsLoading(false))
-    }, [selectedCompany, selectedYear])
 
     const kpiMarkup = (
         <>
