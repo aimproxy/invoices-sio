@@ -3,11 +3,11 @@ import {useContext} from "react";
 import {KpisContext} from "@sio/components/KpisProvider";
 
 const Welcome = () => {
-    const {selectedCompany} = useContext(KpisContext)
+    const {selectedYear} = useContext(KpisContext)
 
     return (
         <div className="flex flex-col">
-            <Title>Olá, {selectedCompany?.company_name ?? 'Demo'}!</Title>
+            <Title>Olá, {selectedYear?.company_id ?? 'Demo'}!</Title>
             <Text>Aqui o especialista és sempre tu!</Text>
         </div>
     )
