@@ -2,6 +2,7 @@ import {Bold, Card, DonutChart, Flex, Legend, Metric, Text, Title} from "@tremor
 import {useContext} from "react";
 import TextSkeleton from "@sio/components/skeletons/TextSkeleton";
 import {KpisContext} from "@sio/components/KpisProvider";
+import useFiscalYear from "@sio/hooks/useFiscalYear";
 
 const products = [
     {
@@ -39,18 +40,22 @@ const valueFormatter = (number: number) =>
     `$ ${Intl.NumberFormat("us").format(number).toString()}`;
 
 export default function Sales() {
-    const {selectedYear} = useContext(KpisContext)
+    const {selectedCompany, selectedYear} = useContext(KpisContext)
+    const {data, isLoading, isError} = useFiscalYear({
+        company: String(selectedCompany?.company_id),
+        year: selectedYear
+    })
 
     return (
         <Card>
             <Title>Sales</Title>
             <Flex justifyContent="start" className="space-x-1 mt-2" alignItems="baseline">
-                {selectedYear == undefined ? (
+                {(isLoading || isError) ? (
                     <TextSkeleton/>
                 ) : (
                     <>
-                        <Metric>{selectedYear?.net_sales}€{' '}</Metric>
-                        <Text>/{' '}{selectedYear?.gross_sales}€</Text>
+                        <Metric>{data?.net_sales}€{' '}</Metric>
+                        <Text>/{' '}{data?.gross_sales}€</Text>
                     </>
                 )}
             </Flex>

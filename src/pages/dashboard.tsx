@@ -1,4 +1,3 @@
-import type {GetServerSideProps, InferGetServerSidePropsType} from 'next';
 import {Card, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
 import {useRouter} from "next/router";
 
@@ -15,33 +14,12 @@ import RevenueOverTime from "@sio/components/charts/RevenueOverTime";
 
 import YearSelector from "@sio/components/selectors/YearSelector";
 
-import {dehydrate, QueryClient, useQuery} from "@tanstack/react-query";
-import {YearsReturnType} from "@sio/query";
 import {KpisContext} from "@sio/components/KpisProvider";
-import {useContext, useEffect} from "react";
+import {useContext} from "react";
 
-const fetchYears = async (company: string): Promise<YearsReturnType> => {
-    const res = await fetch(`/api/years?company=${company}`)
-    return await res.json();
-}
-
-export default function Dashboard({company}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Dashboard() {
     const router = useRouter()
-    const {setSelectedYear} = useContext(KpisContext)
-
-    const {
-        data: years,
-        isLoading,
-        isError
-    } = useQuery(['years', company], {
-        queryFn: async () => await fetchYears(company),
-    })
-
-    useEffect(() => {
-        if (!isLoading && !isError) {
-            setSelectedYear(years[0])
-        }
-    }, [isLoading, isError, setSelectedYear, years])
+    const {selectedCompany} = useContext(KpisContext)
 
     const dashMarkup = (
         <div className="space-y-4">
@@ -78,13 +56,10 @@ export default function Dashboard({company}: InferGetServerSidePropsType<typeof 
         <main className="max-w-6xl mx-auto pt-16 sm:pt-8 px-8">
             <div className="block sm:flex sm:justify-between">
                 <div className="flex flex-col">
-                    <Title>Olá, {company}!</Title>
+                    <Title>Olá, {selectedCompany?.company_name}!</Title>
                     <Text>Aqui o especialista és sempre tu!</Text>
                 </div>
-                <YearSelector company={company}
-                              years={years}
-                              loading={isLoading}
-                              disabled={isError}/>
+                <YearSelector/>
             </div>
             <TabList
                 value={router.route.replace('/', '')}
@@ -103,20 +78,4 @@ export default function Dashboard({company}: InferGetServerSidePropsType<typeof 
             </div>
         </main>
     );
-}
-
-export const getServerSideProps: GetServerSideProps<{ company: string }> = async ({query}) => {
-    const {company} = query
-
-    const queryClient = new QueryClient()
-    await queryClient.prefetchQuery(
-        ['years', company],
-        async () => await fetchYears(String(company)))
-
-    return {
-        props: {
-            dehydratedState: dehydrate(queryClient),
-            company: String(company)
-        },
-    }
 }

@@ -1,13 +1,18 @@
-import {createContext, Dispatch, PropsWithChildren, SetStateAction, useMemo, useState} from "react";
-import {FiscalYear} from "@sio/postgres";
+import {createContext, Dispatch, PropsWithChildren, SetStateAction, useEffect, useMemo, useState} from "react";
+import {CompanyReturnType} from "@sio/pages/api/companies";
 
 interface KpisContextValue {
-    selectedYear: FiscalYear | undefined;
-    setSelectedYear: Dispatch<SetStateAction<FiscalYear | undefined>>;
+    selectedCompany: CompanyReturnType | undefined
+    setSelectedCompany: Dispatch<SetStateAction<CompanyReturnType | undefined>>
+    selectedYear: string
+    setSelectedYear: Dispatch<SetStateAction<string>>
 }
 
 const defaultContextValues: KpisContextValue = {
-    selectedYear: undefined,
+    selectedCompany: undefined,
+    setSelectedCompany: () => {
+    },
+    selectedYear: '',
     setSelectedYear: () => {
     },
 }
@@ -15,12 +20,24 @@ const defaultContextValues: KpisContextValue = {
 export const KpisContext = createContext<KpisContextValue>(defaultContextValues);
 
 const KpisProvider = ({children}: PropsWithChildren) => {
-    const [selectedYear, setSelectedYear] = useState<FiscalYear | undefined>(undefined);
+    const [selectedCompany, setSelectedCompany] = useState<CompanyReturnType>()
+    const [selectedYear, setSelectedYear] = useState('')
+
+    // TODO Just dont reload the page yet
+    useEffect(() => {
+        localStorage.setItem('selectedCompany', JSON.stringify(selectedCompany));
+    }, [selectedCompany]);
+
+    useEffect(() => {
+        localStorage.setItem('selectedYear', selectedYear);
+    }, [selectedYear]);
 
     const inMemory = useMemo(() => ({
+        selectedCompany,
+        setSelectedCompany,
         selectedYear,
         setSelectedYear
-    }), [selectedYear])
+    }), [selectedCompany, selectedYear])
 
     return (
         <KpisContext.Provider value={inMemory}>
