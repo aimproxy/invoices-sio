@@ -30,7 +30,7 @@ export default function CumulativeRevenueTrend() {
             <Title>Cumulative Revenue Trend</Title>
             <Text>Whether the revenue is increasing, decreasing, or remaining stable</Text>
             <LineChart
-                className="mt-8 h-80"
+                className="mt-8"
                 data={data}
                 index="Date"
                 categories={["Customer Churn"]}

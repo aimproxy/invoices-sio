@@ -1,5 +1,6 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import postgres from "@sio/postgres";
+import {sql} from "kysely"
 
 export default async function handler(
     req: NextApiRequest,
@@ -7,7 +8,7 @@ export default async function handler(
 ) {
     const {company_id, year} = req.query
     const {count} = postgres.fn
-    // Calculate Net and Gross Sales
+
     try {
         const invoices = await postgres.selectFrom('invoice')
             .select(['tax_payable', 'net_total', 'gross_total'])
@@ -16,7 +17,7 @@ export default async function handler(
             .execute();
 
         const fiscalYear = await postgres.selectFrom('fiscal_year')
-            .select(['number_of_entries', 'fiscal_year_id'])
+            .select(['number_of_entries'])
             .where('company_id', '=', Number(company_id))
             .where('fiscal_year', '=', Number(year))
             .executeTakeFirstOrThrow()
@@ -27,18 +28,28 @@ export default async function handler(
             .groupBy(['saft_customer_id'])
             .execute()
 
+        const mostProfitableProductsQuery = await sql<{ product_code: number, amount_spend: number }[]>`
+            SELECT product_code, MAX(quantity * unit_price) AS amount_spent
+            FROM invoice_line
+            WHERE fiscal_year = ${Number(year)}
+            GROUP BY product_code
+            ORDER BY amount_spent DESC
+            LIMIT 5`.execute(postgres)
+
+        const mostProfitableProducts = mostProfitableProductsQuery.rows.map(p => ({
+            ...p,
+            company_id: company_id,
+            fiscal_year: year
+        }))
+
         const customerFiscalYear = invoicesByCustomer.map((c) => ({
             ...c,
-            fiscal_year_id: fiscalYear.fiscal_year_id
+            fiscal_year: year
         }))
 
         const net = invoices.reduce((sum, current) => sum + Number(current.net_total), 0);
         const gross = invoices.reduce((sum, current) => sum + Number(current.gross_total), 0);
         const aov = net / fiscalYear.number_of_entries
-
-        console.log(net)
-        console.log(gross)
-        console.log(company_id)
 
         await Promise.all([
             postgres.updateTable('fiscal_year')
@@ -53,6 +64,18 @@ export default async function handler(
 
             postgres.insertInto('customer_fiscal_year')
                 .values(customerFiscalYear)
+                .executeTakeFirstOrThrow(),
+
+            postgres.insertInto('product_fiscal_year')
+                .values(mostProfitableProducts)
+                .onConflict(oc => oc
+                    .columns(['product_code', 'fiscal_year', 'company_id'])
+                    .doUpdateSet(eb => ({
+                        product_code: eb.ref('excluded.product_code'),
+                        fiscal_year: eb.ref('excluded.fiscal_year'),
+                        company_id: eb.ref('excluded.company_id')
+                    }))
+                )
                 .executeTakeFirstOrThrow()
         ])
     } catch (e) {

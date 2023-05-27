@@ -14,8 +14,7 @@ export default async function handler(
     const salesInvoices = doc.getElementsByTagName('SalesInvoices')[0]
     const header = doc.getElementsByTagName('Header')[0];
     const companyMetadata = getElementsByTagNames(header, [
-        'CompanyID', 'TaxRegistrationNumber',
-        'CompanyName', 'CurrencyCode'
+        'CompanyID', 'CompanyName', 'CurrencyCode'
     ])
 
     const fiscalYearMetadata: { [key: string]: any } = {
@@ -33,8 +32,8 @@ export default async function handler(
             .insertInto('company')
             .values(companyMetadata)
             .onConflict(oc =>
-                oc.column('tax_registration_number').doUpdateSet({
-                    tax_registration_number: companyMetadata.tax_registration_number
+                oc.column('company_id').doUpdateSet({
+                    company_id: companyMetadata.company_id
                 })
             )
             .executeTakeFirstOrThrow()
@@ -132,14 +131,14 @@ export default async function handler(
     for (let i = 0; i < invoiceLinesElements.length; i++) {
         const {hash, line} = invoiceLinesElements[i]
         const invoiceLine = getElementsByTagNames(line, [
-            'ProductCode', 'Quantity', 'UnitOfMeasure',
-            'UnitPrice', 'TaxPointDate', 'Description',
+            'ProductCode', 'Quantity', 'UnitPrice', 'TaxPointDate',
         ])
 
         invoiceLines.push({
             invoice_hash: hash,
-            credit_amount: line.getElementsByTagName('CreditAmount')[0]?.textContent ?? null,
-            debit_amount: line.getElementsByTagName('DebitAmount')[0]?.textContent ?? null,
+            fiscal_year: fiscalYearMetadata.fiscal_year,
+            credit_amount: line.getElementsByTagName('CreditAmount')[0]?.textContent ?? 0,
+            debit_amount: line.getElementsByTagName('DebitAmount')[0]?.textContent ?? 0,
             ...invoiceLine
         })
     }

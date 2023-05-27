@@ -44,17 +44,23 @@ export interface CustomerTable extends Record<string, any> {
 export interface CustomerFiscalYearTable extends Record<string, any> {
     customer_fiscal_year_id: Generated<number>
     customer_tax_id: number
-    fiscal_year_id: number
-    invoices_count: number,
+    fiscal_year: number
+    invoices_count: number
 }
 
 export interface ProductTable extends Record<string, any> {
-    product_id: Generated<number>;
-    product_type: string;
-    product_code: string;
-    product_description: string;
-    product_number_code: string;
-    company_id: number;
+    product_code: number
+    product_type: string
+    product_description: string
+    product_number_code: string
+    company_id: number
+}
+
+export interface ProductFiscalYearTable extends Record<string, any> {
+    product_code: number
+    fiscal_year: number
+    company_id: number
+    amount_spent: number
 }
 
 export interface InvoiceTable extends Record<string, any> {
@@ -75,19 +81,18 @@ export interface InvoiceTable extends Record<string, any> {
     company_id: number
 }
 
-export interface InvoiceLine extends Record<string, any> {
+export interface InvoiceLineTable extends Record<string, any> {
     line_id: Generated<number>
+    fiscal_year: number
     invoice_hash: string
     product_code: number
     quantity: number
     unit_of_measure: string
     unit_price: number
     tax_point_date: Date
-    description: string
-    credit_amount?: number
-    debit_amount?: number
+    credit_amount: number
+    debit_amount: number
 }
-
 
 interface DatabaseSchema {
     company: CompanyTable;
@@ -95,8 +100,9 @@ interface DatabaseSchema {
     customer: CustomerTable;
     customer_fiscal_year: CustomerFiscalYearTable;
     product: ProductTable;
+    product_fiscal_year: ProductFiscalYearTable;
     invoice: InvoiceTable;
-    invoice_line: InvoiceLine;
+    invoice_line: InvoiceLineTable;
 }
 
 

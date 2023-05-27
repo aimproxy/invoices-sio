@@ -1,7 +1,6 @@
-import {useCallback, useContext} from "react";
+import {useContext} from "react";
 import {KpisContext} from "@sio/components/KpisProvider";
 import {Button, Dropdown, DropdownItem} from "@tremor/react";
-import {YearsReturnType} from "@sio/query";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {VariableIcon} from "@heroicons/react/24/solid";
 
@@ -14,31 +13,16 @@ const doMath = async ({company, year}: DoMathProps) => {
     return await fetch(`/api/saft/kpis?company_id=${company}&year=${year}`)
 }
 
-interface YearSelectorProps {
-    company: string
-    years?: YearsReturnType
-    loading: boolean
-    disabled: boolean
-}
-
-const YearSelector = ({company, years, loading, disabled}: YearSelectorProps) => {
+const YearSelector = () => {
     const queryClient = useQueryClient();
 
-    const {selectedYear, setSelectedYear} = useContext(KpisContext)
+    const {selectedCompany, selectedYear, setSelectedYear} = useContext(KpisContext)
 
-    const setSelectedYearCallback = useCallback((year: string) => {
-        const filtered = years?.filter(y => y.fiscal_year == Number(year))[0]
-
-        setSelectedYear(filtered)
-    }, [years, setSelectedYear])
-
-    const showMockButton = loading || disabled
-
-    const dropdownItems = years?.map((year, k) => (
-        <DropdownItem value={String(year.fiscal_year)} text={String(year.fiscal_year)} key={k}/>
+    const dropdownItems = selectedCompany?.fiscal_years.map((year, k) => (
+        <DropdownItem value={String(year)} text={String(year)} key={k}/>
     ))
 
-    const {mutate, isLoading} = useMutation(doMath, {
+    const {mutate} = useMutation(doMath, {
         onSuccess: data => {
             console.log(data);
         },
@@ -46,31 +30,25 @@ const YearSelector = ({company, years, loading, disabled}: YearSelectorProps) =>
             console.error("there was an error")
         },
         onSettled: () => {
-            queryClient.invalidateQueries({queryKey: ['kpis']}).then(console.log)
-            queryClient.invalidateQueries({queryKey: ['years', company]}).then(console.log)
+            queryClient.invalidateQueries({queryKey: ['years', selectedCompany]}).then(console.log)
         }
     });
 
     return (
         <div className="flex flex-row space-x-4 items-center mt-4 sm:mt-0">
-            {showMockButton ? (
-                <Button loading={loading} disabled={disabled} size="sm" variant="secondary"/>
-            ) : (
-                <Dropdown
-                    value={String(selectedYear?.fiscal_year)}
-                    onValueChange={setSelectedYearCallback}
-                    placeholder="Select Year">
-                    {dropdownItems ?? []}
-                </Dropdown>
-            )}
+            <Dropdown
+                value={String(selectedYear)}
+                onValueChange={setSelectedYear}
+                placeholder="Select Year">
+                {dropdownItems ?? []}
+            </Dropdown>
             <Button size="sm"
-                    color="emerald"
-                    loading={isLoading}
+                    color="teal"
                     icon={VariableIcon}
                     disabled={selectedYear == undefined}
                     onClick={() => mutate({
-                        company: String(company),
-                        year: String(selectedYear?.fiscal_year)
+                        company: String(selectedCompany?.company_id),
+                        year: String(selectedYear)
                     })}>
                 Run Calculations
             </Button>

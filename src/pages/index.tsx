@@ -1,32 +1,25 @@
 import {Card, Grid, Subtitle, Tab, TabList, Text, Title} from "@tremor/react";
-import {GetServerSideProps} from "next";
-import {dehydrate, QueryClient, useQuery} from "@tanstack/react-query";
-import {CompanyReturnType} from "@sio/query";
 import TextSkeleton from "@sio/components/skeletons/TextSkeleton";
-import {useRouter} from "next/router";
-import {MouseEvent, useState} from "react"
+import {useContext, useState} from "react"
 import SAFTDropzone from "@sio/components/SAFTDropzone";
-
-const fetchCompanies = async (): Promise<CompanyReturnType> => {
-    const res = await fetch('/api/companies')
-    return await res.json();
-}
+import useCompanies from "@sio/hooks/useCompanies";
+import Link from "next/link";
+import {KpisContext} from "@sio/components/KpisProvider";
+import {Company} from "@sio/pages/api/companies";
 
 export default function Home() {
-    const router = useRouter();
+    const {setSelectedCompany, setSelectedYear} = useContext(KpisContext);
     const [selectedView, setSelectedView] = useState("1");
 
-    const {data, isLoading, isError} = useQuery({
-        queryKey: ['companies'],
-        queryFn: fetchCompanies,
-    })
+    // TODO Invalidar esta query quando se da upload do saf-t
+    const {data, isLoading, isError} = useCompanies();
 
-    const handleClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
-        event.preventDefault();
-        router.push(href).then(console.info);
+    const handleCompanySelection = (company: Company) => {
+        setSelectedCompany(company)
+        setSelectedYear(String(company.fiscal_years[0]))
     };
 
-    const generateFakeCards = Array.from(Array(3).keys()).map((card, k) => (
+    const generateFakeCards = Array.from(Array(4).keys()).map((card, k) => (
         <Card className="h-22" key={k}>
             <TextSkeleton/>
         </Card>
@@ -50,14 +43,14 @@ export default function Home() {
                         {(isLoading || isError) && generateFakeCards}
 
                         {data?.map((company, k) => (
-                            <a href={`/dashboard?company=${company.company_id}`}
-                               onClick={(event) => handleClick(event, `/dashboard?company=${company.company_id}`)}
-                               key={k}>
+                            <Link href='/dashboard'
+                                  onClick={() => handleCompanySelection(company)}
+                                  key={k}>
                                 <Card className="h-22">
                                     <Title>{company.company_name}</Title>
-                                    <Subtitle>{company.tax_registration_number}</Subtitle>
+                                    <Subtitle>{company.company_id}</Subtitle>
                                 </Card>
-                            </a>
+                            </Link>
                         ))}
 
                         {(!isLoading || !isError) && generateFakeCards}
@@ -67,16 +60,4 @@ export default function Home() {
 
         </main>
     );
-}
-
-export const getServerSideProps: GetServerSideProps = async () => {
-    const queryClient = new QueryClient()
-
-    await queryClient.prefetchQuery(['companies'], fetchCompanies)
-
-    return {
-        props: {
-            dehydratedState: dehydrate(queryClient),
-        },
-    }
 }
