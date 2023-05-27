@@ -1,30 +1,20 @@
-import {GetServerSideProps, InferGetServerSidePropsType} from "next";
 import {createColumnHelper} from "@tanstack/table-core";
 import Table from "@sio/components/Table";
-import {dehydrate, QueryClient, useQuery} from "@tanstack/react-query";
-import {CustomersReturnType} from "@sio/query";
-import {Customer} from "@sio/postgres";
 import ListSkeleton from "@sio/components/skeletons/ListSkeleton";
 import {Tab, TabList, Text, Title} from "@tremor/react";
 import {useRouter} from "next/router";
+import useCustomers from "@sio/hooks/useCustomers";
+import {useContext} from "react";
+import {KpisContext} from "@sio/components/KpisProvider";
+import {Customer} from "@sio/pages/api/customers";
 
-const fetchCustomers = async (company: string): Promise<CustomersReturnType> => {
-    const res = await fetch(`/api/customers?company=${company}`)
-    return await res.json();
-}
-
-export default function Customers({company}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Customers() {
     const router = useRouter()
 
-    const {
-        data: customers,
-        isLoading: isLoadingCustomers,
-        isError: isErrorCustomers
-    } = useQuery({
-            queryKey: ['customers', company],
-            queryFn: async () => await fetchCustomers(company)
-        }
-    )
+    const {selectedCompany} = useContext(KpisContext)
+    const {data, isLoading, isError} = useCustomers({
+        company: String(selectedCompany?.company_id)
+    })
 
     const columnHelper = createColumnHelper<Customer>()
 
@@ -51,13 +41,13 @@ export default function Customers({company}: InferGetServerSidePropsType<typeof 
         }),
     ]
 
-    const showMockTable = isLoadingCustomers || isErrorCustomers
+    const showMockTable = isLoading || isError
 
     return (
         <main className="max-w-6xl mx-auto pt-16 sm:pt-8 px-8">
             <div className="block sm:flex sm:justify-between">
                 <div className="flex flex-col">
-                    <Title>Olá, {company}!</Title>
+                    <Title>Olá, {selectedCompany?.company_id}!</Title>
                     <Text>Aqui o especialista és sempre tu!</Text>
                 </div>
             </div>
@@ -77,25 +67,9 @@ export default function Customers({company}: InferGetServerSidePropsType<typeof 
                 {showMockTable ? (
                     <ListSkeleton/>
                 ) : (
-                    <Table columns={customerColumns} data={customers ?? []}/>
+                    <Table columns={customerColumns} data={data ?? []}/>
                 )}
             </div>
         </main>
     )
-}
-
-export const getServerSideProps: GetServerSideProps<{ company: string }> = async ({query}) => {
-    const {company} = query
-
-    const queryClient = new QueryClient()
-    await queryClient.prefetchQuery(
-        ['customers', company],
-        async () => await fetchCustomers(String(company)))
-
-    return {
-        props: {
-            dehydratedState: dehydrate(queryClient),
-            company: String(company)
-        },
-    }
 }

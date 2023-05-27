@@ -1,9 +1,9 @@
 import {useQuery} from "@tanstack/react-query";
 import {useMemo} from "react";
-import {FiscalYearReturnType} from "@sio/pages/api/year";
+import {Year} from "@sio/pages/api/year";
 
 const useFiscalYear = ({company, year}: { company: string, year: string }) => {
-    const fetchFiscalYear = async (company: string, year: string): Promise<FiscalYearReturnType> => {
+    const fetchFiscalYear = async (company: string, year: string): Promise<Year> => {
         const res = await fetch(`/api/year?company=${company}&year=${year}`)
         return await res.json();
     }

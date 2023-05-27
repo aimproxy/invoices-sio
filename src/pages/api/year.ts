@@ -1,7 +1,7 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import postgres from "@sio/postgres";
 
-export type FiscalYearReturnType = {
+export type Year = {
     fiscal_year: number
     company_id: number,
     aov: number,
@@ -11,7 +11,7 @@ export type FiscalYearReturnType = {
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse
+    res: NextApiResponse<Year | undefined>
 ) {
     const {company, year} = req.query
 

@@ -1,9 +1,9 @@
 import {useQuery} from "@tanstack/react-query";
 import {useMemo} from "react";
-import {CompaniesReturnType} from "@sio/pages/api/companies";
+import {Company} from "@sio/pages/api/companies";
 
 const useCompanies = () => {
-    const fetchCompanies = async (): Promise<CompaniesReturnType> => {
+    const fetchCompanies = async (): Promise<Company[]> => {
         const res = await fetch('/api/companies')
         return await res.json();
     }

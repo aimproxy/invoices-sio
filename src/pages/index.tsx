@@ -5,7 +5,7 @@ import SAFTDropzone from "@sio/components/SAFTDropzone";
 import useCompanies from "@sio/hooks/useCompanies";
 import Link from "next/link";
 import {KpisContext} from "@sio/components/KpisProvider";
-import {CompanyReturnType} from "@sio/pages/api/companies";
+import {Company} from "@sio/pages/api/companies";
 
 export default function Home() {
     const {setSelectedCompany, setSelectedYear} = useContext(KpisContext);
@@ -14,7 +14,7 @@ export default function Home() {
     // TODO Invalidar esta query quando se da upload do saf-t
     const {data, isLoading, isError} = useCompanies();
 
-    const handleCompanySelection = (company: CompanyReturnType) => {
+    const handleCompanySelection = (company: Company) => {
         setSelectedCompany(company)
         setSelectedYear(String(company.fiscal_years[0]))
     };

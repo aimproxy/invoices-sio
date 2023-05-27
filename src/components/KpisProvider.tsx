@@ -1,9 +1,9 @@
 import {createContext, Dispatch, PropsWithChildren, SetStateAction, useEffect, useMemo, useState} from "react";
-import {CompanyReturnType} from "@sio/pages/api/companies";
+import {Company} from "@sio/pages/api/companies";
 
 interface KpisContextValue {
-    selectedCompany: CompanyReturnType | undefined
-    setSelectedCompany: Dispatch<SetStateAction<CompanyReturnType | undefined>>
+    selectedCompany: Company | undefined
+    setSelectedCompany: Dispatch<SetStateAction<Company | undefined>>
     selectedYear: string
     setSelectedYear: Dispatch<SetStateAction<string>>
 }
@@ -20,7 +20,7 @@ const defaultContextValues: KpisContextValue = {
 export const KpisContext = createContext<KpisContextValue>(defaultContextValues);
 
 const KpisProvider = ({children}: PropsWithChildren) => {
-    const [selectedCompany, setSelectedCompany] = useState<CompanyReturnType>()
+    const [selectedCompany, setSelectedCompany] = useState<Company>()
     const [selectedYear, setSelectedYear] = useState('')
 
     // TODO Just dont reload the page yet

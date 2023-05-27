@@ -1,12 +1,11 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import postgres from "@sio/postgres";
 
-export type CompanyReturnType = { company_id: number, company_name: string, fiscal_years: number[] }
-export type CompaniesReturnType = CompanyReturnType[]
+export type Company = { company_id: number, company_name: string, fiscal_years: number[] }
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<CompaniesReturnType | undefined>
+    res: NextApiResponse<Company[] | undefined>
 ) {
     try {
         const companies = await postgres.selectFrom('company')
@@ -29,7 +28,7 @@ export default async function handler(
             }
 
             return result;
-        }, [] as CompaniesReturnType);
+        }, [] as Company[]);
 
         res.status(200).json(metadata)
     } catch (e) {

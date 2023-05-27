@@ -1,9 +1,9 @@
-import {FiscalYearReturnType} from "@sio/pages/api/year";
+import {Year} from "@sio/pages/api/year";
 import {useQuery} from "@tanstack/react-query";
 import {useMemo} from "react";
 
 const useTopProducts = ({company, year}: { company: string, year: string }) => {
-    const fetchTopProducts = async (company: string, year: string): Promise<FiscalYearReturnType> => {
+    const fetchTopProducts = async (company: string, year: string): Promise<Year> => {
         const res = await fetch(`/api/top_products?company=${company}&year=${year}`)
         return await res.json();
     }
