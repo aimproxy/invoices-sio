@@ -19,6 +19,7 @@ import {dehydrate, QueryClient, useQuery} from "@tanstack/react-query";
 import {YearsReturnType} from "@sio/query";
 import {KpisContext} from "@sio/components/KpisProvider";
 import {useContext, useEffect} from "react";
+import Customers from "@sio/components/kpis/Customers";
 
 const fetchYears = async (company: string): Promise<YearsReturnType> => {
     const res = await fetch(`/api/years?company=${company}`)
@@ -50,7 +51,7 @@ export default function Dashboard({company}: InferGetServerSidePropsType<typeof 
                 <CustomerLifetimeValue/>
                 <RepeatPurchaseRate/>
                 <div className={"col-span-2"}>
-                    <Card/>
+                    <Customers/>
                 </div>
             </Grid>
             <Grid numCols={1} numColsLg={3} className="gap-6">
