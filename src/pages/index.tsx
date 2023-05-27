@@ -19,7 +19,7 @@ export default function Home() {
         setSelectedYear(String(company.fiscal_years[0]))
     };
 
-    const generateFakeCards = Array.from(Array(3).keys()).map((card, k) => (
+    const generateFakeCards = Array.from(Array(4).keys()).map((card, k) => (
         <Card className="h-22" key={k}>
             <TextSkeleton/>
         </Card>

@@ -7,7 +7,7 @@ export default async function handler(
     res: NextApiResponse<{ ok: boolean, e?: any }>
 ) {
     const {company_id, year} = req.query
-    const {count, max} = postgres.fn
+    const {count} = postgres.fn
 
     try {
         const invoices = await postgres.selectFrom('invoice')
@@ -17,7 +17,7 @@ export default async function handler(
             .execute();
 
         const fiscalYear = await postgres.selectFrom('fiscal_year')
-            .select(['number_of_entries', 'fiscal_year_id'])
+            .select(['number_of_entries'])
             .where('company_id', '=', Number(company_id))
             .where('fiscal_year', '=', Number(year))
             .executeTakeFirstOrThrow()
@@ -38,12 +38,13 @@ export default async function handler(
 
         const mostProfitableProducts = mostProfitableProductsQuery.rows.map(p => ({
             ...p,
-            fiscal_year_id: fiscalYear.fiscal_year_id
+            company_id: company_id,
+            fiscal_year: year
         }))
 
         const customerFiscalYear = invoicesByCustomer.map((c) => ({
             ...c,
-            fiscal_year_id: fiscalYear.fiscal_year_id
+            fiscal_year: year
         }))
 
         const net = invoices.reduce((sum, current) => sum + Number(current.net_total), 0);
@@ -67,6 +68,14 @@ export default async function handler(
 
             postgres.insertInto('product_fiscal_year')
                 .values(mostProfitableProducts)
+                .onConflict(oc => oc
+                    .columns(['product_code', 'fiscal_year', 'company_id'])
+                    .doUpdateSet(eb => ({
+                        product_code: eb.ref('excluded.product_code'),
+                        fiscal_year: eb.ref('excluded.fiscal_year'),
+                        company_id: eb.ref('excluded.company_id')
+                    }))
+                )
                 .executeTakeFirstOrThrow()
         ])
     } catch (e) {

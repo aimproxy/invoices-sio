@@ -44,7 +44,7 @@ export interface CustomerTable extends Record<string, any> {
 export interface CustomerFiscalYearTable extends Record<string, any> {
     customer_fiscal_year_id: Generated<number>
     customer_tax_id: number
-    fiscal_year_id: number
+    fiscal_year: number
     invoices_count: number
 }
 
@@ -58,7 +58,8 @@ export interface ProductTable extends Record<string, any> {
 
 export interface ProductFiscalYearTable extends Record<string, any> {
     product_code: number
-    fiscal_year_id: number
+    fiscal_year: number
+    company_id: number
     amount_spent: number
 }
 

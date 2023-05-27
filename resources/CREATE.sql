@@ -1,8 +1,8 @@
 CREATE TABLE company
 (
-    company_id              BIGSERIAL PRIMARY KEY,
-    company_name            VARCHAR(255),
-    currency_code           VARCHAR(3)
+    company_id    BIGSERIAL PRIMARY KEY,
+    company_name  VARCHAR(255),
+    currency_code VARCHAR(3)
 );
 
 CREATE TABLE fiscal_year
@@ -43,10 +43,10 @@ CREATE TABLE customer_fiscal_year
 (
     customer_fiscal_year_id BIGSERIAL PRIMARY KEY,
     saft_customer_id        BIGSERIAL,
-    fiscal_year_id          BIGSERIAL,
+    fiscal_year             BIGSERIAL,
     invoices_count          INT NOT NULL DEFAULT 0,
     FOREIGN KEY (saft_customer_id) REFERENCES customer (saft_customer_id),
-    FOREIGN KEY (fiscal_year_id) REFERENCES fiscal_year (fiscal_year_id)
+    FOREIGN KEY (fiscal_year) REFERENCES fiscal_year (fiscal_year)
 );
 
 CREATE TABLE product
@@ -61,11 +61,14 @@ CREATE TABLE product
 
 CREATE TABLE product_fiscal_year
 (
-    product_code   BIGSERIAL PRIMARY KEY,
-    fiscal_year_id BIGSERIAL,
-    amount_spent   DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    product_code BIGSERIAL,
+    fiscal_year  BIGSERIAL,
+    company_id   BIGSERIAL,
+    amount_spent DECIMAL(10, 2) NOT NULL DEFAULT 0,
     FOREIGN KEY (product_code) REFERENCES product (product_code),
-    FOREIGN KEY (fiscal_year_id) REFERENCES fiscal_year (fiscal_year_id)
+    FOREIGN KEY (fiscal_year) REFERENCES fiscal_year (fiscal_year),
+    FOREIGN KEY (company_id) REFERENCES company (company_id),
+    PRIMARY KEY (product_code, fiscal_year, company_id)
 );
 
 CREATE TABLE invoice
