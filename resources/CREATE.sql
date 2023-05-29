@@ -117,3 +117,14 @@ CREATE TABLE invoice_line
     product_code   BIGSERIAL,
     FOREIGN KEY (product_code) REFERENCES product (product_code)
 );
+
+CREATE TABLE sales_by_city
+(
+    company_id   BIGSERIAL,
+    fiscal_year  BIGSERIAL,
+    billing_city VARCHAR(255),
+    sales_count  INT DEFAULT 0,
+    FOREIGN KEY (company_id) REFERENCES company (company_id),
+    FOREIGN KEY (fiscal_year) REFERENCES fiscal_year (fiscal_year),
+    PRIMARY KEY (company_id, fiscal_year, billing_city)
+);
