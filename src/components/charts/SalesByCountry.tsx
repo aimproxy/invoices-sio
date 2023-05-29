@@ -28,7 +28,7 @@ export default function SalesByCountry() {
                         data={data ?? []}
                         category="sales_count"
                         index="billing_country"
-                        colors={["slate", "violet", "indigo", "rose", "cyan", "amber"]}
+                        colors={["emerald", "violet", "indigo", "yellow", "rose", "cyan", "amber"]}
                         className="mt-6"
                     />
                     <Legend

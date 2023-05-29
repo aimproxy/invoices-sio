@@ -31,7 +31,7 @@ export default function SalesByCity() {
                         data={data ?? []}
                         category="sales_count"
                         index="billing_city"
-                        colors={["slate", "violet", "indigo", "rose", "cyan", "amber"]}
+                        colors={["emerald", "violet", "indigo", "yellow", "rose", "cyan", "amber"]}
                         valueFormatter={valueFormatter}
                         className="mt-6"
                     />
