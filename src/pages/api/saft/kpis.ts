@@ -97,15 +97,10 @@ export default async function handler(
         const aov = net / fiscal_year.number_of_entries
         const rpr = (customerWithInvoices / totalCustomersCount) * 100
 
-        //Calculate CLV
-        const averageTransactionsPerMonth =
-            revenueByMonth.rows.reduce((sum, current) => sum + Number(current.invoices_count), 0)
-            / 12
+        const averageTransactionsPerMonth = revenueByMonth.rows.reduce((sum, current) =>
+            sum + Number(current.invoices_count), 0) / 12
 
         const clv = (averageTransactionsPerMonth * aov * averageMonthsActive.rows[0].average_months_active) / fiscal_year.customers_count
-
-        console.log(averageTransactionsPerMonth)
-
 
         await Promise.all([
             postgres.updateTable('fiscal_year')
