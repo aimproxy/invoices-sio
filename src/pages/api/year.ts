@@ -6,6 +6,7 @@ export type Year = {
     company_id: number
     aov: number
     rpr: number
+    clv: number
     net_sales: number
     gross_sales: number
     number_of_entries: number
@@ -26,6 +27,7 @@ export default async function handler(
                 'fiscal_year.net_sales',
                 'fiscal_year.gross_sales',
                 'fiscal_year.aov',
+                'fiscal_year.clv',
                 'fiscal_year.number_of_entries',
                 'fiscal_year.rpr'
             ])
