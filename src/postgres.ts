@@ -94,6 +94,14 @@ export interface InvoiceLineTable extends Record<string, any> {
     debit_amount: number
 }
 
+export interface RevenueByMonthTable extends Record<string, any> {
+    company_id: number
+    fiscal_year: number
+    month: number
+    invoices_count: number
+    total_net_amount: number
+}
+
 interface DatabaseSchema {
     company: CompanyTable;
     fiscal_year: FiscalYearTable;
@@ -103,6 +111,7 @@ interface DatabaseSchema {
     product_fiscal_year: ProductFiscalYearTable;
     invoice: InvoiceTable;
     invoice_line: InvoiceLineTable;
+    revenue_by_month: RevenueByMonthTable;
 }
 
 

@@ -7,49 +7,66 @@ export default async function handler(
     res: NextApiResponse<{ ok: boolean, e?: any }>
 ) {
     const {company_id, year} = req.query
-    const {count} = postgres.fn
+    const {count, sum} = postgres.fn
 
     try {
-        const invoices = await postgres.selectFrom('invoice')
-            .select(['tax_payable', 'net_total', 'gross_total'])
-            .where('company_id', '=', Number(company_id))
-            .where('fiscal_year', '=', Number(year))
-            .execute();
+        const [
+            invoices,
+            fiscal_year,
+            invoicesByCustomer,
+            revenueByMonth,
+            revenueByProducts
+        ] = await Promise.all([
+            postgres.selectFrom('invoice')
+                .select(['net_total', 'gross_total'])
+                .where('company_id', '=', Number(company_id))
+                .where('fiscal_year', '=', Number(year))
+                .execute(),
 
-        const fiscalYear = await postgres.selectFrom('fiscal_year')
-            .select(['number_of_entries'])
-            .where('company_id', '=', Number(company_id))
-            .where('fiscal_year', '=', Number(year))
-            .executeTakeFirstOrThrow()
+            postgres.selectFrom('fiscal_year')
+                .select(['number_of_entries'])
+                .where('company_id', '=', Number(company_id))
+                .where('fiscal_year', '=', Number(year))
+                .executeTakeFirstOrThrow(),
 
-        const invoicesByCustomer = await postgres.selectFrom("invoice")
-            .select([count('invoice_id').as('invoices_count'), 'saft_customer_id'])
-            .where("fiscal_year", '=', Number(year))
-            .groupBy(['saft_customer_id'])
-            .execute()
+            postgres.selectFrom("invoice")
+                .select([
+                    count('invoice_id').as('invoices_count'),
+                    'saft_customer_id',
+                    'fiscal_year'
+                ])
+                .where('fiscal_year', '=', Number(year))
+                .groupBy(['saft_customer_id', 'fiscal_year'])
+                .execute(),
 
-        const mostProfitableProductsQuery = await sql<{ product_code: number, amount_spend: number }[]>`
-            SELECT product_code, MAX(quantity * unit_price) AS amount_spent
-            FROM invoice_line
-            WHERE fiscal_year = ${Number(year)}
-            GROUP BY product_code
-            ORDER BY amount_spent DESC
-            LIMIT 5`.execute(postgres)
+            sql<{
+                invoices_count: number,
+                month: number,
+                total_net_amount: number,
+                fiscal_year: number,
+                company_id: number
+            }>`
+                SELECT COUNT(invoice_id)                AS invoices_count,
+                       EXTRACT(MONTH FROM invoice_date) AS month,
+                       SUM(net_total)                   AS net_total,
+                       SUM(gross_total)                 AS gross_total,
+                       fiscal_year,
+                       company_id
+                FROM invoice
+                WHERE fiscal_year = ${Number(year)}
+                GROUP BY month, fiscal_year, company_id`.execute(postgres),
 
-        const mostProfitableProducts = mostProfitableProductsQuery.rows.map(p => ({
-            ...p,
-            company_id: company_id,
-            fiscal_year: year
-        }))
-
-        const customerFiscalYear = invoicesByCustomer.map((c) => ({
-            ...c,
-            fiscal_year: year
-        }))
+            sql<{ product_code: number, amount_spend: number }[]>`
+                SELECT product_code, MAX(quantity * unit_price) AS amount_spent
+                FROM invoice_line
+                WHERE fiscal_year = ${Number(year)}
+                GROUP BY product_code
+                ORDER BY amount_spent DESC`.execute(postgres)
+        ])
 
         const net = invoices.reduce((sum, current) => sum + Number(current.net_total), 0);
         const gross = invoices.reduce((sum, current) => sum + Number(current.gross_total), 0);
-        const aov = net / fiscalYear.number_of_entries
+        const aov = net / fiscal_year.number_of_entries
 
         await Promise.all([
             postgres.updateTable('fiscal_year')
@@ -63,15 +80,31 @@ export default async function handler(
                 .executeTakeFirstOrThrow(),
 
             postgres.insertInto('customer_fiscal_year')
-                .values(customerFiscalYear)
+                .values(invoicesByCustomer)
                 .executeTakeFirstOrThrow(),
 
             postgres.insertInto('product_fiscal_year')
-                .values(mostProfitableProducts)
+                .values(revenueByProducts.rows.map(p => ({
+                    ...p,
+                    company_id: company_id,
+                    fiscal_year: year
+                })))
                 .onConflict(oc => oc
                     .columns(['product_code', 'fiscal_year', 'company_id'])
                     .doUpdateSet(eb => ({
                         product_code: eb.ref('excluded.product_code'),
+                        fiscal_year: eb.ref('excluded.fiscal_year'),
+                        company_id: eb.ref('excluded.company_id')
+                    }))
+                )
+                .executeTakeFirstOrThrow(),
+
+            postgres.insertInto('revenue_by_month')
+                .values(revenueByMonth.rows)
+                .onConflict(oc => oc
+                    .columns(['month', 'fiscal_year', 'company_id'])
+                    .doUpdateSet(eb => ({
+                        month: eb.ref('excluded.month'),
                         fiscal_year: eb.ref('excluded.fiscal_year'),
                         company_id: eb.ref('excluded.company_id')
                     }))

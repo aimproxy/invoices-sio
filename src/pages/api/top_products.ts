@@ -15,6 +15,8 @@ export default async function handler(
             .where('product_fiscal_year.fiscal_year', '=', Number(year))
             .where('product_fiscal_year.company_id', '=', Number(company))
             .innerJoin('product', 'product.product_code', 'product_fiscal_year.product_code')
+            .orderBy('product_fiscal_year.amount_spent', 'desc')
+            .limit(5)
             .execute()
 
         res.status(200).json(products)

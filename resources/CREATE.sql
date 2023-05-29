@@ -71,6 +71,19 @@ CREATE TABLE product_fiscal_year
     PRIMARY KEY (product_code, fiscal_year, company_id)
 );
 
+CREATE TABLE revenue_by_month
+(
+    company_id     BIGSERIAL,
+    fiscal_year    BIGSERIAL,
+    month          INT,
+    invoices_count INT            NOT NULL DEFAULT 0,
+    net_total      DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    gross_total    DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    FOREIGN KEY (company_id) REFERENCES company (company_id),
+    FOREIGN KEY (fiscal_year) REFERENCES fiscal_year (fiscal_year),
+    PRIMARY KEY (month, fiscal_year, company_id)
+);
+
 CREATE TABLE invoice
 (
     invoice_id          BIGSERIAL PRIMARY KEY,
