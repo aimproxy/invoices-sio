@@ -16,7 +16,8 @@ export default async function handler(
             invoicesByCustomer,
             revenueByMonth,
             revenueByProducts,
-            salesByCity
+            salesByCity,
+            salesByCountry
         ] = await Promise.all([
             postgres.selectFrom('invoice')
                 .select(['net_total', 'gross_total'])
@@ -64,13 +65,22 @@ export default async function handler(
                 GROUP BY product_code
                 ORDER BY amount_spent DESC`.execute(postgres),
 
-            sql<{company_id: number, fiscal_year: number, billing_city: string, sales_count: number}[]>`
+            sql<{ company_id: number, fiscal_year: number, billing_city: string, sales_count: number }[]>`
                 SELECT count(i) as sales_count, customer.billing_city, i.fiscal_year, customer.company_id
                 FROM customer
                          INNER JOIN invoice i ON i.saft_customer_id = customer.saft_customer_id
-                WHERE i.company_id = 233020780
-                  AND fiscal_year = 2022
-                GROUP BY customer.billing_city, i.fiscal_year, customer.company_id`.execute(postgres)
+                WHERE i.company_id = ${Number(company_id)}
+                  AND fiscal_year = ${Number(year)}
+                GROUP BY customer.billing_city, i.fiscal_year, customer.company_id`.execute(postgres),
+
+            sql<{ company_id: number, fiscal_year: number, billing_country: string, sales_count: number }[]>`
+                SELECT count(i) as sales_count, customer.billing_country, i.fiscal_year, customer.company_id
+                FROM customer
+                         INNER JOIN invoice i ON i.saft_customer_id = customer.saft_customer_id
+                WHERE i.company_id = ${Number(company_id)}
+                  AND fiscal_year = ${Number(year)}
+                GROUP BY customer.billing_country, i.fiscal_year, customer.company_id`.execute(postgres),
+
         ])
 
         const net = invoices.reduce((sum, current) => sum + Number(current.net_total), 0);
@@ -123,11 +133,21 @@ export default async function handler(
             postgres.insertInto('sales_by_city')
                 .values(salesByCity.rows)
                 .onConflict(oc => oc
-                    .columns(['company_id', 'fiscal_year', 'billing_city'])
+                    .columns(['sales_by_city_id', 'company_id', 'fiscal_year'])
+                    .doUpdateSet(eb => ({
+                        company_id: eb.ref('excluded.company_id'),
+                        fiscal_year: eb.ref('excluded.fiscal_year')
+                    })))
+                .executeTakeFirstOrThrow(),
+
+            postgres.insertInto('sales_by_country')
+                .values(salesByCountry.rows)
+                .onConflict(oc => oc
+                    .columns(['company_id', 'fiscal_year', 'billing_country'])
                     .doUpdateSet(eb => ({
                         company_id: eb.ref('excluded.company_id'),
                         fiscal_year: eb.ref('excluded.fiscal_year'),
-                        billing_city: eb.ref('excluded.billing_city')
+                        billing_country: eb.ref('excluded.billing_country')
                     })))
                 .executeTakeFirstOrThrow()
         ])

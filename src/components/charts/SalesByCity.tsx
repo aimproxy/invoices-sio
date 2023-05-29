@@ -1,4 +1,4 @@
-import {Card, DeltaType, DonutChart, Legend, Title,} from "@tremor/react";
+import {Card, DonutChart, Legend, Title,} from "@tremor/react";
 import useSalesByCity from "@sio/hooks/useSalesByCity";
 import {useContext} from "react";
 import {KpisContext} from "@sio/components/KpisProvider";
@@ -23,7 +23,7 @@ export default function SalesByCity() {
     return (
         <Card>
             <Title>Sales by City</Title>
-            {(isLoading || isError) ? (
+            {(isLoading || isError || data?.length === 0) ? (
                 <ChartSkeleton/>
             ) : (
                 <>
