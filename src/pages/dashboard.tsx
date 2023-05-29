@@ -1,4 +1,4 @@
-import {Card, Grid, Metric, Text, Title} from "@tremor/react";
+import {Card, Grid, Metric, Text} from "@tremor/react";
 import {useRouter} from "next/router";
 
 import CustomerLifetimeValue from "@sio/components/kpis/CustomerLifetimeValue";
@@ -18,6 +18,7 @@ import {KpisContext} from "@sio/components/KpisProvider";
 import {useContext} from "react";
 import Orders from "@sio/components/kpis/Orders";
 import Tabs from "@sio/components/Tabs";
+import Welcome from "@sio/components/Welcome";
 
 export default function Dashboard() {
     const router = useRouter()
@@ -55,11 +56,8 @@ export default function Dashboard() {
 
     return (
         <main className="max-w-6xl mx-auto pt-16 sm:pt-8 px-8">
-            <div className="block sm:flex sm:justify-between">
-                <div className="flex flex-col">
-                    <Title>Olá, {selectedCompany?.company_name}!</Title>
-                    <Text>Aqui o especialista és sempre tu!</Text>
-                </div>
+            <div className="flex justify-between">
+                <Welcome/>
                 <YearSelector/>
             </div>
             <Tabs/>
