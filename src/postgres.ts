@@ -99,7 +99,8 @@ export interface RevenueByMonthTable extends Record<string, any> {
     fiscal_year: number
     month: number
     invoices_count: number
-    total_net_amount: number
+    net_total: number
+    gross_total: number
 }
 
 export interface SalesByCityTable extends Record<string, any> {
