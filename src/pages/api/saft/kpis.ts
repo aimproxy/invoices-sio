@@ -11,7 +11,6 @@ export default async function handler(
 
     try {
         const [
-            invoices,
             fiscal_year,
             invoicesByCustomer,
             revenueByMonth,
@@ -19,12 +18,6 @@ export default async function handler(
             salesByCity,
             salesByCountry
         ] = await Promise.all([
-
-            postgres.selectFrom('invoice')
-                .select(['net_total', 'gross_total'])
-                .where('company_id', '=', Number(company_id))
-                .where('fiscal_year', '=', Number(year))
-                .execute(),
 
             postgres.selectFrom('fiscal_year')
                 .select(['number_of_entries'])
@@ -46,7 +39,8 @@ export default async function handler(
             sql<{
                 invoices_count: number,
                 month: number,
-                total_net_amount: number,
+                net_total: number,
+                gross_total: number,
                 fiscal_year: number,
                 company_id: number
             }>`
@@ -88,10 +82,18 @@ export default async function handler(
         const totalCustomersCount = invoicesByCustomer.length
         const customerWithInvoices = invoicesByCustomer.filter(c => Number(c.invoices_count) > 1).length
 
-        const net = invoices.reduce((sum, current) => sum + Number(current.net_total), 0);
-        const gross = invoices.reduce((sum, current) => sum + Number(current.gross_total), 0);
+        const net = revenueByMonth.rows.reduce((sum, current) => sum + Number(current.net_total), 0);
+        const gross = revenueByMonth.rows.reduce((sum, current) => sum + Number(current.gross_total), 0);
         const aov = net / fiscal_year.number_of_entries
         const rpr = (customerWithInvoices / totalCustomersCount) * 100
+
+        //Calculate CLV
+        const averageTransactionsPerMonth =
+            revenueByMonth.rows.reduce((sum, current) => sum + Number(current.invoices_count), 0)
+            / revenueByMonth.rows.length
+
+        console.log(averageTransactionsPerMonth)
+
 
         await Promise.all([
             postgres.updateTable('fiscal_year')
