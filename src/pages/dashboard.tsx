@@ -16,6 +16,7 @@ import YearSelector from "@sio/components/selectors/YearSelector";
 
 import {KpisContext} from "@sio/components/KpisProvider";
 import {useContext} from "react";
+import Orders from "@sio/components/kpis/Orders";
 
 export default function Dashboard() {
     const router = useRouter()
@@ -24,9 +25,7 @@ export default function Dashboard() {
     const dashMarkup = (
         <div className="space-y-4">
             <Grid numCols={1} numColsLg={4} className="gap-6">
-                <Card>
-                    <Title>Orders</Title>
-                </Card>
+                <Orders/>
                 <AverageOrderValue/>
                 <CustomerLifetimeValue/>
                 <RepeatPurchaseRate/>

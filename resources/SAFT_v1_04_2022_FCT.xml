@@ -32,13 +32,13 @@
             <CompanyName>Joao Matias</CompanyName>
             <BillingAddress>
                 <AddressDetail>Desconhecido</AddressDetail>
-                <City>Felgueiras - MADAIL</City>
+                <City>Felgueiras</City>
                 <PostalCode>3720-114</PostalCode>
                 <Country>PT</Country>
             </BillingAddress>
             <ShipToAddress>
                 <AddressDetail>Desconhecido</AddressDetail>
-                <City>Felgueiras - MADAIL</City>
+                <City>Felgueiras</City>
                 <PostalCode>3720-114</PostalCode>
                 <Country>PT</Country>
             </ShipToAddress>
@@ -184,13 +184,13 @@
             <CompanyName>Necas Ferreira</CompanyName>
             <BillingAddress>
                 <AddressDetail>Desconhecido</AddressDetail>
-                <City>Várzeas de Quarteira - ALBUFEIRA</City>
+                <City>Albufeira</City>
                 <PostalCode>8200-379</PostalCode>
                 <Country>PT</Country>
             </BillingAddress>
             <ShipToAddress>
                 <AddressDetail>Desconhecido</AddressDetail>
-                <City>Várzeas de Quarteira - ALBUFEIRA</City>
+                <City>Albufeira</City>
                 <PostalCode>8200-379</PostalCode>
                 <Country>PT</Country>
             </ShipToAddress>

@@ -3,10 +3,11 @@ import postgres from "@sio/postgres";
 
 export type Year = {
     fiscal_year: number
-    company_id: number,
-    aov: number,
-    net_sales: number,
+    company_id: number
+    aov: number
+    net_sales: number
     gross_sales: number
+    number_of_entries: number
 }
 
 export default async function handler(
@@ -23,7 +24,8 @@ export default async function handler(
                 'fiscal_year.company_id',
                 'fiscal_year.net_sales',
                 'fiscal_year.gross_sales',
-                'fiscal_year.aov'
+                'fiscal_year.aov',
+                'fiscal_year.number_of_entries'
             ])
             .where('fiscal_year.company_id', '=', Number(company))
             .where('fiscal_year.fiscal_year', '=', Number(year))
