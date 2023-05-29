@@ -1,12 +1,13 @@
 import {createColumnHelper} from "@tanstack/table-core";
 import Table from "@sio/components/Table";
 import ListSkeleton from "@sio/components/skeletons/ListSkeleton";
-import {Tab, TabList, Text, Title} from "@tremor/react";
+import {Text, Title} from "@tremor/react";
 import {useRouter} from "next/router";
 import useCustomers from "@sio/hooks/useCustomers";
 import {useContext} from "react";
 import {KpisContext} from "@sio/components/KpisProvider";
 import {Customer} from "@sio/pages/api/customers";
+import Tabs from "@sio/components/Tabs";
 
 export default function Customers() {
     const router = useRouter()
@@ -51,17 +52,7 @@ export default function Customers() {
                     <Text>Aqui o especialista és sempre tu!</Text>
                 </div>
             </div>
-            <TabList
-                value={router.route.replace('/', '')}
-                onValueChange={(value) => router.push({
-                    pathname: value,
-                    query: router.query,
-                })}
-                className="mt-6"
-            >
-                <Tab value="dashboard" text="Dashboard"/>
-                <Tab value="customers" text="Customers"/>
-            </TabList>
+            <Tabs/>
 
             <div className="mt-6 mb-8 gap-6">
                 {showMockTable ? (

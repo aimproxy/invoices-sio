@@ -1,4 +1,4 @@
-import {Card, Grid, Metric, Tab, TabList, Text, Title} from "@tremor/react";
+import {Card, Grid, Metric, Text, Title} from "@tremor/react";
 import {useRouter} from "next/router";
 
 import CustomerLifetimeValue from "@sio/components/kpis/CustomerLifetimeValue";
@@ -17,6 +17,7 @@ import YearSelector from "@sio/components/selectors/YearSelector";
 import {KpisContext} from "@sio/components/KpisProvider";
 import {useContext} from "react";
 import Orders from "@sio/components/kpis/Orders";
+import Tabs from "@sio/components/Tabs";
 
 export default function Dashboard() {
     const router = useRouter()
@@ -61,17 +62,7 @@ export default function Dashboard() {
                 </div>
                 <YearSelector/>
             </div>
-            <TabList
-                value={router.route.replace('/', '')}
-                onValueChange={(value) => router.push({
-                    pathname: value,
-                    query: router.query,
-                })}
-                className="mt-6"
-            >
-                <Tab value="dashboard" text="Dashboard"/>
-                <Tab value="customers" text="Customers"/>
-            </TabList>
+            <Tabs/>
 
             <div className="mt-6 mb-8 gap-6">
                 {dashMarkup}

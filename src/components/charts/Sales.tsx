@@ -3,7 +3,7 @@ import {useContext} from "react";
 import TextSkeleton from "@sio/components/skeletons/TextSkeleton";
 import {KpisContext} from "@sio/components/KpisProvider";
 import useFiscalYear from "@sio/hooks/useFiscalYear";
-import useTopProducts from "@sio/hooks/useTopProducts";
+import useProducts from "@sio/hooks/useProducts";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
 
 const valueFormatter = (number: number) => `${Intl.NumberFormat("us").format(number).toString()} €`;
@@ -23,12 +23,15 @@ export default function Sales() {
         products,
         isLoading: isLoadingProducts,
         isError: isErrorProducts
-    } = useTopProducts({
+    } = useProducts({
         company: String(selectedCompany?.company_id),
         year: selectedYear
     })
 
-    console.log(products)
+    const topProducts = products?.slice(0, 5).map(product => ({
+        name: product.product_description.slice(0, 30),
+        value: Number(product.amount_spent)
+    }))
 
     return (
         <Card>
@@ -51,7 +54,7 @@ export default function Sales() {
             ) : (
                 <>
                     <DonutChart
-                        data={products ?? []}
+                        data={topProducts ?? []}
                         category="value"
                         index="name"
                         colors={["emerald", "violet", "indigo", "yellow", "rose", "cyan", "amber"]}
