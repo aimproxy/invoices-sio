@@ -18,6 +18,7 @@ CREATE TABLE fiscal_year
     net_sales         DECIMAL(10, 2) NOT NULL DEFAULT 0,
     gross_sales       DECIMAL(10, 2) NOT NULL DEFAULT 0,
     aov               DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    rpr               DECIMAL(10, 2) NOT NULL DEFAULT 0,
     FOREIGN KEY (company_id) REFERENCES company (company_id)
 );
 
@@ -41,12 +42,14 @@ CREATE TABLE customer
 
 CREATE TABLE customer_fiscal_year
 (
-    customer_fiscal_year_id BIGSERIAL PRIMARY KEY,
-    saft_customer_id        BIGSERIAL,
-    fiscal_year             BIGSERIAL,
-    invoices_count          INT NOT NULL DEFAULT 0,
+    saft_customer_id BIGSERIAL,
+    company_id       BIGSERIAL,
+    fiscal_year      BIGSERIAL,
+    invoices_count   INT NOT NULL DEFAULT 0,
     FOREIGN KEY (saft_customer_id) REFERENCES customer (saft_customer_id),
-    FOREIGN KEY (fiscal_year) REFERENCES fiscal_year (fiscal_year)
+    FOREIGN KEY (fiscal_year) REFERENCES fiscal_year (fiscal_year),
+    FOREIGN KEY (company_id) REFERENCES company (company_id),
+    PRIMARY KEY (company_id, fiscal_year, saft_customer_id)
 );
 
 CREATE TABLE product
@@ -120,14 +123,13 @@ CREATE TABLE invoice_line
 
 CREATE TABLE sales_by_city
 (
-    sales_by_city_id BIGSERIAL,
-    company_id       BIGSERIAL,
-    fiscal_year      BIGSERIAL,
-    billing_city     VARCHAR(255),
-    sales_count      INT DEFAULT 0,
+    company_id   BIGSERIAL,
+    fiscal_year  BIGSERIAL,
+    billing_city VARCHAR(50),
+    sales_count  INT DEFAULT 0,
     FOREIGN KEY (company_id) REFERENCES company (company_id),
     FOREIGN KEY (fiscal_year) REFERENCES fiscal_year (fiscal_year),
-    PRIMARY KEY (sales_by_city_id, company_id, fiscal_year)
+    PRIMARY KEY (billing_city, company_id, fiscal_year)
 );
 
 CREATE TABLE sales_by_country

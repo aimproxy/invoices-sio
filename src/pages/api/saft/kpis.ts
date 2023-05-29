@@ -19,6 +19,7 @@ export default async function handler(
             salesByCity,
             salesByCountry
         ] = await Promise.all([
+
             postgres.selectFrom('invoice')
                 .select(['net_total', 'gross_total'])
                 .where('company_id', '=', Number(company_id))
@@ -35,10 +36,11 @@ export default async function handler(
                 .select([
                     count('invoice_id').as('invoices_count'),
                     'saft_customer_id',
-                    'fiscal_year'
+                    'fiscal_year',
+                    'company_id'
                 ])
                 .where('fiscal_year', '=', Number(year))
-                .groupBy(['saft_customer_id', 'fiscal_year'])
+                .groupBy(['saft_customer_id', 'fiscal_year', 'company_id'])
                 .execute(),
 
             sql<{
@@ -48,7 +50,7 @@ export default async function handler(
                 fiscal_year: number,
                 company_id: number
             }>`
-                SELECT COUNT(invoice_id)                AS invoices_count,
+                SELECT COUNT(invoice_id) AS invoices_count,
                        EXTRACT(MONTH FROM invoice_date) AS month,
                        SUM(net_total)                   AS net_total,
                        SUM(gross_total)                 AS gross_total,
@@ -83,16 +85,21 @@ export default async function handler(
 
         ])
 
+        const totalCustomersCount = invoicesByCustomer.length
+        const customerWithInvoices = invoicesByCustomer.filter(c => Number(c.invoices_count) > 1).length
+
         const net = invoices.reduce((sum, current) => sum + Number(current.net_total), 0);
         const gross = invoices.reduce((sum, current) => sum + Number(current.gross_total), 0);
         const aov = net / fiscal_year.number_of_entries
+        const rpr = (customerWithInvoices / totalCustomersCount) * 100
 
         await Promise.all([
             postgres.updateTable('fiscal_year')
                 .set({
                     net_sales: net,
                     gross_sales: gross,
-                    aov
+                    aov,
+                    rpr
                 })
                 .where('company_id', '=', Number(company_id))
                 .where('fiscal_year', '=', Number(year))
@@ -100,6 +107,13 @@ export default async function handler(
 
             postgres.insertInto('customer_fiscal_year')
                 .values(invoicesByCustomer)
+                .onConflict(oc => oc
+                    .columns(['saft_customer_id', 'company_id', 'fiscal_year'])
+                    .doUpdateSet(eb => ({
+                        saft_customer_id: eb.ref('excluded.saft_customer_id'),
+                        company_id: eb.ref('excluded.company_id'),
+                        fiscal_year: eb.ref('excluded.fiscal_year'),
+                    })))
                 .executeTakeFirstOrThrow(),
 
             postgres.insertInto('product_fiscal_year')
@@ -133,10 +147,11 @@ export default async function handler(
             postgres.insertInto('sales_by_city')
                 .values(salesByCity.rows)
                 .onConflict(oc => oc
-                    .columns(['sales_by_city_id', 'company_id', 'fiscal_year'])
+                    .columns(['billing_city', 'company_id', 'fiscal_year'])
                     .doUpdateSet(eb => ({
                         company_id: eb.ref('excluded.company_id'),
-                        fiscal_year: eb.ref('excluded.fiscal_year')
+                        fiscal_year: eb.ref('excluded.fiscal_year'),
+                        billing_city: eb.ref('excluded.billing_city')
                     })))
                 .executeTakeFirstOrThrow(),
 

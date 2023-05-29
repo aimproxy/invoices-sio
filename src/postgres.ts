@@ -21,6 +21,7 @@ export interface FiscalYearTable extends Record<string, any> {
     company_id: number
     number_of_entries: number
     aov: number
+    rpr: number
     net_sales: number
     gross_sales: number
 }
@@ -43,6 +44,7 @@ export interface CustomerTable extends Record<string, any> {
 
 export interface CustomerFiscalYearTable extends Record<string, any> {
     customer_fiscal_year_id: Generated<number>
+    company_id: number
     customer_tax_id: number
     fiscal_year: number
     invoices_count: number
@@ -104,7 +106,6 @@ export interface RevenueByMonthTable extends Record<string, any> {
 }
 
 export interface SalesByCityTable extends Record<string, any> {
-    sales_by_city_id: number,
     company_id: number,
     fiscal_year: number,
     billing_city: string,
