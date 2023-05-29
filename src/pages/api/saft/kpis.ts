@@ -16,11 +16,12 @@ export default async function handler(
             revenueByMonth,
             revenueByProducts,
             salesByCity,
-            salesByCountry
+            salesByCountry,
+            averageMonthsActive,
         ] = await Promise.all([
 
             postgres.selectFrom('fiscal_year')
-                .select(['number_of_entries'])
+                .select(['number_of_entries', 'customers_count'])
                 .where('company_id', '=', Number(company_id))
                 .where('fiscal_year', '=', Number(year))
                 .executeTakeFirstOrThrow(),
@@ -77,6 +78,15 @@ export default async function handler(
                   AND fiscal_year = ${Number(year)}
                 GROUP BY customer.billing_country, i.fiscal_year, customer.company_id`.execute(postgres),
 
+            sql<{ average_months_active: number }>`
+                SELECT AVG(months_active) AS average_months_active
+                FROM (SELECT COUNT(DISTINCT EXTRACT(MONTH FROM i.invoice_date)) AS months_active
+                      FROM customer c
+                               INNER JOIN invoice i ON i.saft_customer_id = c.saft_customer_id
+                      WHERE i.company_id = ${Number(company_id)}
+                        AND fiscal_year = ${Number(year)}
+                      GROUP BY c.saft_customer_id) AS customer_months_active`.execute(postgres),
+
         ])
 
         const totalCustomersCount = invoicesByCustomer.length
@@ -90,7 +100,9 @@ export default async function handler(
         //Calculate CLV
         const averageTransactionsPerMonth =
             revenueByMonth.rows.reduce((sum, current) => sum + Number(current.invoices_count), 0)
-            / revenueByMonth.rows.length
+            / 12
+
+        const clv = (averageTransactionsPerMonth * aov * averageMonthsActive.rows[0].average_months_active) / fiscal_year.customers_count
 
         console.log(averageTransactionsPerMonth)
 
@@ -101,7 +113,8 @@ export default async function handler(
                     net_sales: net,
                     gross_sales: gross,
                     aov,
-                    rpr
+                    rpr,
+                    clv
                 })
                 .where('company_id', '=', Number(company_id))
                 .where('fiscal_year', '=', Number(year))

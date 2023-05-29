@@ -19,6 +19,7 @@ CREATE TABLE fiscal_year
     gross_sales       DECIMAL(10, 2) NOT NULL DEFAULT 0,
     aov               DECIMAL(10, 2) NOT NULL DEFAULT 0,
     rpr               DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    clv               DECIMAL(10, 2) NOT NULL DEFAULT 0,
     FOREIGN KEY (company_id) REFERENCES company (company_id)
 );
 

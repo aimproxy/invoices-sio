@@ -22,6 +22,7 @@ export interface FiscalYearTable extends Record<string, any> {
     number_of_entries: number
     aov: number
     rpr: number
+    clv: number
     net_sales: number
     gross_sales: number
 }
