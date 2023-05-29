@@ -25,9 +25,9 @@ const RevenueOverTime = () => {
                 <AreaChart
                     className="h-72 mt-4"
                     data={revenueOverTime ?? []}
-                    index="date"
+                    index="month"
                     categories={["Net Sales", "Gross Sales"]}
-                    colors={["indigo", "green"]}
+                    colors={["indigo", "emerald", "amber"]}
                     valueFormatter={dataFormatter}
                 />
             )}

@@ -19,6 +19,7 @@ export default async function handler(
             .select(['net_total', 'gross_total', 'month'])
             .where('company_id', '=', Number(company))
             .where('fiscal_year', '=', Number(year))
+            .orderBy('month', 'asc')
             .execute()
 
         res.status(200).json(revenue)

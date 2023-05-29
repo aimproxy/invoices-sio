@@ -13,7 +13,8 @@ const useRevenueOverTime = ({company, year}: { company: string, year: string }) 
         const date = new Date();
         date.setMonth(monthNumber - 1); // Subtract 1 because months are zero-based in JavaScript
 
-        return date.toLocaleString('default', {month: 'long'});
+        const month = date.toLocaleString('default', {month: 'long'});
+        return month.charAt(0).toUpperCase() + month.slice(1);
     }
 
     const {
@@ -24,11 +25,17 @@ const useRevenueOverTime = ({company, year}: { company: string, year: string }) 
         queryFn: async () => await fetchRevenueOverTime(company, year),
     })
 
-    const revenueOverTime = data?.map(revenue => ({
-        month: getMonthWord(revenue.month),
-        "Net Sales": Number(revenue.net_total),
-        "Gross Sales": Number(revenue.gross_total)
-    }))
+    let cumulativeNetTotal = 0
+    const revenueOverTime = data?.map((revenue, i) => {
+        cumulativeNetTotal += Number(revenue.net_total);
+
+        return {
+            month: getMonthWord(revenue.month),
+            "Net Sales": Number(revenue.net_total),
+            "Gross Sales": Number(revenue.gross_total),
+            "Cumulative Revenue": cumulativeNetTotal,
+        }
+    })
 
     return useMemo(() => ({
         revenueOverTime,

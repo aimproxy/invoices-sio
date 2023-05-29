@@ -1,4 +1,4 @@
-import {Bold, Card, DonutChart, Flex, Legend, Metric, Text, Title} from "@tremor/react";
+import {Bold, Card, DonutChart, Flex, Metric, Text, Title} from "@tremor/react";
 import {useContext} from "react";
 import TextSkeleton from "@sio/components/skeletons/TextSkeleton";
 import {KpisContext} from "@sio/components/KpisProvider";
@@ -57,11 +57,6 @@ export default function Sales() {
                         colors={["emerald", "violet", "indigo", "yellow", "rose", "cyan", "amber"]}
                         valueFormatter={valueFormatter}
                         className="mt-6"
-                    />
-                    <Legend
-                        colors={["emerald", "violet", "indigo", "yellow", "rose", "cyan", "amber"]}
-                        categories={products?.map((product) => product.name) ?? []}
-                        className="mt-6 justify-center"
                     />
                 </>
             )}

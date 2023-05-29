@@ -23,24 +23,25 @@ export default function Dashboard() {
 
     const dashMarkup = (
         <div className="space-y-4">
-            <Grid numCols={1} numColsLg={5} className="gap-6">
+            <Grid numCols={1} numColsLg={4} className="gap-6">
+                <Card>
+                    <Title>Orders</Title>
+                </Card>
                 <AverageOrderValue/>
                 <CustomerLifetimeValue/>
                 <RepeatPurchaseRate/>
-                <div className={"col-span-2"}>
-                    <Card/>
-                </div>
             </Grid>
             <Grid numCols={1} numColsLg={3} className="gap-6">
                 <div className={"col-span-2"}>
-                    <CumulativeRevenueTrend/>
+                    <RevenueOverTime/>
                 </div>
                 <Sales/>
             </Grid>
             <Grid numCols={1} numColsLg={2} className="gap-6">
-                <RevenueOverTime/>
+                <CumulativeRevenueTrend/>
                 <RevenueBySegment/>
             </Grid>
+
             <Grid numCols={1} numColsLg={3} className="gap-6">
                 <SalesByCountry/>
                 <SalesByCity/>

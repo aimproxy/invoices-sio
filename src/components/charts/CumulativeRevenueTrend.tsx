@@ -1,43 +1,31 @@
 import {Card, LineChart, Text, Title} from "@tremor/react";
+import useRevenueOverTime from "@sio/hooks/useRevenueOverTime";
+import {useContext} from "react";
+import {KpisContext} from "@sio/components/KpisProvider";
 
-const data = [
-    {
-        Date: "01.01.2021",
-        "Customer Churn": 9.73,
-    },
-    {
-        Date: "02.01.2021",
-        "Customer Churn": 10.74,
-    },
-    {
-        Date: "03.01.2021",
-        "Customer Churn": 11.93,
-    },
-    // ...
-    {
-        Date: "13.03.2021",
-        "Customer Churn": 8.82,
-    },
+const valueFormatter = (number: number) => {
+    return "€ " + Intl.NumberFormat("us").format(number).toString();
+};
 
-];
-
-const valueFormatterRelative = (number: number) =>
-    `${Intl.NumberFormat("us").format(number).toString()}%`;
 
 export default function CumulativeRevenueTrend() {
+    const {selectedCompany, selectedYear} = useContext(KpisContext)
+    const {revenueOverTime, isLoading, isError} = useRevenueOverTime({
+        company: String(selectedCompany?.company_id),
+        year: selectedYear
+    })
+
     return (
         <Card>
             <Title>Cumulative Revenue Trend</Title>
-            <Text>Whether the revenue is increasing, decreasing, or remaining stable</Text>
+            <Text>Whether the revenue is increasing, or remaining the same</Text>
             <LineChart
                 className="mt-8"
-                data={data}
-                index="Date"
-                categories={["Customer Churn"]}
-                colors={["blue"]}
-                showLegend={false}
-                valueFormatter={valueFormatterRelative}
-                yAxisWidth={40}
+                data={revenueOverTime ?? []}
+                index="month"
+                categories={["Cumulative Revenue"]}
+                colors={["blue", "emerald"]}
+                valueFormatter={valueFormatter}
             />
         </Card>
     );
