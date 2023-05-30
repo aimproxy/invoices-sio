@@ -12,9 +12,10 @@ import Welcome from "@sio/components/Welcome";
 export default function Customers() {
     const router = useRouter()
 
-    const {selectedCompany} = useContext(KpisContext)
+    const {selectedCompany, selectedYear} = useContext(KpisContext)
     const {data, isLoading, isError} = useCustomers({
-        company: String(selectedCompany?.company_id)
+        company: String(selectedCompany?.company_id),
+        year: String(selectedYear)
     })
 
     const columnHelper = createColumnHelper<Customer>()

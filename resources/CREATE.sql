@@ -43,10 +43,11 @@ CREATE TABLE customer
 
 CREATE TABLE customer_fiscal_year
 (
-    saft_customer_id BIGSERIAL,
-    company_id       BIGSERIAL,
-    fiscal_year      BIGSERIAL,
-    invoices_count   INT NOT NULL DEFAULT 0,
+    saft_customer_id   BIGSERIAL,
+    company_id         BIGSERIAL,
+    fiscal_year        BIGSERIAL,
+    invoices_count     INT            NOT NULL DEFAULT 0,
+    customer_net_total DECIMAL(10, 2) NOT NULL DEFAULT 0,
     FOREIGN KEY (saft_customer_id) REFERENCES customer (saft_customer_id),
     FOREIGN KEY (fiscal_year) REFERENCES fiscal_year (fiscal_year),
     FOREIGN KEY (company_id) REFERENCES company (company_id),

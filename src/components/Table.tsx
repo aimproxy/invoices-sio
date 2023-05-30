@@ -32,9 +32,9 @@ const Table = <T, >({columns, data}: TableProps<T>) => {
                     </tr>
                 ))}
                 </thead>
-                <tbody className="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+                <tbody className="bg-white divide-y">
                 {table.getRowModel().rows.map(row => (
-                    <tr className="text-gray-700 dark:text-gray-400" key={row.id}>
+                    <tr className="text-gray-700" key={row.id}>
                         {row.getVisibleCells().map(cell => (
                             <td className="px-4 py-3 text-sm" key={cell.id}>
                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
