@@ -24,9 +24,10 @@ export default function TopCustomersByRevenue() {
                 <>
                     <Flex className="mt-4">
                         <Text>Name</Text>
-                        <Text className="text-right">Net Total</Text>
+                        <Text className="text-right">Revenue</Text>
                     </Flex>
                     <BarList
+                        color={"emerald"}
                         data={data!.slice(0, 5).map(customer => ({
                             name: customer.company_name,
                             value: customer.customer_net_total

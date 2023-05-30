@@ -29,8 +29,15 @@ const YearSelector = () => {
         onError: () => {
             console.error("there was an error")
         },
-        onSettled: () => {
-            queryClient.invalidateQueries({queryKey: ['years', selectedCompany]}).then(console.log)
+        onSettled: async () => {
+            await Promise.all([
+                queryClient.invalidateQueries({queryKey: ['year', selectedCompany, selectedYear]}),
+                queryClient.invalidateQueries({queryKey: ['products', selectedCompany, selectedYear]}),
+                queryClient.invalidateQueries({queryKey: ['customers', selectedCompany, selectedYear]}),
+                queryClient.invalidateQueries({queryKey: ['revenue_over_time', selectedCompany, selectedYear]}),
+                queryClient.invalidateQueries({queryKey: ['sales_by_city', selectedCompany, selectedYear]}),
+                queryClient.invalidateQueries({queryKey: ['sales_by_country', selectedCompany, selectedYear]}),
+            ]).then(console.log).catch(console.error)
         }
     });
 

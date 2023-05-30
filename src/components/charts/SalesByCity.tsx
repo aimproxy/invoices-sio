@@ -36,6 +36,7 @@ export default function SalesByCity() {
                     />
                     <Legend
                         categories={data?.map((city) => city.billing_city) ?? []}
+                        colors={["emerald", "violet", "indigo", "yellow", "rose", "cyan", "amber"]}
                         className="mt-6 justify-center"
                     />
                 </>
