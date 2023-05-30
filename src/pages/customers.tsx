@@ -41,6 +41,14 @@ export default function Customers() {
             header: () => 'Country',
             cell: info => info.getValue(),
         }),
+        columnHelper.accessor('invoices_count', {
+            header: () => 'Invoices',
+            cell: info => info.getValue(),
+        }),
+        columnHelper.accessor('customer_net_total', {
+            header: () => 'Net Total',
+            cell: info => `${info.getValue()} €`,
+        }),
     ]
 
     const showMockTable = isLoading || isError

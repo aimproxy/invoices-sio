@@ -7,6 +7,7 @@ export type Customer = {
     ship_to_city: string,
     ship_to_postal_code: string,
     ship_to_country: string
+    invoices_count: string
     customer_net_total: number
 }
 
@@ -26,6 +27,7 @@ export default async function handler(
                 'ship_to_city',
                 'ship_to_postal_code',
                 'ship_to_country',
+                'invoices_count',
                 'customer_net_total'
             ])
             .innerJoin('customer_fiscal_year', 'customer.saft_customer_id', 'customer_fiscal_year.saft_customer_id')
