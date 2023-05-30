@@ -7,13 +7,16 @@ export type Customer = {
     ship_to_city: string,
     ship_to_postal_code: string,
     ship_to_country: string
+    invoices_count: string
+    customer_net_total: number
 }
 
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<Customer[] | undefined>
 ) {
-    const {company} = req.query
+
+    const {company, year} = req.query
 
     try {
         const customers = await postgres
@@ -23,9 +26,14 @@ export default async function handler(
                 'customer_tax_id',
                 'ship_to_city',
                 'ship_to_postal_code',
-                'ship_to_country'
+                'ship_to_country',
+                'invoices_count',
+                'customer_net_total'
             ])
-            .where('company_id', '=', Number(company))
+            .innerJoin('customer_fiscal_year', 'customer.saft_customer_id', 'customer_fiscal_year.saft_customer_id')
+            .where('customer.company_id', '=', Number(company))
+            .where('fiscal_year', '=', Number(year))
+            .orderBy('customer_net_total', 'desc')
             .execute()
 
         res.status(200).json(customers)

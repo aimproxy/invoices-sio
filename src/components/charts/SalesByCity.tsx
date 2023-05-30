@@ -18,7 +18,6 @@ export default function SalesByCity() {
         company: String(selectedCompany?.company_id),
         year: selectedYear
     })
-    console.log(data)
 
     return (
         <Card>

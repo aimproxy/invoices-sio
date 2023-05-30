@@ -53,7 +53,6 @@ export default function Home() {
                             </Link>
                         ))}
 
-                        {(!isLoading || !isError) && generateFakeCards}
                     </Grid>}
                 {selectedView == "2" && <SAFTDropzone/>}
             </div>

@@ -1,4 +1,4 @@
-import {Card, Grid, Metric, Text} from "@tremor/react";
+import {Grid} from "@tremor/react";
 import {useRouter} from "next/router";
 
 import CustomerLifetimeValue from "@sio/components/kpis/CustomerLifetimeValue";
@@ -19,6 +19,7 @@ import {useContext} from "react";
 import Orders from "@sio/components/kpis/Orders";
 import Tabs from "@sio/components/Tabs";
 import Welcome from "@sio/components/Welcome";
+import TopCustomersByRevenue from "@sio/components/charts/TopCustomersByRevenue";
 
 export default function Dashboard() {
     const router = useRouter()
@@ -46,10 +47,7 @@ export default function Dashboard() {
             <Grid numCols={1} numColsLg={3} className="gap-6">
                 <SalesByCountry/>
                 <SalesByCity/>
-                <Card>
-                    <Text>Title</Text>
-                    <Metric>KPI 7</Metric>
-                </Card>
+                <TopCustomersByRevenue/>
             </Grid>
         </div>
     )

@@ -44,11 +44,11 @@ export interface CustomerTable extends Record<string, any> {
 }
 
 export interface CustomerFiscalYearTable extends Record<string, any> {
-    customer_fiscal_year_id: Generated<number>
     company_id: number
     customer_tax_id: number
     fiscal_year: number
     invoices_count: number
+    customer_net_total: number
 }
 
 export interface ProductTable extends Record<string, any> {

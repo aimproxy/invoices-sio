@@ -2,9 +2,9 @@ import {useQuery} from "@tanstack/react-query";
 import {useMemo} from "react";
 import {Customer} from "@sio/pages/api/customers";
 
-const useCustomers = ({company}: { company: string }) => {
+const useCustomers = ({company, year}: { company: string, year: string }) => {
     const fetchCustomers = async (company: string): Promise<Customer[]> => {
-        const res = await fetch(`/api/customers?company=${company}`)
+        const res = await fetch(`/api/customers?company=${company}&year=${year}`)
         return await res.json();
     }
 
@@ -13,7 +13,7 @@ const useCustomers = ({company}: { company: string }) => {
         isLoading,
         isError,
     } = useQuery({
-            queryKey: ['customers', company],
+            queryKey: ['customers', company, year],
             queryFn: async () => await fetchCustomers(company)
         }
     )

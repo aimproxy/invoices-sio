@@ -29,11 +29,13 @@ export default async function handler(
             postgres.selectFrom("invoice")
                 .select([
                     count('invoice_id').as('invoices_count'),
+                    sum('net_total').as('customer_net_total'),
                     'saft_customer_id',
                     'fiscal_year',
                     'company_id'
                 ])
                 .where('fiscal_year', '=', Number(year))
+                .where('company_id', '=', Number(company_id))
                 .groupBy(['saft_customer_id', 'fiscal_year', 'company_id'])
                 .execute(),
 

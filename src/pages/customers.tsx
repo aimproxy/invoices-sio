@@ -12,9 +12,10 @@ import Welcome from "@sio/components/Welcome";
 export default function Customers() {
     const router = useRouter()
 
-    const {selectedCompany} = useContext(KpisContext)
+    const {selectedCompany, selectedYear} = useContext(KpisContext)
     const {data, isLoading, isError} = useCustomers({
-        company: String(selectedCompany?.company_id)
+        company: String(selectedCompany?.company_id),
+        year: String(selectedYear)
     })
 
     const columnHelper = createColumnHelper<Customer>()
@@ -39,6 +40,14 @@ export default function Customers() {
         columnHelper.accessor('ship_to_country', {
             header: () => 'Country',
             cell: info => info.getValue(),
+        }),
+        columnHelper.accessor('invoices_count', {
+            header: () => 'Invoices',
+            cell: info => info.getValue(),
+        }),
+        columnHelper.accessor('customer_net_total', {
+            header: () => 'Net Total',
+            cell: info => `${info.getValue()} €`,
         }),
     ]
 
