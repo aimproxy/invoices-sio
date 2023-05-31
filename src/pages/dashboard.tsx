@@ -6,7 +6,7 @@ import AverageOrderValue from "@sio/components/kpis/AverageOrderValue";
 import RepeatPurchaseRate from "@sio/components/kpis/RepeatPurchaseRate";
 
 import CumulativeRevenueTrend from "@sio/components/charts/CumulativeRevenueTrend";
-import RevenueBySegment from "@sio/components/charts/RevenueBySegment";
+import RevenueBySegment from "@sio/components/charts/SalesByMonth";
 import Sales from "@sio/components/charts/Sales";
 import SalesByCountry from "@sio/components/charts/SalesByCountry";
 import SalesByCity from "@sio/components/charts/SalesByCity";
