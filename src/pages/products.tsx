@@ -5,13 +5,10 @@ import Table from "@sio/components/Table";
 import {useContext} from "react";
 import {KpisContext} from "@sio/components/KpisProvider";
 import useProducts from "@sio/hooks/useProducts";
-import {useRouter} from "next/router";
 import Tabs from "@sio/components/Tabs";
 import Welcome from "@sio/components/Welcome";
 
 export default function Products() {
-    const router = useRouter()
-
     const {selectedCompany, selectedYear} = useContext(KpisContext)
     const {products, isLoading, isError} = useProducts({
         company: String(selectedCompany?.company_id),
