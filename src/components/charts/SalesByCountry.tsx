@@ -33,6 +33,7 @@ export default function SalesByCountry() {
                     />
                     <Legend
                         categories={data?.map((country) => country.billing_country) ?? []}
+                        colors={["emerald", "violet", "indigo", "yellow", "rose", "cyan", "amber"]}
                         className="mt-6 justify-center"
                     />
                 </>

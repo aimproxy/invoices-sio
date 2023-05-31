@@ -19,12 +19,6 @@ export default function Home() {
         setSelectedYear(String(company.fiscal_years[0]))
     };
 
-    const generateFakeCards = Array.from(Array(4).keys()).map((card, k) => (
-        <Card className="h-22" key={k}>
-            <TextSkeleton/>
-        </Card>
-    ))
-
     return (
         <main className={"max-w-6xl mx-auto pt-16 sm:pt-8 px-8"}>
             <Title>Empresas</Title>
@@ -40,7 +34,11 @@ export default function Home() {
             <div className="mt-6 mb-8 gap-6">
                 {selectedView == "1" &&
                     <Grid numColsMd={4} className="mt-6 gap-6">
-                        {(isLoading || isError) && generateFakeCards}
+                        {(isLoading || isError || data?.length == 0) && Array.from(Array(4).keys()).map((card, k) => (
+                            <Card className="h-22" key={k}>
+                                <TextSkeleton/>
+                            </Card>
+                        ))}
 
                         {data?.map((company, k) => (
                             <Link href='/dashboard'
