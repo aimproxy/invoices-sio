@@ -6,10 +6,13 @@ import Tabs from "@sio/components/Tabs";
 import {SpinSkeleton} from "@sio/components/skeletons/SpinSkeleton";
 import {SaftResponse} from "@sio/pages/api/saft/dom";
 import {CheckCircleIcon, ExclamationTriangleIcon} from "@heroicons/react/24/solid";
+import {useQueryClient} from "@tanstack/react-query";
 
 const classNames = (...s: (string | null)[]) => s.filter(Boolean).join(' ');
 
 const SAFT = () => {
+    const queryClient = useQueryClient();
+
     const [showCallout, setShowCallout] = useState<{
         title: string,
         description: string,
@@ -57,6 +60,8 @@ const SAFT = () => {
                         icon: CheckCircleIcon,
                         color: 'teal'
                     })
+
+                    queryClient.invalidateQueries({queryKey: ['companies']}).then(console.log)
                 }
 
                 setShowSpin(false)
