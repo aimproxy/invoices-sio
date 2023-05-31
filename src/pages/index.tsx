@@ -9,8 +9,6 @@ import Tabs from "@sio/components/Tabs";
 
 export default function Home() {
     const {setSelectedCompany, setSelectedYear} = useContext(KpisContext);
-
-    // TODO Invalidate esta query quando se da upload do saf-t
     const {data, isLoading, isError} = useCompanies();
 
     const handleCompanySelection = (company: Company) => {
