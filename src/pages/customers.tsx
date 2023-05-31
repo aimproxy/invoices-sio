@@ -56,7 +56,11 @@ export default function Customers() {
     return (
         <main className="max-w-6xl mx-auto pt-16 sm:pt-8 px-8">
             <Welcome/>
-            <Tabs/>
+            <Tabs tabs={[
+                {route: 'dashboard', name: 'Dashboard'},
+                {route: 'customers', name: 'Customers'},
+                {route: 'products', name: 'Products'}
+            ]}/>
 
             <div className="mt-6 mb-8 gap-6">
                 {showMockTable ? (

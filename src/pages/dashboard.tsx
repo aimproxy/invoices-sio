@@ -58,7 +58,11 @@ export default function Dashboard() {
                 <Welcome/>
                 <YearSelector/>
             </div>
-            <Tabs/>
+            <Tabs tabs={[
+                {route: 'dashboard', name: 'Dashboard'},
+                {route: 'customers', name: 'Customers'},
+                {route: 'products', name: 'Products'}
+            ]}/>
 
             <div className="mt-6 mb-8 gap-6">
                 {dashMarkup}

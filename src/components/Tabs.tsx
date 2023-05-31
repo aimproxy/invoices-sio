@@ -1,7 +1,7 @@
 import {useRouter} from "next/router";
 import {Tab, TabList} from "@tremor/react";
 
-const Tabs = () => {
+const Tabs = ({tabs}: { tabs: { route: string, name: string }[] }) => {
     const router = useRouter()
 
     return (
@@ -13,9 +13,7 @@ const Tabs = () => {
             })}
             className="mt-6"
         >
-            <Tab value="dashboard" text="Dashboard"/>
-            <Tab value="customers" text="Customers"/>
-            <Tab value="products" text="Products"/>
+            {tabs.map(({route, name}) => <Tab key={route} value={route} text={name}/>)}
         </TabList>
     )
 }
