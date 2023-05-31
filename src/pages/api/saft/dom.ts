@@ -2,9 +2,11 @@ import {NextApiRequest, NextApiResponse} from 'next';
 import {DOMParser} from 'xmldom';
 import postgres from "@sio/postgres";
 
+export type SaftResponse = { ok: boolean, e?: any }
+
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<{ ok: boolean, e?: any }>
+    res: NextApiResponse<SaftResponse>
 ) {
     const xml = req.body
 
