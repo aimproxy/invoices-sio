@@ -1,6 +1,6 @@
 import {Grid} from "@tremor/react";
-import {useRouter} from "next/router";
 
+import Orders from "@sio/components/kpis/Orders";
 import CustomerLifetimeValue from "@sio/components/kpis/CustomerLifetimeValue";
 import AverageOrderValue from "@sio/components/kpis/AverageOrderValue";
 import RepeatPurchaseRate from "@sio/components/kpis/RepeatPurchaseRate";
@@ -11,20 +11,14 @@ import Sales from "@sio/components/charts/Sales";
 import SalesByCountry from "@sio/components/charts/SalesByCountry";
 import SalesByCity from "@sio/components/charts/SalesByCity";
 import RevenueOverTime from "@sio/components/charts/RevenueOverTime";
+import TopCustomersByRevenue from "@sio/components/charts/TopCustomersByRevenue";
 
 import YearSelector from "@sio/components/selectors/YearSelector";
 
-import {KpisContext} from "@sio/components/KpisProvider";
-import {useContext} from "react";
-import Orders from "@sio/components/kpis/Orders";
 import Tabs from "@sio/components/Tabs";
 import Welcome from "@sio/components/Welcome";
-import TopCustomersByRevenue from "@sio/components/charts/TopCustomersByRevenue";
 
 export default function Dashboard() {
-    const router = useRouter()
-    const {selectedCompany} = useContext(KpisContext)
-
     const dashMarkup = (
         <div className="space-y-4">
             <Grid numCols={1} numColsLg={4} className="gap-6">
@@ -58,6 +52,7 @@ export default function Dashboard() {
                 <Welcome/>
                 <YearSelector/>
             </div>
+
             <Tabs tabs={[
                 {route: 'dashboard', name: 'Dashboard'},
                 {route: 'customers', name: 'Customers'},

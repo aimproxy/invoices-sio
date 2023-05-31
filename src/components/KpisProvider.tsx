@@ -23,7 +23,6 @@ const KpisProvider = ({children}: PropsWithChildren) => {
     const [selectedCompany, setSelectedCompany] = useState<Company>()
     const [selectedYear, setSelectedYear] = useState('')
 
-    // TODO Just dont reload the page yet
     useEffect(() => {
         localStorage.setItem('selectedCompany', JSON.stringify(selectedCompany));
     }, [selectedCompany]);
