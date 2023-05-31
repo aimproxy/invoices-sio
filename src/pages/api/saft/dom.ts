@@ -155,10 +155,11 @@ export default async function handler(
                     ...fiscalYearMetadata
                 })
                 .onConflict(oc => oc
-                    .column('fiscal_year')
-                    .doUpdateSet({
-                        fiscal_year: fiscalYearMetadata.fiscal_year
-                    })
+                    .columns(['fiscal_year', 'company_id'])
+                    .doUpdateSet(eb => ({
+                        fiscal_year: eb.ref('excluded.fiscal_year'),
+                        company_id: eb.ref('excluded.company_id')
+                    }))
                 )
                 .executeTakeFirstOrThrow(),
 

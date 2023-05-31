@@ -9,8 +9,7 @@ CREATE TABLE company
 
 CREATE TABLE fiscal_year
 (
-    fiscal_year_id    BIGSERIAL PRIMARY KEY,
-    fiscal_year       INT UNIQUE,
+    fiscal_year       BIGSERIAL,
     start_date        DATE,
     end_date          DATE,
     date_created      DATE,
@@ -22,7 +21,8 @@ CREATE TABLE fiscal_year
     aov               DECIMAL(10, 2) NOT NULL DEFAULT 0,
     rpr               DECIMAL(10, 2) NOT NULL DEFAULT 0,
     clv               DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    FOREIGN KEY (company_id) REFERENCES company (company_id)
+    FOREIGN KEY (company_id) REFERENCES company (company_id),
+    PRIMARY KEY (fiscal_year, company_id)
 );
 
 CREATE TABLE customer
@@ -51,8 +51,7 @@ CREATE TABLE customer_fiscal_year
     invoices_count     INT            NOT NULL DEFAULT 0,
     customer_net_total DECIMAL(10, 2) NOT NULL DEFAULT 0,
     FOREIGN KEY (saft_customer_id) REFERENCES customer (saft_customer_id),
-    FOREIGN KEY (fiscal_year) REFERENCES fiscal_year (fiscal_year),
-    FOREIGN KEY (company_id) REFERENCES company (company_id),
+    FOREIGN KEY (fiscal_year, company_id) REFERENCES fiscal_year (fiscal_year, company_id),
     PRIMARY KEY (company_id, fiscal_year, saft_customer_id)
 );
 
@@ -73,8 +72,7 @@ CREATE TABLE product_fiscal_year
     company_id   BIGSERIAL,
     amount_spent DECIMAL(10, 2) NOT NULL DEFAULT 0,
     FOREIGN KEY (product_code) REFERENCES product (product_code),
-    FOREIGN KEY (fiscal_year) REFERENCES fiscal_year (fiscal_year),
-    FOREIGN KEY (company_id) REFERENCES company (company_id),
+    FOREIGN KEY (fiscal_year, company_id) REFERENCES fiscal_year (fiscal_year, company_id),
     PRIMARY KEY (product_code, fiscal_year, company_id)
 );
 
@@ -86,8 +84,7 @@ CREATE TABLE revenue_by_month
     invoices_count INT            NOT NULL DEFAULT 0,
     net_total      DECIMAL(10, 2) NOT NULL DEFAULT 0,
     gross_total    DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    FOREIGN KEY (company_id) REFERENCES company (company_id),
-    FOREIGN KEY (fiscal_year) REFERENCES fiscal_year (fiscal_year),
+    FOREIGN KEY (fiscal_year, company_id) REFERENCES fiscal_year (fiscal_year, company_id),
     PRIMARY KEY (month, fiscal_year, company_id)
 );
 
@@ -131,8 +128,7 @@ CREATE TABLE sales_by_city
     fiscal_year  BIGSERIAL,
     billing_city VARCHAR(50),
     sales_count  INT DEFAULT 0,
-    FOREIGN KEY (company_id) REFERENCES company (company_id),
-    FOREIGN KEY (fiscal_year) REFERENCES fiscal_year (fiscal_year),
+    FOREIGN KEY (fiscal_year, company_id) REFERENCES fiscal_year (fiscal_year, company_id),
     PRIMARY KEY (billing_city, company_id, fiscal_year)
 );
 
@@ -142,7 +138,6 @@ CREATE TABLE sales_by_country
     fiscal_year     BIGSERIAL,
     billing_country VARCHAR(2),
     sales_count     INT DEFAULT 0,
-    FOREIGN KEY (company_id) REFERENCES company (company_id),
-    FOREIGN KEY (fiscal_year) REFERENCES fiscal_year (fiscal_year),
+    FOREIGN KEY (fiscal_year, company_id) REFERENCES fiscal_year (fiscal_year, company_id),
     PRIMARY KEY (company_id, fiscal_year, billing_country)
 );
