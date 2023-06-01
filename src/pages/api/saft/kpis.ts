@@ -66,7 +66,6 @@ export default async function handler(
                 GROUP BY product_code
                 ORDER BY amount_spent DESC`.execute(postgres),
 
-            // TODO Calculate Revenue by City
             sql<{ company_id: number, fiscal_year: number, billing_city: string, net_total: number }>`
                 SELECT sum(i.net_total) as net_total, customer.billing_city, i.fiscal_year, customer.company_id
                 FROM customer
@@ -75,7 +74,6 @@ export default async function handler(
                   AND fiscal_year = ${Number(year)}
                 GROUP BY customer.billing_city, i.fiscal_year, customer.company_id`.execute(postgres),
 
-            // TODO Calculate Revenue by Country
             sql<{ company_id: number, fiscal_year: number, billing_country: string, net_total: number }>`
                 SELECT sum(i.net_total) as net_total, customer.billing_country, i.fiscal_year, customer.company_id
                 FROM customer

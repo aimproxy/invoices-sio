@@ -3,6 +3,7 @@ import useRevenueOverTime from "@sio/hooks/useRevenueOverTime";
 import {useContext} from "react";
 import {KpisContext} from "@sio/components/KpisProvider";
 import formatEuro from "@sio/utils/formatEuro";
+import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
 
 
 export default function CumulativeRevenueTrend() {
@@ -17,14 +18,19 @@ export default function CumulativeRevenueTrend() {
         <Card>
             <Title>Cumulative Revenue Trend</Title>
             <Text>Whether the revenue is increasing, or remaining the same</Text>
-            <LineChart
-                className="mt-8"
-                data={revenueOverTime ?? []}
-                index="month"
-                categories={["Cumulative Revenue"]}
-                colors={["blue", "emerald"]}
-                valueFormatter={formatEuro}
-            />
+
+            {isLoading ?
+                <ChartSkeleton/>
+                :
+                <LineChart
+                    className="mt-8"
+                    data={revenueOverTime ?? []}
+                    index="month"
+                    categories={["Cumulative Revenue"]}
+                    colors={["blue", "emerald"]}
+                    valueFormatter={formatEuro}
+                />
+            }
         </Card>
     );
 }

@@ -37,7 +37,10 @@ export default function Sales() {
             <Title>Sales</Title>
             <Flex justifyContent="start" className="space-x-1 mt-2" alignItems="baseline">
                 {(isLoadingYear || isErrorYear) ? (
-                    <TextSkeleton/>
+                    <>
+                        <TextSkeleton/>
+                    </>
+
                 ) : (
                     <>
                         <Metric>{formatEuro(year!.net_sales)}{' '}</Metric>
@@ -45,13 +48,13 @@ export default function Sales() {
                     </>
                 )}
             </Flex>
-            <Text className="mt-4">
-                <Bold>Top 5 products by units sold</Bold>
-            </Text>
             {(isLoadingProducts || isErrorProducts) ? (
                 <ChartSkeleton/>
             ) : (
                 <>
+                    <Text className="mt-4">
+                        <Bold>Top 5 products by units sold</Bold>
+                    </Text>
                     <DonutChart
                         data={topProducts ?? []}
                         category="value"

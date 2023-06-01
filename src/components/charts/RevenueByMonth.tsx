@@ -20,7 +20,7 @@ export default function RevenueByMonth() {
     return (
         <Card>
             <Title>Sales per Month</Title>
-            <Text>Number of sales per each month</Text>
+            <Text>Revenue per each month</Text>
             {(isLoading || isError || data == null) ? (
                 <ChartSkeleton/>
             ) : (
