@@ -1,5 +1,4 @@
 import {useQuery} from "@tanstack/react-query";
-import {useMemo} from "react";
 import {Company} from "@sio/pages/api/companies";
 
 const useCompanies = () => {
@@ -8,16 +7,10 @@ const useCompanies = () => {
         return await res.json();
     }
 
-    const {data, isLoading, isError} = useQuery({
+    return useQuery({
         queryKey: ['companies'],
         queryFn: fetchCompanies,
     })
-
-    return useMemo(() => ({
-        data,
-        isLoading,
-        isError
-    }), [data, isError, isLoading])
 }
 
 export default useCompanies
