@@ -51,7 +51,7 @@ export default function Dashboard({company, year}: InferGetServerSidePropsType<t
     return (
         <main className="max-w-6xl mx-auto pt-16 sm:pt-8 px-8">
             <div className="flex justify-between">
-                <Welcome company={company}/>
+                <Welcome company={company} year={year}/>
                 <YearSelector company={company} year={year}/>
             </div>
             <Tabs tabs={[
