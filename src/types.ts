@@ -1,4 +1,4 @@
-export default interface BaseKpiProps {
+export default interface BaseProps {
     company: string
     year: string
 }

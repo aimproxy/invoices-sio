@@ -2,9 +2,9 @@ import {BarList, Card, Flex, Text, Title} from "@tremor/react";
 import useCustomers from "@sio/hooks/useCustomers";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
 import formatEuro from "@sio/utils/formatEuro";
-import BaseKpiProps from "@sio/types";
+import BaseProps from "@sio/types";
 
-export default function TopCustomersByRevenue({company, year}: BaseKpiProps) {
+export default function TopCustomersByRevenue({company, year}: BaseProps) {
     const {data, isLoading, isError} = useCustomers({company, year})
 
     return (

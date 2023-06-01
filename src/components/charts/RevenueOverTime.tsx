@@ -2,9 +2,9 @@ import {AreaChart, Card, Text, Title} from "@tremor/react";
 import useRevenueOverTime from "@sio/hooks/useRevenueOverTime";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
 import formatEuro from "@sio/utils/formatEuro";
-import BaseKpiProps from "@sio/types";
+import BaseProps from "@sio/types";
 
-const RevenueOverTime = ({company, year}: BaseKpiProps) => {
+const RevenueOverTime = ({company, year}: BaseProps) => {
     const {revenueOverTime, isLoading, isError} = useRevenueOverTime({company, year})
 
     return (

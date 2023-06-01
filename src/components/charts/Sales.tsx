@@ -4,9 +4,9 @@ import useFiscalYear from "@sio/hooks/useFiscalYear";
 import useProducts from "@sio/hooks/useProducts";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
 import formatEuro from "@sio/utils/formatEuro";
-import BaseKpiProps from "@sio/types";
+import BaseProps from "@sio/types";
 
-export default function Sales({company, year}: BaseKpiProps) {
+export default function Sales({company, year}: BaseProps) {
     const {
         data: fiscalYear,
         isLoading: isLoadingYear,

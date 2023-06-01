@@ -1,9 +1,9 @@
 import {Card, Metric, Text, Title} from "@tremor/react";
 import TextSkeleton from "@sio/components/skeletons/TextSkeleton";
 import useFiscalYear from "@sio/hooks/useFiscalYear";
-import BaseKpiProps from "@sio/types";
+import BaseProps from "@sio/types";
 
-export default function RepeatPurchaseRate({company, year}: BaseKpiProps) {
+export default function RepeatPurchaseRate({company, year}: BaseProps) {
     // Repeat purchase rate = (Number of customers who made more than one purchase / Total number of customers) x 100
     const {data, isLoading, isError} = useFiscalYear({company, year})
 

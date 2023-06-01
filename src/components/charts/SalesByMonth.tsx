@@ -1,9 +1,9 @@
 import {BarChart, Card, Text, Title} from "@tremor/react";
 import useSalesByMonth from "@sio/hooks/useSalesByMonth";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
-import BaseKpiProps from "@sio/types";
+import BaseProps from "@sio/types";
 
-export default function SalesByMonth({company, year}: BaseKpiProps) {
+export default function SalesByMonth({company, year}: BaseProps) {
     const {
         salesByMonth,
         isLoading,
