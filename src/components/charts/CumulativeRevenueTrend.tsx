@@ -13,7 +13,6 @@ export default function CumulativeRevenueTrend() {
         year: selectedYear
     })
 
-    // TODO Show loading state
     return (
         <Card>
             <Title>Cumulative Revenue Trend</Title>
