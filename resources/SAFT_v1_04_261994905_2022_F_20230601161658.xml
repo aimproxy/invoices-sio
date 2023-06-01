@@ -1,0 +1,823 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<AuditFile xmlns="urn:OECD:StandardAuditFile-Tax:PT_1.04_01">
+    <Header>
+        <AuditFileVersion>1.04_01</AuditFileVersion>
+        <CompanyID>261994905</CompanyID>
+        <TaxRegistrationNumber>261994905</TaxRegistrationNumber>
+        <TaxAccountingBasis>F</TaxAccountingBasis>
+        <CompanyName>Empresa Carlos Leite</CompanyName>
+        <BusinessName>Empresa Carlos Leite</BusinessName>
+        <CompanyAddress>
+            <AddressDetail>Avenida Barbosa du Bocage, 45</AddressDetail>
+            <City>Lisboa</City>
+            <PostalCode>1049-013</PostalCode>
+            <Country>PT</Country>
+        </CompanyAddress>
+        <FiscalYear>2022</FiscalYear>
+        <StartDate>2022-01-01</StartDate>
+        <EndDate>2022-12-31</EndDate>
+        <CurrencyCode>EUR</CurrencyCode>
+        <DateCreated>2023-06-01</DateCreated>
+        <TaxEntity>Global</TaxEntity>
+        <ProductCompanyTaxID>503692310</ProductCompanyTaxID>
+        <SoftwareCertificateNumber>1662</SoftwareCertificateNumber>
+        <ProductID>TOConline/Ordem dos Contabilistas Certificados</ProductID>
+        <ProductVersion>3.0.4526</ProductVersion>
+    </Header>
+    <MasterFiles>
+        <Customer>
+            <CustomerID>3</CustomerID>
+            <AccountID>Desconhecido</AccountID>
+            <CustomerTaxID>217651143</CustomerTaxID>
+            <CompanyName>Sérgio Félix</CompanyName>
+            <Contact>Sérgio Félix</Contact>
+            <BillingAddress>
+                <AddressDetail>Curva da trindade</AddressDetail>
+                <City>Felgueiras</City>
+                <PostalCode>4610-156</PostalCode>
+                <Country>AF</Country>
+            </BillingAddress>
+            <ShipToAddress>
+                <AddressDetail>Curva da trindade</AddressDetail>
+                <City>Felgueiras</City>
+                <PostalCode>4610-156</PostalCode>
+                <Country>AF</Country>
+            </ShipToAddress>
+            <Email>sergiofelix@gmail.com</Email>
+            <SelfBillingIndicator>0</SelfBillingIndicator>
+        </Customer>
+        <Customer>
+            <CustomerID>6</CustomerID>
+            <AccountID>Desconhecido</AccountID>
+            <CustomerTaxID>250878445</CustomerTaxID>
+            <CompanyName>Diana Corina</CompanyName>
+            <Contact>Diana Corina</Contact>
+            <BillingAddress>
+                <AddressDetail>Reta da marfel</AddressDetail>
+                <City>Lisboa</City>
+                <PostalCode>4610-159</PostalCode>
+                <Country>CN</Country>
+            </BillingAddress>
+            <ShipToAddress>
+                <AddressDetail>Reta da marfel</AddressDetail>
+                <City>Lisboa</City>
+                <PostalCode>4610-159</PostalCode>
+                <Country>CN</Country>
+            </ShipToAddress>
+            <Email>dianacorina@gmail.com</Email>
+            <SelfBillingIndicator>0</SelfBillingIndicator>
+        </Customer>
+        <Customer>
+            <CustomerID>8</CustomerID>
+            <AccountID>Desconhecido</AccountID>
+            <CustomerTaxID>273826620</CustomerTaxID>
+            <CompanyName>Beatriz Melo</CompanyName>
+            <Contact>Beatriz Melo</Contact>
+            <BillingAddress>
+                <AddressDetail>Madeira, ali na curva</AddressDetail>
+                <City>Ribeira</City>
+                <PostalCode>4610-161</PostalCode>
+                <Country>AS</Country>
+            </BillingAddress>
+            <ShipToAddress>
+                <AddressDetail>Madeira, ali na curva</AddressDetail>
+                <City>Ribeira</City>
+                <PostalCode>4610-161</PostalCode>
+                <Country>AS</Country>
+            </ShipToAddress>
+            <Email>beatrizmelo@gmail.com</Email>
+            <SelfBillingIndicator>0</SelfBillingIndicator>
+        </Customer>
+        <Customer>
+            <CustomerID>9</CustomerID>
+            <AccountID>Desconhecido</AccountID>
+            <CustomerTaxID>296235369</CustomerTaxID>
+            <CompanyName>Rui Files</CompanyName>
+            <Contact>Rui Files</Contact>
+            <BillingAddress>
+                <AddressDetail>Rua do Curral</AddressDetail>
+                <City>Felgueiras</City>
+                <PostalCode>4610-162</PostalCode>
+                <Country>PT</Country>
+            </BillingAddress>
+            <ShipToAddress>
+                <AddressDetail>Rua do Curral</AddressDetail>
+                <City>Felgueiras</City>
+                <PostalCode>4610-162</PostalCode>
+                <Country>PT</Country>
+            </ShipToAddress>
+            <SelfBillingIndicator>0</SelfBillingIndicator>
+        </Customer>
+        <Customer>
+            <CustomerID>10</CustomerID>
+            <AccountID>Desconhecido</AccountID>
+            <CustomerTaxID>225502399</CustomerTaxID>
+            <CompanyName>Micael Dias</CompanyName>
+            <Contact>Micael Dias</Contact>
+            <BillingAddress>
+                <AddressDetail>Curva da amizade</AddressDetail>
+                <City>Felgueiras</City>
+                <PostalCode>4610-163</PostalCode>
+                <Country>PT</Country>
+            </BillingAddress>
+            <ShipToAddress>
+                <AddressDetail>Curva da amizade</AddressDetail>
+                <City>Felgueiras</City>
+                <PostalCode>4610-163</PostalCode>
+                <Country>PT</Country>
+            </ShipToAddress>
+            <SelfBillingIndicator>0</SelfBillingIndicator>
+        </Customer>
+        <Product>
+            <ProductType>P</ProductType>
+            <ProductCode>111117</ProductCode>
+            <ProductDescription>Teclado + Rato MITSAI C411 (Wireless - 1600 dpi - Ótico - Teclado Numérico)
+            </ProductDescription>
+            <ProductNumberCode>111117</ProductNumberCode>
+        </Product>
+        <Product>
+            <ProductType>P</ProductType>
+            <ProductCode>111116</ProductCode>
+            <ProductDescription>Monitor ASUS VZ27EHE (27'' - FHD - IPS)
+                Energetic Certification - E
+            </ProductDescription>
+            <ProductNumberCode>111116</ProductNumberCode>
+        </Product>
+        <Product>
+            <ProductType>P</ProductType>
+            <ProductCode>111111</ProductCode>
+            <ProductDescription>MICROSOFT Surface Go 2 (12.4'' - Intel Core i5 1135G7 - RAM: 8 GB - 256 GB SSD - Intel
+                Iris Xe Graphics)
+            </ProductDescription>
+            <ProductNumberCode>111111</ProductNumberCode>
+        </Product>
+        <Product>
+            <ProductType>P</ProductType>
+            <ProductCode>111113</ProductCode>
+            <ProductDescription>Rato MITSAI R575 (Wireless - Produtiva - 1600 dpi - Preto)</ProductDescription>
+            <ProductNumberCode>111113</ProductNumberCode>
+        </Product>
+        <Product>
+            <ProductType>P</ProductType>
+            <ProductCode>111119</ProductCode>
+            <ProductDescription>Rato HP 250 (Wireless - Regular - 1600 dpi - Preto)</ProductDescription>
+            <ProductNumberCode>111119</ProductNumberCode>
+        </Product>
+        <Product>
+            <ProductType>P</ProductType>
+            <ProductCode>111112</ProductCode>
+            <ProductDescription>Portátil ASUS Vivobook F1605EA-51ALHDSB1</ProductDescription>
+            <ProductNumberCode>111112</ProductNumberCode>
+        </Product>
+        <Product>
+            <ProductType>P</ProductType>
+            <ProductCode>111115</ProductCode>
+            <ProductDescription>Tablet SAMSUNG Galaxy A7 Lite</ProductDescription>
+            <ProductNumberCode>111115</ProductNumberCode>
+        </Product>
+        <Product>
+            <ProductType>P</ProductType>
+            <ProductCode>111118</ProductCode>
+            <ProductDescription>Monitor AOC 24B1H (23.6'' - Full HD - LED)
+                Energetic Certification - E
+            </ProductDescription>
+            <ProductNumberCode>111118</ProductNumberCode>
+        </Product>
+        <Product>
+            <ProductType>S</ProductType>
+            <ProductCode>OUTROS</ProductCode>
+            <ProductDescription>OUTROS PRODUTOS E SERVIÇOS</ProductDescription>
+            <ProductNumberCode>OUTROS</ProductNumberCode>
+        </Product>
+        <TaxTable>
+            <TaxTableEntry>
+                <TaxType>IVA</TaxType>
+                <TaxCountryRegion>PT</TaxCountryRegion>
+                <TaxCode>NOR</TaxCode>
+                <Description>Normal</Description>
+                <TaxPercentage>23</TaxPercentage>
+            </TaxTableEntry>
+            <TaxTableEntry>
+                <TaxType>IVA</TaxType>
+                <TaxCountryRegion>PT</TaxCountryRegion>
+                <TaxCode>INT</TaxCode>
+                <Description>Intermédia</Description>
+                <TaxPercentage>13</TaxPercentage>
+            </TaxTableEntry>
+            <TaxTableEntry>
+                <TaxType>IVA</TaxType>
+                <TaxCountryRegion>PT</TaxCountryRegion>
+                <TaxCode>RED</TaxCode>
+                <Description>Reduzida</Description>
+                <TaxPercentage>6</TaxPercentage>
+            </TaxTableEntry>
+            <TaxTableEntry>
+                <TaxType>IVA</TaxType>
+                <TaxCountryRegion>PT</TaxCountryRegion>
+                <TaxCode>ISE</TaxCode>
+                <Description>Isenta</Description>
+                <TaxPercentage>0</TaxPercentage>
+            </TaxTableEntry>
+            <TaxTableEntry>
+                <TaxType>IVA</TaxType>
+                <TaxCountryRegion>PT-MA</TaxCountryRegion>
+                <TaxCode>NOR</TaxCode>
+                <Description>Normal</Description>
+                <TaxPercentage>22</TaxPercentage>
+            </TaxTableEntry>
+            <TaxTableEntry>
+                <TaxType>IVA</TaxType>
+                <TaxCountryRegion>PT-MA</TaxCountryRegion>
+                <TaxCode>INT</TaxCode>
+                <Description>Intermédia</Description>
+                <TaxPercentage>12</TaxPercentage>
+            </TaxTableEntry>
+            <TaxTableEntry>
+                <TaxType>IVA</TaxType>
+                <TaxCountryRegion>PT-MA</TaxCountryRegion>
+                <TaxCode>RED</TaxCode>
+                <Description>Reduzida</Description>
+                <TaxPercentage>5</TaxPercentage>
+            </TaxTableEntry>
+            <TaxTableEntry>
+                <TaxType>IVA</TaxType>
+                <TaxCountryRegion>PT-MA</TaxCountryRegion>
+                <TaxCode>ISE</TaxCode>
+                <Description>Isenta</Description>
+                <TaxPercentage>0</TaxPercentage>
+            </TaxTableEntry>
+            <TaxTableEntry>
+                <TaxType>IVA</TaxType>
+                <TaxCountryRegion>PT-AC</TaxCountryRegion>
+                <TaxCode>ISE</TaxCode>
+                <Description>Isenta</Description>
+                <TaxPercentage>0</TaxPercentage>
+            </TaxTableEntry>
+            <TaxTableEntry>
+                <TaxType>IVA</TaxType>
+                <TaxCountryRegion>PT-AC</TaxCountryRegion>
+                <TaxCode>INT</TaxCode>
+                <Description>Intermédia</Description>
+                <TaxPercentage>9</TaxPercentage>
+            </TaxTableEntry>
+            <TaxTableEntry>
+                <TaxType>IVA</TaxType>
+                <TaxCountryRegion>PT-AC</TaxCountryRegion>
+                <TaxCode>RED</TaxCode>
+                <Description>Reduzida</Description>
+                <TaxPercentage>4</TaxPercentage>
+            </TaxTableEntry>
+            <TaxTableEntry>
+                <TaxType>IVA</TaxType>
+                <TaxCountryRegion>PT-AC</TaxCountryRegion>
+                <TaxCode>NOR</TaxCode>
+                <Description>Normal</Description>
+                <TaxPercentage>16</TaxPercentage>
+            </TaxTableEntry>
+        </TaxTable>
+    </MasterFiles>
+    <SourceDocuments>
+        <SalesInvoices>
+            <NumberOfEntries>9</NumberOfEntries>
+            <TotalDebit>0.00</TotalDebit>
+            <TotalCredit>11759.14</TotalCredit>
+            <Invoice>
+                <InvoiceNo>FT 2022/1</InvoiceNo>
+                <ATCUD>0-1</ATCUD>
+                <DocumentStatus>
+                    <InvoiceStatus>N</InvoiceStatus>
+                    <InvoiceStatusDate>2023-06-01T14:33:53</InvoiceStatusDate>
+                    <SourceID>29947</SourceID>
+                    <SourceBilling>P</SourceBilling>
+                </DocumentStatus>
+                <Hash>
+                    X0L3rqPd+L6bsJev9gkqY0IQRnLh3coRXspYpSPzGJ9piYNegraW0Cra4Xf4aie25muPAfAlMqz9Mw/G6EnDkXlAJ8Bst5/o0GDL1VyQ3sp86LWVhL+trPtQR0y6E0PYEBzhdY3HMJq4WM7j6jkXVTJVrUJkiZMY8lXbJAxvUcI=
+                </Hash>
+                <HashControl>1</HashControl>
+                <Period>1</Period>
+                <InvoiceDate>2022-01-11</InvoiceDate>
+                <InvoiceType>FT</InvoiceType>
+                <SpecialRegimes>
+                    <SelfBillingIndicator>0</SelfBillingIndicator>
+                    <CashVATSchemeIndicator>0</CashVATSchemeIndicator>
+                    <ThirdPartiesBillingIndicator>0</ThirdPartiesBillingIndicator>
+                </SpecialRegimes>
+                <SourceID>29947</SourceID>
+                <SystemEntryDate>2023-06-01T14:33:53</SystemEntryDate>
+                <CustomerID>9</CustomerID>
+                <Line>
+                    <LineNumber>1</LineNumber>
+                    <ProductCode>111117</ProductCode>
+                    <ProductDescription>Teclado + Rato MITSAI C411 (Wireless - 1600 dpi - Ótico - Teclado Numérico)
+                    </ProductDescription>
+                    <Quantity>1.00</Quantity>
+                    <UnitOfMeasure>un</UnitOfMeasure>
+                    <UnitPrice>16.25000</UnitPrice>
+                    <TaxPointDate>2022-01-11</TaxPointDate>
+                    <Description>Teclado + Rato MITSAI C411 (Wireless - 1600 dpi - Ótico - Te</Description>
+                    <CreditAmount>16.25</CreditAmount>
+                    <Tax>
+                        <TaxType>IVA</TaxType>
+                        <TaxCountryRegion>PT</TaxCountryRegion>
+                        <TaxCode>NOR</TaxCode>
+                        <TaxPercentage>23</TaxPercentage>
+                    </Tax>
+                </Line>
+                <Line>
+                    <LineNumber>2</LineNumber>
+                    <ProductCode>111116</ProductCode>
+                    <ProductDescription>Monitor ASUS VZ27EHE (27'' - FHD - IPS)
+                        Energetic Certification - E
+                    </ProductDescription>
+                    <Quantity>1.00</Quantity>
+                    <UnitOfMeasure>un</UnitOfMeasure>
+                    <UnitPrice>126.82000</UnitPrice>
+                    <TaxPointDate>2022-01-11</TaxPointDate>
+                    <Description>Monitor ASUS VZ27EHE (27'' - FHD - IPS)&#13;
+                        Energetic Certifica
+                    </Description>
+                    <CreditAmount>126.82</CreditAmount>
+                    <Tax>
+                        <TaxType>IVA</TaxType>
+                        <TaxCountryRegion>PT</TaxCountryRegion>
+                        <TaxCode>NOR</TaxCode>
+                        <TaxPercentage>23</TaxPercentage>
+                    </Tax>
+                </Line>
+                <DocumentTotals>
+                    <TaxPayable>32.91</TaxPayable>
+                    <NetTotal>143.07</NetTotal>
+                    <GrossTotal>175.98</GrossTotal>
+                </DocumentTotals>
+            </Invoice>
+            <Invoice>
+                <InvoiceNo>FT 2022/2</InvoiceNo>
+                <ATCUD>0-2</ATCUD>
+                <DocumentStatus>
+                    <InvoiceStatus>N</InvoiceStatus>
+                    <InvoiceStatusDate>2023-06-01T14:34:48</InvoiceStatusDate>
+                    <SourceID>29947</SourceID>
+                    <SourceBilling>P</SourceBilling>
+                </DocumentStatus>
+                <Hash>
+                    Bt/tCFo0VwtNALxtnjD7EMeJ2RuW6dpH0xLzS5aoHVhsOlsYqf8A5BWparRHLTQI6PjxkN1GvbadRHf3eJkgzcCFkoFNW5q223qgIWnTPkVRToWHDFZ/0i37n+tY/z5gz/rnj1ZD/wndmYMyWrDwdnli5Mnpf3hci+xVqns1iQU=
+                </Hash>
+                <HashControl>1</HashControl>
+                <Period>1</Period>
+                <InvoiceDate>2022-01-26</InvoiceDate>
+                <InvoiceType>FT</InvoiceType>
+                <SpecialRegimes>
+                    <SelfBillingIndicator>0</SelfBillingIndicator>
+                    <CashVATSchemeIndicator>0</CashVATSchemeIndicator>
+                    <ThirdPartiesBillingIndicator>0</ThirdPartiesBillingIndicator>
+                </SpecialRegimes>
+                <SourceID>29947</SourceID>
+                <SystemEntryDate>2023-06-01T14:34:48</SystemEntryDate>
+                <CustomerID>8</CustomerID>
+                <Line>
+                    <LineNumber>1</LineNumber>
+                    <ProductCode>111111</ProductCode>
+                    <ProductDescription>MICROSOFT Surface Go 2 (12.4'' - Intel Core i5 1135G7 - RAM: 8 GB - 256 GB SSD -
+                        Intel Iris Xe Graphics)
+                    </ProductDescription>
+                    <Quantity>1.00</Quantity>
+                    <UnitOfMeasure>un</UnitOfMeasure>
+                    <UnitPrice>772.36000</UnitPrice>
+                    <TaxPointDate>2022-01-26</TaxPointDate>
+                    <Description>MICROSOFT Surface Go 2 (12.4'' - Intel Core i5 1135G7 - RAM:</Description>
+                    <CreditAmount>772.36</CreditAmount>
+                    <Tax>
+                        <TaxType>IVA</TaxType>
+                        <TaxCountryRegion>PT</TaxCountryRegion>
+                        <TaxCode>NOR</TaxCode>
+                        <TaxPercentage>23</TaxPercentage>
+                    </Tax>
+                </Line>
+                <Line>
+                    <LineNumber>2</LineNumber>
+                    <ProductCode>111113</ProductCode>
+                    <ProductDescription>Rato MITSAI R575 (Wireless - Produtiva - 1600 dpi - Preto)</ProductDescription>
+                    <Quantity>1.00</Quantity>
+                    <UnitOfMeasure>un</UnitOfMeasure>
+                    <UnitPrice>24.38000</UnitPrice>
+                    <TaxPointDate>2022-01-26</TaxPointDate>
+                    <Description>Rato MITSAI R575 (Wireless - Produtiva - 1600 dpi - Preto)</Description>
+                    <CreditAmount>24.38</CreditAmount>
+                    <Tax>
+                        <TaxType>IVA</TaxType>
+                        <TaxCountryRegion>PT</TaxCountryRegion>
+                        <TaxCode>NOR</TaxCode>
+                        <TaxPercentage>23</TaxPercentage>
+                    </Tax>
+                </Line>
+                <DocumentTotals>
+                    <TaxPayable>183.25</TaxPayable>
+                    <NetTotal>796.74</NetTotal>
+                    <GrossTotal>979.99</GrossTotal>
+                </DocumentTotals>
+            </Invoice>
+            <Invoice>
+                <InvoiceNo>FT 2022/3</InvoiceNo>
+                <ATCUD>0-3</ATCUD>
+                <DocumentStatus>
+                    <InvoiceStatus>N</InvoiceStatus>
+                    <InvoiceStatusDate>2023-06-01T14:36:33</InvoiceStatusDate>
+                    <SourceID>29947</SourceID>
+                    <SourceBilling>P</SourceBilling>
+                </DocumentStatus>
+                <Hash>
+                    vO5bDw1jvg4ZJnaiWePjJX8enApBxf85BcKj1roxFB1tyIlH5nmPHIUEe+cEomQ5Xq/Y4gx1NeLTf/jBjhc+TYPixyrJD14a1ieEl292tbQXMkpsww6Mrdw8WWdzXiQ22zmDLrH9YeMit1fXl/ywa4T2aEu4R4NzAavHGNPC30w=
+                </Hash>
+                <HashControl>1</HashControl>
+                <Period>2</Period>
+                <InvoiceDate>2022-02-15</InvoiceDate>
+                <InvoiceType>FT</InvoiceType>
+                <SpecialRegimes>
+                    <SelfBillingIndicator>0</SelfBillingIndicator>
+                    <CashVATSchemeIndicator>0</CashVATSchemeIndicator>
+                    <ThirdPartiesBillingIndicator>0</ThirdPartiesBillingIndicator>
+                </SpecialRegimes>
+                <SourceID>29947</SourceID>
+                <SystemEntryDate>2023-06-01T14:36:33</SystemEntryDate>
+                <CustomerID>6</CustomerID>
+                <Line>
+                    <LineNumber>1</LineNumber>
+                    <ProductCode>111111</ProductCode>
+                    <ProductDescription>MICROSOFT Surface Go 2 (12.4'' - Intel Core i5 1135G7 - RAM: 8 GB - 256 GB SSD -
+                        Intel Iris Xe Graphics)
+                    </ProductDescription>
+                    <Quantity>11.00</Quantity>
+                    <UnitOfMeasure>un</UnitOfMeasure>
+                    <UnitPrice>772.35727</UnitPrice>
+                    <TaxPointDate>2022-02-15</TaxPointDate>
+                    <Description>MICROSOFT Surface Go 2 (12.4'' - Intel Core i5 1135G7 - RAM:</Description>
+                    <CreditAmount>8495.93</CreditAmount>
+                    <Tax>
+                        <TaxType>IVA</TaxType>
+                        <TaxCountryRegion>PT</TaxCountryRegion>
+                        <TaxCode>NOR</TaxCode>
+                        <TaxPercentage>23</TaxPercentage>
+                    </Tax>
+                </Line>
+                <DocumentTotals>
+                    <TaxPayable>1954.06</TaxPayable>
+                    <NetTotal>8495.93</NetTotal>
+                    <GrossTotal>10449.99</GrossTotal>
+                </DocumentTotals>
+            </Invoice>
+            <Invoice>
+                <InvoiceNo>FT 2022/4</InvoiceNo>
+                <ATCUD>0-4</ATCUD>
+                <DocumentStatus>
+                    <InvoiceStatus>N</InvoiceStatus>
+                    <InvoiceStatusDate>2023-06-01T14:37:28</InvoiceStatusDate>
+                    <SourceID>29947</SourceID>
+                    <SourceBilling>P</SourceBilling>
+                </DocumentStatus>
+                <Hash>
+                    FE0DpqGb9rWjDvpgBQNXL5jafjbgMl3kf45TeE8XhbR1+ZSd4xTjmVGmj0wbzwvpxAEZpLjXbOCHwjjC0iLgnaHBoYaFnjksp9vFz5QTd0Zw+nIt5LVHYua9MtVJJ0ge+lWn3X0S5asuujNJBHvrXlCANzUTDiURqVED+fzlTnw=
+                </Hash>
+                <HashControl>1</HashControl>
+                <Period>2</Period>
+                <InvoiceDate>2022-02-16</InvoiceDate>
+                <InvoiceType>FT</InvoiceType>
+                <SpecialRegimes>
+                    <SelfBillingIndicator>0</SelfBillingIndicator>
+                    <CashVATSchemeIndicator>0</CashVATSchemeIndicator>
+                    <ThirdPartiesBillingIndicator>0</ThirdPartiesBillingIndicator>
+                </SpecialRegimes>
+                <SourceID>29947</SourceID>
+                <SystemEntryDate>2023-06-01T14:37:28</SystemEntryDate>
+                <CustomerID>8</CustomerID>
+                <Line>
+                    <LineNumber>1</LineNumber>
+                    <ProductCode>111113</ProductCode>
+                    <ProductDescription>Rato MITSAI R575 (Wireless - Produtiva - 1600 dpi - Preto)</ProductDescription>
+                    <Quantity>1.00</Quantity>
+                    <UnitOfMeasure>un</UnitOfMeasure>
+                    <UnitPrice>24.38000</UnitPrice>
+                    <TaxPointDate>2022-02-16</TaxPointDate>
+                    <Description>Rato MITSAI R575 (Wireless - Produtiva - 1600 dpi - Preto)</Description>
+                    <CreditAmount>24.38</CreditAmount>
+                    <Tax>
+                        <TaxType>IVA</TaxType>
+                        <TaxCountryRegion>PT</TaxCountryRegion>
+                        <TaxCode>NOR</TaxCode>
+                        <TaxPercentage>23</TaxPercentage>
+                    </Tax>
+                </Line>
+                <DocumentTotals>
+                    <TaxPayable>5.61</TaxPayable>
+                    <NetTotal>24.38</NetTotal>
+                    <GrossTotal>29.99</GrossTotal>
+                </DocumentTotals>
+            </Invoice>
+            <Invoice>
+                <InvoiceNo>FT 2022/5</InvoiceNo>
+                <ATCUD>0-5</ATCUD>
+                <DocumentStatus>
+                    <InvoiceStatus>N</InvoiceStatus>
+                    <InvoiceStatusDate>2023-06-01T14:40:43</InvoiceStatusDate>
+                    <SourceID>29947</SourceID>
+                    <SourceBilling>P</SourceBilling>
+                </DocumentStatus>
+                <Hash>
+                    qWsqFx/QyKWJ0fg0/CCVZ/mlqWoHOMBwENEt7zoqdMetm+xEUCMoEy6ynhDG35Io8Tg55N68vUzBO0yc4apLIy2UGJ8MPYieSpl+irVVjkAUHxoZZS2K3ZNC9u3Y6bc8/9G9+8tJhlYeO3VrXNUMul3zhu7eg2+Lz8YGHuVu82g=
+                </Hash>
+                <HashControl>1</HashControl>
+                <Period>3</Period>
+                <InvoiceDate>2022-03-08</InvoiceDate>
+                <InvoiceType>FT</InvoiceType>
+                <SpecialRegimes>
+                    <SelfBillingIndicator>0</SelfBillingIndicator>
+                    <CashVATSchemeIndicator>0</CashVATSchemeIndicator>
+                    <ThirdPartiesBillingIndicator>0</ThirdPartiesBillingIndicator>
+                </SpecialRegimes>
+                <SourceID>29947</SourceID>
+                <SystemEntryDate>2023-06-01T14:40:43</SystemEntryDate>
+                <CustomerID>10</CustomerID>
+                <Line>
+                    <LineNumber>1</LineNumber>
+                    <ProductCode>111119</ProductCode>
+                    <ProductDescription>Rato HP 250 (Wireless - Regular - 1600 dpi - Preto)</ProductDescription>
+                    <Quantity>1.00</Quantity>
+                    <UnitOfMeasure>un</UnitOfMeasure>
+                    <UnitPrice>13.81000</UnitPrice>
+                    <TaxPointDate>2022-03-08</TaxPointDate>
+                    <Description>Rato HP 250 (Wireless - Regular - 1600 dpi - Preto)</Description>
+                    <CreditAmount>13.81</CreditAmount>
+                    <Tax>
+                        <TaxType>IVA</TaxType>
+                        <TaxCountryRegion>PT</TaxCountryRegion>
+                        <TaxCode>NOR</TaxCode>
+                        <TaxPercentage>23</TaxPercentage>
+                    </Tax>
+                </Line>
+                <Line>
+                    <LineNumber>2</LineNumber>
+                    <ProductCode>111112</ProductCode>
+                    <ProductDescription>Portátil ASUS Vivobook F1605EA-51ALHDSB1</ProductDescription>
+                    <Quantity>1.00</Quantity>
+                    <UnitOfMeasure>un</UnitOfMeasure>
+                    <UnitPrice>569.10000</UnitPrice>
+                    <TaxPointDate>2022-03-08</TaxPointDate>
+                    <Description>Portátil ASUS Vivobook F1605EA-51ALHDSB1</Description>
+                    <CreditAmount>569.10</CreditAmount>
+                    <Tax>
+                        <TaxType>IVA</TaxType>
+                        <TaxCountryRegion>PT</TaxCountryRegion>
+                        <TaxCode>NOR</TaxCode>
+                        <TaxPercentage>23</TaxPercentage>
+                    </Tax>
+                </Line>
+                <DocumentTotals>
+                    <TaxPayable>134.07</TaxPayable>
+                    <NetTotal>582.91</NetTotal>
+                    <GrossTotal>716.98</GrossTotal>
+                </DocumentTotals>
+            </Invoice>
+            <Invoice>
+                <InvoiceNo>FT 2022/6</InvoiceNo>
+                <ATCUD>0-6</ATCUD>
+                <DocumentStatus>
+                    <InvoiceStatus>N</InvoiceStatus>
+                    <InvoiceStatusDate>2023-06-01T14:41:54</InvoiceStatusDate>
+                    <SourceID>29947</SourceID>
+                    <SourceBilling>P</SourceBilling>
+                </DocumentStatus>
+                <Hash>
+                    dovoViO/fJNKJQgWJg9dt+O2WNPhBCcIT2c/TpSmcK31uuT8+NvZKlSknWXuEr4p9hOJSC22DwdjMXJW6qwiOQ1aRY97BhBXkzqLQ1hCOM0lRR9vnzxOSt8E/9ozc2QE0Z6cO1fcok4PMocp7RSJoE+ERTASPhJihtE5QsKfuGU=
+                </Hash>
+                <HashControl>1</HashControl>
+                <Period>3</Period>
+                <InvoiceDate>2022-03-10</InvoiceDate>
+                <InvoiceType>FT</InvoiceType>
+                <SpecialRegimes>
+                    <SelfBillingIndicator>0</SelfBillingIndicator>
+                    <CashVATSchemeIndicator>0</CashVATSchemeIndicator>
+                    <ThirdPartiesBillingIndicator>0</ThirdPartiesBillingIndicator>
+                </SpecialRegimes>
+                <SourceID>29947</SourceID>
+                <SystemEntryDate>2023-06-01T14:41:54</SystemEntryDate>
+                <CustomerID>9</CustomerID>
+                <Line>
+                    <LineNumber>1</LineNumber>
+                    <ProductCode>111115</ProductCode>
+                    <ProductDescription>Tablet SAMSUNG Galaxy A7 Lite</ProductDescription>
+                    <Quantity>11.00</Quantity>
+                    <UnitOfMeasure>un</UnitOfMeasure>
+                    <UnitPrice>130.07364</UnitPrice>
+                    <TaxPointDate>2022-03-10</TaxPointDate>
+                    <Description>Tablet SAMSUNG Galaxy A7 Lite</Description>
+                    <CreditAmount>1430.81</CreditAmount>
+                    <Tax>
+                        <TaxType>IVA</TaxType>
+                        <TaxCountryRegion>PT</TaxCountryRegion>
+                        <TaxCode>NOR</TaxCode>
+                        <TaxPercentage>23</TaxPercentage>
+                    </Tax>
+                </Line>
+                <DocumentTotals>
+                    <TaxPayable>329.09</TaxPayable>
+                    <NetTotal>1430.81</NetTotal>
+                    <GrossTotal>1759.90</GrossTotal>
+                </DocumentTotals>
+            </Invoice>
+            <Invoice>
+                <InvoiceNo>FT 2022/7</InvoiceNo>
+                <ATCUD>0-7</ATCUD>
+                <DocumentStatus>
+                    <InvoiceStatus>N</InvoiceStatus>
+                    <InvoiceStatusDate>2023-06-01T14:43:10</InvoiceStatusDate>
+                    <SourceID>29947</SourceID>
+                    <SourceBilling>P</SourceBilling>
+                </DocumentStatus>
+                <Hash>
+                    obKz6u39LxGvOyxVHkQ/pAi2nzasXY/6TtpL0MK+Vj0roA/m05ruiinDBEkMBk81uPz2jTMXdGIuoZtYp4r/SiZBegjJ5Flk57OsijnIQHa8W8AIBprmI3yKn2AJZ1VTQznx8LN7zG0PjzTJPBwmDW3MtF1aV0UZDYyTmXpVTWk=
+                </Hash>
+                <HashControl>1</HashControl>
+                <Period>3</Period>
+                <InvoiceDate>2022-03-23</InvoiceDate>
+                <InvoiceType>FT</InvoiceType>
+                <SpecialRegimes>
+                    <SelfBillingIndicator>0</SelfBillingIndicator>
+                    <CashVATSchemeIndicator>0</CashVATSchemeIndicator>
+                    <ThirdPartiesBillingIndicator>0</ThirdPartiesBillingIndicator>
+                </SpecialRegimes>
+                <SourceID>29947</SourceID>
+                <SystemEntryDate>2023-06-01T14:43:10</SystemEntryDate>
+                <CustomerID>3</CustomerID>
+                <Line>
+                    <LineNumber>1</LineNumber>
+                    <ProductCode>111119</ProductCode>
+                    <ProductDescription>Rato HP 250 (Wireless - Regular - 1600 dpi - Preto)</ProductDescription>
+                    <Quantity>3.00</Quantity>
+                    <UnitOfMeasure>un</UnitOfMeasure>
+                    <UnitPrice>13.81333</UnitPrice>
+                    <TaxPointDate>2022-03-23</TaxPointDate>
+                    <Description>Rato HP 250 (Wireless - Regular - 1600 dpi - Preto)</Description>
+                    <CreditAmount>41.44</CreditAmount>
+                    <Tax>
+                        <TaxType>IVA</TaxType>
+                        <TaxCountryRegion>PT</TaxCountryRegion>
+                        <TaxCode>NOR</TaxCode>
+                        <TaxPercentage>23</TaxPercentage>
+                    </Tax>
+                </Line>
+                <DocumentTotals>
+                    <TaxPayable>9.53</TaxPayable>
+                    <NetTotal>41.44</NetTotal>
+                    <GrossTotal>50.97</GrossTotal>
+                </DocumentTotals>
+            </Invoice>
+            <Invoice>
+                <InvoiceNo>FT 2022/8</InvoiceNo>
+                <ATCUD>0-8</ATCUD>
+                <DocumentStatus>
+                    <InvoiceStatus>N</InvoiceStatus>
+                    <InvoiceStatusDate>2023-06-01T14:44:05</InvoiceStatusDate>
+                    <SourceID>29947</SourceID>
+                    <SourceBilling>P</SourceBilling>
+                </DocumentStatus>
+                <Hash>
+                    EVNEzIhnf03GeQnmlEhudM53H6sUZTZPuwQgv7nj0GkHnqSPaOPhJfH4dX6u8irlZXWq5Ggm5061cyYFzbkpuQWBGq1EnpSoxeMrma1WFvMaxTjo9e27paAl79JPJHP18HSMuc3veebcSN3TYYcBasHUlsj6U9ViM22t7dBJVCk=
+                </Hash>
+                <HashControl>1</HashControl>
+                <Period>4</Period>
+                <InvoiceDate>2022-04-08</InvoiceDate>
+                <InvoiceType>FT</InvoiceType>
+                <SpecialRegimes>
+                    <SelfBillingIndicator>0</SelfBillingIndicator>
+                    <CashVATSchemeIndicator>0</CashVATSchemeIndicator>
+                    <ThirdPartiesBillingIndicator>0</ThirdPartiesBillingIndicator>
+                </SpecialRegimes>
+                <SourceID>29947</SourceID>
+                <SystemEntryDate>2023-06-01T14:44:05</SystemEntryDate>
+                <CustomerID>6</CustomerID>
+                <Line>
+                    <LineNumber>1</LineNumber>
+                    <ProductCode>111118</ProductCode>
+                    <ProductDescription>Monitor AOC 24B1H (23.6'' - Full HD - LED)
+                        Energetic Certification - E
+                    </ProductDescription>
+                    <Quantity>1.00</Quantity>
+                    <UnitOfMeasure>un</UnitOfMeasure>
+                    <UnitPrice>81.29000</UnitPrice>
+                    <TaxPointDate>2022-04-08</TaxPointDate>
+                    <Description>Monitor AOC 24B1H (23.6'' - Full HD - LED)&#13;
+                        Energetic Certif
+                    </Description>
+                    <CreditAmount>81.29</CreditAmount>
+                    <Tax>
+                        <TaxType>IVA</TaxType>
+                        <TaxCountryRegion>PT</TaxCountryRegion>
+                        <TaxCode>NOR</TaxCode>
+                        <TaxPercentage>23</TaxPercentage>
+                    </Tax>
+                </Line>
+                <Line>
+                    <LineNumber>2</LineNumber>
+                    <ProductCode>111117</ProductCode>
+                    <ProductDescription>Teclado + Rato MITSAI C411 (Wireless - 1600 dpi - Ótico - Teclado Numérico)
+                    </ProductDescription>
+                    <Quantity>1.00</Quantity>
+                    <UnitOfMeasure>un</UnitOfMeasure>
+                    <UnitPrice>16.25000</UnitPrice>
+                    <TaxPointDate>2022-04-08</TaxPointDate>
+                    <Description>Teclado + Rato MITSAI C411 (Wireless - 1600 dpi - Ótico - Te</Description>
+                    <CreditAmount>16.25</CreditAmount>
+                    <Tax>
+                        <TaxType>IVA</TaxType>
+                        <TaxCountryRegion>PT</TaxCountryRegion>
+                        <TaxCode>NOR</TaxCode>
+                        <TaxPercentage>23</TaxPercentage>
+                    </Tax>
+                </Line>
+                <DocumentTotals>
+                    <TaxPayable>22.43</TaxPayable>
+                    <NetTotal>97.54</NetTotal>
+                    <GrossTotal>119.97</GrossTotal>
+                </DocumentTotals>
+            </Invoice>
+            <Invoice>
+                <InvoiceNo>FT 2022/9</InvoiceNo>
+                <ATCUD>0-9</ATCUD>
+                <DocumentStatus>
+                    <InvoiceStatus>N</InvoiceStatus>
+                    <InvoiceStatusDate>2023-06-01T15:12:24</InvoiceStatusDate>
+                    <SourceID>29947</SourceID>
+                    <SourceBilling>P</SourceBilling>
+                </DocumentStatus>
+                <Hash>
+                    rNZmvBHUhIZpsX/4WzgFLocdjM/ATQn1QCsYy5k2/0aDE9p6oX+JhlFgR1e4OW5pwWcO5xj4dUuO+N+Gre+kFtfduHMfpUVP4iIQJpDZq6KQzAFAhIqi096Khb8P0HemxlEPaPzm0E8VNl3xWDCW/G0paSgPvdAlgMWQZvYhQZ8=
+                </Hash>
+                <HashControl>1</HashControl>
+                <Period>8</Period>
+                <InvoiceDate>2022-08-15</InvoiceDate>
+                <InvoiceType>FT</InvoiceType>
+                <SpecialRegimes>
+                    <SelfBillingIndicator>0</SelfBillingIndicator>
+                    <CashVATSchemeIndicator>0</CashVATSchemeIndicator>
+                    <ThirdPartiesBillingIndicator>0</ThirdPartiesBillingIndicator>
+                </SpecialRegimes>
+                <SourceID>29947</SourceID>
+                <SystemEntryDate>2023-06-01T15:12:24</SystemEntryDate>
+                <CustomerID>8</CustomerID>
+                <Line>
+                    <LineNumber>1</LineNumber>
+                    <ProductCode>111117</ProductCode>
+                    <ProductDescription>Teclado + Rato MITSAI C411 (Wireless - 1600 dpi - Ótico - Teclado Numérico)
+                    </ProductDescription>
+                    <Quantity>1.00</Quantity>
+                    <UnitOfMeasure>un</UnitOfMeasure>
+                    <UnitPrice>16.25000</UnitPrice>
+                    <TaxPointDate>2022-08-15</TaxPointDate>
+                    <Description>Teclado + Rato MITSAI C411 (Wireless - 1600 dpi - Ótico - Te</Description>
+                    <CreditAmount>16.25</CreditAmount>
+                    <Tax>
+                        <TaxType>IVA</TaxType>
+                        <TaxCountryRegion>PT</TaxCountryRegion>
+                        <TaxCode>NOR</TaxCode>
+                        <TaxPercentage>23</TaxPercentage>
+                    </Tax>
+                </Line>
+                <Line>
+                    <LineNumber>2</LineNumber>
+                    <ProductCode>111115</ProductCode>
+                    <ProductDescription>Tablet SAMSUNG Galaxy A7 Lite</ProductDescription>
+                    <Quantity>1.00</Quantity>
+                    <UnitOfMeasure>un</UnitOfMeasure>
+                    <UnitPrice>130.07000</UnitPrice>
+                    <TaxPointDate>2022-08-15</TaxPointDate>
+                    <Description>Tablet SAMSUNG Galaxy A7 Lite</Description>
+                    <CreditAmount>130.07</CreditAmount>
+                    <Tax>
+                        <TaxType>IVA</TaxType>
+                        <TaxCountryRegion>PT</TaxCountryRegion>
+                        <TaxCode>NOR</TaxCode>
+                        <TaxPercentage>23</TaxPercentage>
+                    </Tax>
+                </Line>
+                <DocumentTotals>
+                    <TaxPayable>33.66</TaxPayable>
+                    <NetTotal>146.33</NetTotal>
+                    <GrossTotal>179.99</GrossTotal>
+                </DocumentTotals>
+            </Invoice>
+        </SalesInvoices>
+        <MovementOfGoods>
+            <NumberOfMovementLines>0</NumberOfMovementLines>
+            <TotalQuantityIssued>0</TotalQuantityIssued>
+        </MovementOfGoods>
+        <WorkingDocuments>
+            <NumberOfEntries>0</NumberOfEntries>
+            <TotalDebit>0.00</TotalDebit>
+            <TotalCredit>0.00</TotalCredit>
+        </WorkingDocuments>
+        <Payments>
+            <NumberOfEntries>0</NumberOfEntries>
+            <TotalDebit>0.00</TotalDebit>
+            <TotalCredit>0.00</TotalCredit>
+        </Payments>
+    </SourceDocuments>
+</AuditFile>
