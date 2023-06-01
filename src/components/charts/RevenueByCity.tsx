@@ -1,12 +1,11 @@
 import {Card, DonutChart, Legend, Title,} from "@tremor/react";
-import useSalesByCity from "@sio/hooks/useSalesByCity";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
 import formatEuro from "@sio/utils/formatEuro";
 import BaseProps from "@sio/types";
 import useRevenueByCity from "@sio/hooks/useRevenueByCity";
 
 export default function SalesByCity({company, year}: BaseProps) {
-    const {data, isLoading, isError} = useRevenueByCity({company, year})
+    const {revenueByCity, isLoading, isError} = useRevenueByCity({company, year})
 
     return (
         <Card>

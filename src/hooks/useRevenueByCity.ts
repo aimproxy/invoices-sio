@@ -8,24 +8,23 @@ const useRevenueByCity = ({company, year}: { company: string, year: string }) =>
         return await res.json();
     }
 
-    const {
-        data,
-        isLoading,
-        isError
-    } = useQuery(['revenue_by_city', company, year], {
-        queryFn: async () => await fetchSalesByCity(company, year),
-    })
+    const {data, isLoading, isError} = useQuery(
+        ['revenue_by_city', company, year], {
+            queryFn: async () => await fetchSalesByCity(company, year),
+        })
 
-    const revenueByCity = data?.map((rc) => ({
-        billing_city: rc.billing_city,
-        net_total: Number(rc.net_total)
-    }))
+    return useMemo(() => {
+        const revenueByCity = data?.map((rc) => ({
+            billing_city: rc.billing_city,
+            net_total: Number(rc.net_total)
+        }))
 
-    return useMemo(() => ({
-        revenueByCity,
-        isLoading,
-        isError
-    }), [revenueByCity, isError, isLoading])
+        return {
+            revenueByCity,
+            isLoading,
+            isError
+        }
+    }, [data, isError, isLoading])
 }
 
 export default useRevenueByCity

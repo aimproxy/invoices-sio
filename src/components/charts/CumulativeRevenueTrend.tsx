@@ -13,7 +13,7 @@ export default function CumulativeRevenueTrend({company, year}: BaseProps) {
             <Title>Cumulative Revenue Trend</Title>
             <Text>Whether the revenue is increasing, or remaining the same</Text>
 
-            {isLoading
+            {isLoading || isError
                 ? <ChartSkeleton/>
                 : <LineChart
                     className="mt-8"

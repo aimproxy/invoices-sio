@@ -8,24 +8,23 @@ const useRevenueByCountry = ({company, year}: { company: string, year: string })
         return await res.json();
     }
 
-    const {
-        data,
-        isLoading,
-        isError
-    } = useQuery(['revenue_by_country', company, year], {
-        queryFn: async () => await fetchSalesByCountry(company, year),
-    })
+    const {data, isLoading, isError} = useQuery(
+        ['revenue_by_country', company, year], {
+            queryFn: async () => await fetchSalesByCountry(company, year),
+        })
 
-    const revenueByCountry = data?.map((rc) => ({
-        billing_country: rc.billing_country,
-        net_total: Number(rc.net_total)
-    }))
+    return useMemo(() => {
+        const revenueByCountry = data?.map((rc) => ({
+            billing_country: rc.billing_country,
+            net_total: Number(rc.net_total)
+        }))
 
-    return useMemo(() => ({
-        revenueByCountry,
-        isLoading,
-        isError
-    }), [revenueByCountry, isError, isLoading])
+        return {
+            revenueByCountry,
+            isLoading,
+            isError
+        }
+    }, [data, isError, isLoading])
 }
 
 export default useRevenueByCountry
