@@ -6,6 +6,7 @@ import useProducts from "@sio/hooks/useProducts";
 import Tabs from "@sio/components/Tabs";
 import Welcome from "@sio/components/Welcome";
 import {GetServerSideProps, InferGetServerSidePropsType} from "next";
+import YearSelector from "@sio/components/selectors/YearSelector";
 
 export default function Products({company, year}: InferGetServerSidePropsType<typeof getServerSideProps>) {
     const {products, isLoading, isError} = useProducts({company, year})
@@ -31,7 +32,10 @@ export default function Products({company, year}: InferGetServerSidePropsType<ty
 
     return (
         <main className="max-w-6xl mx-auto pt-16 sm:pt-8 px-8">
-            <Welcome company={company}/>
+            <div className="flex justify-between">
+                <Welcome company={company}/>
+                <YearSelector company={company} year={year}/>
+            </div>
             <Tabs tabs={[
                 {route: 'dashboard', name: 'Dashboard'},
                 {route: 'customers', name: 'Customers'},

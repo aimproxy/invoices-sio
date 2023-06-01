@@ -54,7 +54,6 @@ export default function Dashboard({company, year}: InferGetServerSidePropsType<t
                 <Welcome company={company}/>
                 <YearSelector company={company} year={year}/>
             </div>
-
             <Tabs tabs={[
                 {route: 'dashboard', name: 'Dashboard'},
                 {route: 'customers', name: 'Customers'},

@@ -9,7 +9,7 @@ const Orders = ({company, year}: BaseProps) => {
     return (
         <Card>
             <Title>Orders</Title>
-            <Text>Total open orders</Text>
+            <Text>Total Open Orders</Text>
             <div className={"mt-4"}>
                 {isLoading || isError ? <TextSkeleton/> : <Metric>{data?.number_of_entries ?? 0}</Metric>}
             </div>
