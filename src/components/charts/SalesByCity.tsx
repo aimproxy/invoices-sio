@@ -3,9 +3,7 @@ import useSalesByCity from "@sio/hooks/useSalesByCity";
 import {useContext} from "react";
 import {KpisContext} from "@sio/components/KpisProvider";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
-
-const valueFormatter = (number: number) =>
-    `${Intl.NumberFormat("us").format(number).toString()} €`;
+import formatEuro from "@sio/utils/formatEuro";
 
 export default function SalesByCity() {
     const {selectedCompany, selectedYear} = useContext(KpisContext)
@@ -31,7 +29,7 @@ export default function SalesByCity() {
                         category="sales_count"
                         index="billing_city"
                         colors={["emerald", "violet", "indigo", "yellow", "rose", "cyan", "amber"]}
-                        valueFormatter={valueFormatter}
+                        valueFormatter={formatEuro}
                         className="mt-6"
                     />
                     <Legend

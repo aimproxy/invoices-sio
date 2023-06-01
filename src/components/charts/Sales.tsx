@@ -5,8 +5,7 @@ import {KpisContext} from "@sio/components/KpisProvider";
 import useFiscalYear from "@sio/hooks/useFiscalYear";
 import useProducts from "@sio/hooks/useProducts";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
-
-const valueFormatter = (number: number) => `${Intl.NumberFormat("us").format(number).toString()} €`;
+import formatEuro from "@sio/utils/formatEuro";
 
 export default function Sales() {
     const {selectedCompany, selectedYear} = useContext(KpisContext)
@@ -41,8 +40,8 @@ export default function Sales() {
                     <TextSkeleton/>
                 ) : (
                     <>
-                        <Metric>{valueFormatter(year!.net_sales)}{' '}</Metric>
-                        <Text>/{' '}{valueFormatter(year!.gross_sales)}</Text>
+                        <Metric>{formatEuro(year!.net_sales)}{' '}</Metric>
+                        <Text>/{' '}{formatEuro(year!.gross_sales)}</Text>
                     </>
                 )}
             </Flex>
@@ -58,7 +57,7 @@ export default function Sales() {
                         category="value"
                         index="name"
                         colors={["emerald", "violet", "indigo", "yellow", "rose", "cyan", "amber"]}
-                        valueFormatter={valueFormatter}
+                        valueFormatter={formatEuro}
                         className="mt-6"
                     />
                 </>

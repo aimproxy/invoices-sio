@@ -3,6 +3,7 @@ import {Card, Metric, Text, Title} from "@tremor/react";
 import {useContext} from "react";
 import {KpisContext} from "@sio/components/KpisProvider";
 import useFiscalYear from "@sio/hooks/useFiscalYear";
+import formatEuro from "@sio/utils/formatEuro";
 
 export default function AverageOrderValue() {
     const {selectedCompany, selectedYear} = useContext(KpisContext)
@@ -16,7 +17,7 @@ export default function AverageOrderValue() {
             <Title>AOV</Title>
             <Text>Average Order Value</Text>
             <div className={"mt-4"}>
-                {isLoading || isError ? <TextSkeleton/> : <Metric>{data?.aov}€</Metric>}
+                {isLoading || isError ? <TextSkeleton/> : <Metric>{formatEuro(data!.aov)}</Metric>}
             </div>
         </Card>
     );

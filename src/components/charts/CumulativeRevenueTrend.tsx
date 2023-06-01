@@ -2,10 +2,7 @@ import {Card, LineChart, Text, Title} from "@tremor/react";
 import useRevenueOverTime from "@sio/hooks/useRevenueOverTime";
 import {useContext} from "react";
 import {KpisContext} from "@sio/components/KpisProvider";
-
-const valueFormatter = (number: number) => {
-    return "€ " + Intl.NumberFormat("us").format(number).toString();
-};
+import formatEuro from "@sio/utils/formatEuro";
 
 
 export default function CumulativeRevenueTrend() {
@@ -15,6 +12,7 @@ export default function CumulativeRevenueTrend() {
         year: selectedYear
     })
 
+    // TODO Show loading state
     return (
         <Card>
             <Title>Cumulative Revenue Trend</Title>
@@ -25,7 +23,7 @@ export default function CumulativeRevenueTrend() {
                 index="month"
                 categories={["Cumulative Revenue"]}
                 colors={["blue", "emerald"]}
-                valueFormatter={valueFormatter}
+                valueFormatter={formatEuro}
             />
         </Card>
     );

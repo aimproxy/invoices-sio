@@ -3,10 +3,8 @@ import useCustomers from "@sio/hooks/useCustomers";
 import {useContext} from "react";
 import {KpisContext} from "@sio/components/KpisProvider";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
+import formatEuro from "@sio/utils/formatEuro";
 
-
-const valueFormatter = (number: number) =>
-    `${Intl.NumberFormat("us").format(number).toString()} €`;
 export default function TopCustomersByRevenue() {
     const {selectedCompany, selectedYear} = useContext(KpisContext)
 
@@ -32,7 +30,7 @@ export default function TopCustomersByRevenue() {
                             name: customer.company_name,
                             value: customer.customer_net_total
                         }))}
-                        valueFormatter={valueFormatter}
+                        valueFormatter={formatEuro}
                         className="mt-2"
                     />
                 </>

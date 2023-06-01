@@ -3,10 +3,7 @@ import {useContext} from "react";
 import {KpisContext} from "@sio/components/KpisProvider";
 import useRevenueOverTime from "@sio/hooks/useRevenueOverTime";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
-
-const dataFormatter = (number: number) => {
-    return "€ " + Intl.NumberFormat("us").format(number).toString();
-};
+import formatEuro from "@sio/utils/formatEuro";
 
 const RevenueOverTime = () => {
     const {selectedCompany, selectedYear} = useContext(KpisContext)
@@ -28,7 +25,7 @@ const RevenueOverTime = () => {
                     index="month"
                     categories={["Net Sales", "Gross Sales"]}
                     colors={["indigo", "emerald", "amber"]}
-                    valueFormatter={dataFormatter}
+                    valueFormatter={formatEuro}
                 />
             )}
         </Card>
