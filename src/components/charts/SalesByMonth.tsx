@@ -10,7 +10,7 @@ export default function SalesByMonth() {
     const {selectedCompany, selectedYear} = useContext(KpisContext)
 
     const {
-        data,
+        salesByMonth,
         isLoading,
         isError
     } = useSalesByMonth({
@@ -18,17 +18,11 @@ export default function SalesByMonth() {
         year: selectedYear
     })
 
-    const salesByMonth = Array.from(months,
-        (month, i) => ({
-            "Number Of Sales": data?.[i].invoice_count ?? 0,
-            month: month,
-        }))
-
     return (
         <Card>
             <Title>Sales per Month</Title>
             <Text>Number of sales per each month</Text>
-            {(isLoading || isError || data == null) ? (
+            {(isLoading || isError || salesByMonth == null) ? (
                 <ChartSkeleton/>
             ) : (
                 <BarChart

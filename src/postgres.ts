@@ -54,7 +54,6 @@ export interface ProductTable extends Record<string, any> {
     product_code: number
     product_type: string
     product_description: string
-    product_number_code: string
     company_id: number
 }
 
@@ -66,15 +65,8 @@ export interface ProductFiscalYearTable extends Record<string, any> {
 }
 
 export interface InvoiceTable extends Record<string, any> {
-    invoice_id: Generated<number>
-    invoice_no: string
-    atcud: string
     hash: string
-    invoice_status: string
-    invoice_status_date: Date
     invoice_date: Date
-    invoice_type: string
-    system_entry_date: Date
     saft_customer_id: number
     tax_payable: number
     net_total: number
@@ -86,6 +78,7 @@ export interface InvoiceTable extends Record<string, any> {
 export interface InvoiceLineTable extends Record<string, any> {
     line_id: Generated<number>
     fiscal_year: number
+    company_id: number
     invoice_hash: string
     product_code: number
     quantity: number

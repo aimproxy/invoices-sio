@@ -6,7 +6,7 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<{ ok: boolean, e?: any }>
 ) {
-    const {company_id, year} = req.query
+    const {company, year} = req.query
     const {count, sum} = postgres.fn
 
     try {
@@ -22,20 +22,20 @@ export default async function handler(
 
             postgres.selectFrom('fiscal_year')
                 .select(['number_of_entries', 'customers_count'])
-                .where('company_id', '=', Number(company_id))
+                .where('company_id', '=', Number(company))
                 .where('fiscal_year', '=', Number(year))
                 .executeTakeFirstOrThrow(),
 
             postgres.selectFrom("invoice")
                 .select([
-                    count('invoice_id').as('invoices_count'),
+                    count('hash').as('invoices_count'),
                     sum('net_total').as('customer_net_total'),
                     'saft_customer_id',
                     'fiscal_year',
                     'company_id'
                 ])
                 .where('fiscal_year', '=', Number(year))
-                .where('company_id', '=', Number(company_id))
+                .where('company_id', '=', Number(company))
                 .groupBy(['saft_customer_id', 'fiscal_year', 'company_id'])
                 .execute(),
 
@@ -47,7 +47,7 @@ export default async function handler(
                 fiscal_year: number,
                 company_id: number
             }>`
-                SELECT COUNT(invoice_id) AS invoices_count,
+                SELECT COUNT(*)                         AS invoices_count,
                        EXTRACT(MONTH FROM invoice_date) AS month,
                        SUM(net_total)                   AS net_total,
                        SUM(gross_total)                 AS gross_total,
@@ -55,28 +55,32 @@ export default async function handler(
                        company_id
                 FROM invoice
                 WHERE fiscal_year = ${Number(year)}
+                  AND company_id = ${Number(company)}
                 GROUP BY month, fiscal_year, company_id`.execute(postgres),
 
             sql<{ product_code: number, amount_spend: number }[]>`
                 SELECT product_code, MAX(quantity * unit_price) AS amount_spent
                 FROM invoice_line
                 WHERE fiscal_year = ${Number(year)}
+                  AND company_id = ${Number(company)}
                 GROUP BY product_code
                 ORDER BY amount_spent DESC`.execute(postgres),
 
+            // TODO Calculate Revenue by City
             sql<{ company_id: number, fiscal_year: number, billing_city: string, sales_count: number }[]>`
                 SELECT count(i) as sales_count, customer.billing_city, i.fiscal_year, customer.company_id
                 FROM customer
                          INNER JOIN invoice i ON i.saft_customer_id = customer.saft_customer_id
-                WHERE i.company_id = ${Number(company_id)}
+                WHERE i.company_id = ${Number(company)}
                   AND fiscal_year = ${Number(year)}
                 GROUP BY customer.billing_city, i.fiscal_year, customer.company_id`.execute(postgres),
 
+            // TODO Calculate Revenue by Country
             sql<{ company_id: number, fiscal_year: number, billing_country: string, sales_count: number }[]>`
                 SELECT count(i) as sales_count, customer.billing_country, i.fiscal_year, customer.company_id
                 FROM customer
                          INNER JOIN invoice i ON i.saft_customer_id = customer.saft_customer_id
-                WHERE i.company_id = ${Number(company_id)}
+                WHERE i.company_id = ${Number(company)}
                   AND fiscal_year = ${Number(year)}
                 GROUP BY customer.billing_country, i.fiscal_year, customer.company_id`.execute(postgres),
 
@@ -85,7 +89,7 @@ export default async function handler(
                 FROM (SELECT COUNT(DISTINCT EXTRACT(MONTH FROM i.invoice_date)) AS months_active
                       FROM customer c
                                INNER JOIN invoice i ON i.saft_customer_id = c.saft_customer_id
-                      WHERE i.company_id = ${Number(company_id)}
+                      WHERE i.company_id = ${Number(company)}
                         AND fiscal_year = ${Number(year)}
                       GROUP BY c.saft_customer_id) AS customer_months_active`.execute(postgres),
 
@@ -113,7 +117,7 @@ export default async function handler(
                     rpr,
                     clv
                 })
-                .where('company_id', '=', Number(company_id))
+                .where('company_id', '=', Number(company))
                 .where('fiscal_year', '=', Number(year))
                 .executeTakeFirstOrThrow(),
 
@@ -131,7 +135,7 @@ export default async function handler(
             postgres.insertInto('product_fiscal_year')
                 .values(revenueByProducts.rows.map(p => ({
                     ...p,
-                    company_id: company_id,
+                    company_id: company,
                     fiscal_year: year
                 })))
                 .onConflict(oc => oc

@@ -89,10 +89,9 @@ const SAFT = () => {
                     'focus-within:ring-offset-2 hover:text-indigo-500'
                 )}
                 >
-                    <span>Upload a file</span>
+                    <span>Upload SAF-T</span>
                     <input {...getInputProps()} className="sr-only"/>
                 </div>
-                <p className="pl-1">or drag and drop</p>
             </div>
         </div>
     )

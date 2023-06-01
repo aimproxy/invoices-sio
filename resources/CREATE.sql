@@ -1,5 +1,17 @@
 SET client_encoding = 'UTF8';
 
+DROP TABLE IF EXISTS invoice_line;
+DROP TABLE IF EXISTS invoice;
+DROP TABLE IF EXISTS sales_by_country;
+DROP TABLE IF EXISTS sales_by_city;
+DROP TABLE IF EXISTS revenue_by_month;
+DROP TABLE IF EXISTS product_fiscal_year;
+DROP TABLE IF EXISTS product;
+DROP TABLE IF EXISTS customer_fiscal_year;
+DROP TABLE IF EXISTS customer;
+DROP TABLE IF EXISTS fiscal_year;
+DROP TABLE IF EXISTS company;
+
 CREATE TABLE company
 (
     company_id    BIGSERIAL PRIMARY KEY,
@@ -60,7 +72,6 @@ CREATE TABLE product
     product_code        BIGSERIAL PRIMARY KEY,
     product_type        VARCHAR(1),
     product_description VARCHAR(255),
-    product_number_code VARCHAR(50),
     company_id          BIGSERIAL,
     FOREIGN KEY (company_id) REFERENCES company (company_id)
 );
@@ -88,40 +99,6 @@ CREATE TABLE revenue_by_month
     PRIMARY KEY (month, fiscal_year, company_id)
 );
 
-CREATE TABLE invoice
-(
-    invoice_id          BIGSERIAL PRIMARY KEY,
-    invoice_no          VARCHAR(255),
-    atcud               VARCHAR(50),
-    hash                varchar(255),
-    invoice_status      VARCHAR(50),
-    invoice_status_date TIMESTAMP,
-    invoice_date        DATE,
-    invoice_type        VARCHAR(50),
-    system_entry_date   TIMESTAMP,
-    saft_customer_id    INT,
-    tax_payable         DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    net_total           DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    gross_total         DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    fiscal_year         INT,
-    company_id          BIGSERIAL,
-    FOREIGN KEY (company_id) REFERENCES company (company_id)
-);
-
-CREATE TABLE invoice_line
-(
-    line_id        BIGSERIAL PRIMARY KEY,
-    fiscal_year    INT,
-    invoice_hash   VARCHAR(255),
-    quantity       DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    unit_price     DECIMAL(18, 5) NOT NULL DEFAULT 0,
-    tax_point_date DATE,
-    credit_amount  DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    debit_amount   DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    product_code   BIGSERIAL,
-    FOREIGN KEY (product_code) REFERENCES product (product_code)
-);
-
 CREATE TABLE sales_by_city
 (
     company_id   BIGSERIAL,
@@ -140,4 +117,33 @@ CREATE TABLE sales_by_country
     sales_count     INT DEFAULT 0,
     FOREIGN KEY (fiscal_year, company_id) REFERENCES fiscal_year (fiscal_year, company_id),
     PRIMARY KEY (company_id, fiscal_year, billing_country)
+);
+
+CREATE TABLE invoice
+(
+    hash             BYTEA UNIQUE,
+    invoice_date     DATE,
+    saft_customer_id INT,
+    tax_payable      DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    net_total        DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    gross_total      DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    fiscal_year      BIGSERIAL,
+    company_id       BIGSERIAL,
+    FOREIGN KEY (fiscal_year, company_id) REFERENCES fiscal_year (fiscal_year, company_id),
+    PRIMARY KEY (company_id, fiscal_year, hash)
+);
+
+CREATE TABLE invoice_line
+(
+    line_id       BIGSERIAL PRIMARY KEY,
+    fiscal_year   BIGSERIAL,
+    company_id    BIGSERIAL,
+    invoice_hash  BYTEA,
+    quantity      DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    unit_price    DECIMAL(18, 5) NOT NULL DEFAULT 0,
+    credit_amount DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    debit_amount  DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    product_code  BIGSERIAL,
+    FOREIGN KEY (fiscal_year, company_id) REFERENCES fiscal_year (fiscal_year, company_id),
+    FOREIGN KEY (product_code) REFERENCES product (product_code)
 );

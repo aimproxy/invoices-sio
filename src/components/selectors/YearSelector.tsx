@@ -10,7 +10,7 @@ interface DoMathProps {
 }
 
 const doMath = async ({company, year}: DoMathProps) => {
-    return await fetch(`/api/saft/kpis?company_id=${company}&year=${year}`)
+    return await fetch(`/api/saft/kpis?company=${company}&year=${year}`)
 }
 
 const YearSelector = () => {

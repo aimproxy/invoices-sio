@@ -16,11 +16,16 @@ const useSalesByMonth = ({company, year}: { company: string, year: string }) => 
         queryFn: async () => await fetchSalesByMonth(company, year),
     })
 
+    const salesByMonth = data?.map(sale => ({
+        "Number Of Sales": sale.invoice_count ?? 0,
+        month: sale.month.trim(),
+    }))
+
     return useMemo(() => ({
-        data,
+        salesByMonth,
         isLoading,
         isError
-    }), [data, isError, isLoading])
+    }), [salesByMonth, isError, isLoading])
 }
 
 export default useSalesByMonth

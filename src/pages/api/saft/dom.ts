@@ -13,21 +13,10 @@ export default async function handler(
     const parser = new DOMParser();
     const doc = parser.parseFromString(xml, 'application/xml');
 
-    const salesInvoices = doc.getElementsByTagName('SalesInvoices')[0]
     const header = doc.getElementsByTagName('Header')[0];
     const companyMetadata = getElementsByTagNames(header, [
         'CompanyID', 'CompanyName', 'CurrencyCode'
     ])
-
-    const fiscalYearMetadata: { [key: string]: any } = {
-        company_id: companyMetadata.company_id,
-        ...getElementsByTagNames(header, [
-            'FiscalYear', 'StartDate',
-            'EndDate', 'DateCreated'
-        ]),
-        ...getElementsByTagNames(salesInvoices,
-            ['NumberOfEntries'])
-    }
 
     try {
         await postgres
@@ -48,13 +37,16 @@ export default async function handler(
     const products = []
     for (let i = 0; i < productMetadata.length; i++) {
         const product = productMetadata[i];
+        const p = getElementsByTagNames(product, [
+                'ProductType', 'ProductCode',
+                'ProductDescription', 'ProductNumberCode'
+            ]
+        )
+        if (p.product_code == "OUTROS") continue;
+
         products.push({
             company_id: companyMetadata.company_id,
-            ...getElementsByTagNames(product, [
-                    'ProductType', 'ProductCode',
-                    'ProductDescription', 'ProductNumberCode'
-                ]
-            )
+            ...p
         })
     }
 
@@ -82,14 +74,25 @@ export default async function handler(
             self_billing_indicator: Number(self_billing_indicator),
             ...left,
             ...getElementsByTagNames(billingAddressElement, [
-                'AddressDetail', 'City',
-                'PostalCode', 'Country'
+                'AddressDetail', 'City', 'PostalCode', 'Country'
             ], 'billing'),
             ...getElementsByTagNames(shipToAddressElement, [
-                'AddressDetail', 'City',
-                'PostalCode', 'Country'
+                'AddressDetail', 'City', 'PostalCode', 'Country'
             ], 'ship_to')
         })
+    }
+
+    const fiscalYearMetadata: { [key: string]: any } = {
+        company_id: companyMetadata.company_id,
+        customers_count: customers.length,
+        ...getElementsByTagNames(header, [
+            'FiscalYear', 'StartDate',
+            'EndDate', 'DateCreated'
+        ]),
+        ...getElementsByTagNames(
+            doc.getElementsByTagName('SalesInvoices')[0],
+            ['NumberOfEntries']
+        )
     }
 
     const invoiceElement = doc.getElementsByTagName('Invoice');
@@ -103,9 +106,7 @@ export default async function handler(
             customer_id,
             ...left
         } = getElementsByTagNames(rawInvoice, [
-            'InvoiceNo', 'ATCUD', 'Hash', 'InvoiceStatus',
-            'InvoiceStatusDate', 'InvoiceDate', 'InvoiceType',
-            'SystemEntryDate', 'CustomerID', 'TaxPayable',
+            'Hash', 'InvoiceDate', 'CustomerID',
             'NetTotal', 'GrossTotal'
         ])
 
@@ -132,34 +133,25 @@ export default async function handler(
     const invoiceLines = []
     for (let i = 0; i < invoiceLinesElements.length; i++) {
         const {hash, line} = invoiceLinesElements[i]
-        const invoiceLine = getElementsByTagNames(line, [
-            'ProductCode', 'Quantity', 'UnitPrice', 'TaxPointDate',
-        ])
 
         invoiceLines.push({
-            invoice_hash: hash,
+            invoice_hash: hash.trim(),
+            company_id: companyMetadata.company_id,
             fiscal_year: fiscalYearMetadata.fiscal_year,
             credit_amount: line.getElementsByTagName('CreditAmount')[0]?.textContent ?? 0,
             debit_amount: line.getElementsByTagName('DebitAmount')[0]?.textContent ?? 0,
-            ...invoiceLine
+            ...getElementsByTagNames(line, ['ProductCode', 'Quantity', 'UnitPrice'])
         })
     }
 
     try {
         await Promise.all([
             // Insert Fiscal Year
-            //TODO ver porque é que nao esta a dar replace ao customers_count quando o ficheiro é importado novamente!!!!!
             postgres.insertInto('fiscal_year')
-                .values({
-                    customers_count: customers.length,
-                    ...fiscalYearMetadata
-                })
+                .values(fiscalYearMetadata)
                 .onConflict(oc => oc
                     .columns(['fiscal_year', 'company_id'])
-                    .doUpdateSet(eb => ({
-                        fiscal_year: eb.ref('excluded.fiscal_year'),
-                        company_id: eb.ref('excluded.company_id')
-                    }))
+                    .doUpdateSet(fiscalYearMetadata)
                 )
                 .executeTakeFirstOrThrow(),
 
@@ -186,8 +178,22 @@ export default async function handler(
                 .executeTakeFirstOrThrow(),
 
             // Insert Invoices
-            await postgres.insertInto('invoice').values(invoices).executeTakeFirstOrThrow(),
-            await postgres.insertInto('invoice_line').values(invoiceLines).executeTakeFirstOrThrow()
+            await postgres.insertInto('invoice')
+                .values(invoices)
+                .onConflict(oc => oc
+                    .columns(['hash', 'fiscal_year', 'company_id'])
+                    .doUpdateSet(eb => ({
+                        hash: eb.ref('excluded.hash'),
+                        fiscal_year: eb.ref('excluded.fiscal_year'),
+                        company_id: eb.ref('excluded.company_id')
+                    }))
+                )
+                .executeTakeFirstOrThrow(),
+
+            // Insert Invoice Lines
+            await postgres.insertInto('invoice_line')
+                .values(invoiceLines)
+                .executeTakeFirstOrThrow()
         ])
 
 
