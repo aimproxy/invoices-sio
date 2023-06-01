@@ -58,13 +58,15 @@ export default async function handler(
                   AND company_id = ${Number(company)}
                 GROUP BY month, fiscal_year, company_id`.execute(postgres),
 
-            sql<{ product_code: number, amount_spend: number }[]>`
-                SELECT product_code, MAX(quantity * unit_price) AS amount_spent
+            sql<{ product_code: number, revenue: number, total_sales: number }>`
+                SELECT product_code,
+                       MAX(quantity * unit_price) AS revenue,
+                       count(product_code)        as total_sales
                 FROM invoice_line
                 WHERE fiscal_year = ${Number(year)}
                   AND company_id = ${Number(company)}
                 GROUP BY product_code
-                ORDER BY amount_spent DESC`.execute(postgres),
+                ORDER BY revenue DESC`.execute(postgres),
 
             sql<{ company_id: number, fiscal_year: number, billing_city: string, net_total: number }>`
                 SELECT sum(i.net_total) as net_total, customer.billing_city, i.fiscal_year, customer.company_id

@@ -82,7 +82,8 @@ CREATE TABLE product_fiscal_year
     product_code BIGSERIAL,
     fiscal_year  BIGSERIAL,
     company_id   BIGSERIAL,
-    amount_spent DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    revenue      DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    total_sales  INT            NOT NULL DEFAULT 0,
     FOREIGN KEY (product_code) REFERENCES product (product_code),
     FOREIGN KEY (fiscal_year, company_id) REFERENCES fiscal_year (fiscal_year, company_id),
     PRIMARY KEY (product_code, fiscal_year, company_id)

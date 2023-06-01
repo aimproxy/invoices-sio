@@ -21,7 +21,7 @@ export default function Sales({company, year}: BaseProps) {
 
     const topProducts = products?.slice(0, 5).map(product => ({
         name: product.product_description.slice(0, 30),
-        value: Number(product.amount_spent)
+        value: Number(product.revenue)
     }))
 
     return (
@@ -29,10 +29,7 @@ export default function Sales({company, year}: BaseProps) {
             <Title>Sales</Title>
             <Flex justifyContent="start" className="space-x-1 mt-2" alignItems="baseline">
                 {(isLoadingYear || isErrorYear) ? (
-                    <>
-                        <TextSkeleton/>
-                    </>
-
+                    <TextSkeleton/>
                 ) : (
                     <>
                         <Metric>{formatEuro(fiscalYear!.net_sales)}{' '}</Metric>

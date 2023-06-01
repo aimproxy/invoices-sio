@@ -61,7 +61,8 @@ export interface ProductFiscalYearTable extends Record<string, any> {
     product_code: number
     fiscal_year: number
     company_id: number
-    amount_spent: number
+    revenue: number
+    total_sales: number
 }
 
 export interface InvoiceTable extends Record<string, any> {

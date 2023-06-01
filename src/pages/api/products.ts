@@ -4,7 +4,8 @@ import postgres from "@sio/postgres";
 export type Product = {
     product_code: number
     product_description: string
-    amount_spent: number
+    revenue: number
+    total_sales: number
 }
 
 export default async function handler(
@@ -18,12 +19,13 @@ export default async function handler(
             .select([
                 'product.product_code',
                 'product.product_description',
-                'product_fiscal_year.amount_spent'
+                'product_fiscal_year.revenue',
+                'product_fiscal_year.total_sales'
             ])
             .where('product_fiscal_year.fiscal_year', '=', Number(year))
             .where('product_fiscal_year.company_id', '=', Number(company))
             .innerJoin('product', 'product.product_code', 'product_fiscal_year.product_code')
-            .orderBy('product_fiscal_year.amount_spent', 'desc')
+            .orderBy('product_fiscal_year.revenue', 'desc')
             .execute()
 
         res.status(200).json(products)
