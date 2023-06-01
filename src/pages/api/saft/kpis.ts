@@ -15,8 +15,8 @@ export default async function handler(
             invoicesByCustomer,
             revenueByMonth,
             revenueByProducts,
-            salesByCity,
-            salesByCountry,
+            revenueByCity,
+            revenueByCountry,
             averageMonthsActive,
         ] = await Promise.all([
 
@@ -67,8 +67,8 @@ export default async function handler(
                 ORDER BY amount_spent DESC`.execute(postgres),
 
             // TODO Calculate Revenue by City
-            sql<{ company_id: number, fiscal_year: number, billing_city: string, sales_count: number }[]>`
-                SELECT count(i) as sales_count, customer.billing_city, i.fiscal_year, customer.company_id
+            sql<{ company_id: number, fiscal_year: number, billing_city: string, net_total: number }>`
+                SELECT sum(i.net_total) as net_total, customer.billing_city, i.fiscal_year, customer.company_id
                 FROM customer
                          INNER JOIN invoice i ON i.saft_customer_id = customer.saft_customer_id
                 WHERE i.company_id = ${Number(company)}
@@ -76,8 +76,8 @@ export default async function handler(
                 GROUP BY customer.billing_city, i.fiscal_year, customer.company_id`.execute(postgres),
 
             // TODO Calculate Revenue by Country
-            sql<{ company_id: number, fiscal_year: number, billing_country: string, sales_count: number }[]>`
-                SELECT count(i) as sales_count, customer.billing_country, i.fiscal_year, customer.company_id
+            sql<{ company_id: number, fiscal_year: number, billing_country: string, net_total: number }>`
+                SELECT sum(i.net_total) as net_total, customer.billing_country, i.fiscal_year, customer.company_id
                 FROM customer
                          INNER JOIN invoice i ON i.saft_customer_id = customer.saft_customer_id
                 WHERE i.company_id = ${Number(company)}
@@ -160,8 +160,8 @@ export default async function handler(
                 )
                 .executeTakeFirstOrThrow(),
 
-            postgres.insertInto('sales_by_city')
-                .values(salesByCity.rows)
+            postgres.insertInto('revenue_by_city')
+                .values(revenueByCity.rows)
                 .onConflict(oc => oc
                     .columns(['billing_city', 'company_id', 'fiscal_year'])
                     .doUpdateSet(eb => ({
@@ -171,8 +171,8 @@ export default async function handler(
                     })))
                 .executeTakeFirstOrThrow(),
 
-            postgres.insertInto('sales_by_country')
-                .values(salesByCountry.rows)
+            postgres.insertInto('revenue_by_country')
+                .values(revenueByCountry.rows)
                 .onConflict(oc => oc
                     .columns(['company_id', 'fiscal_year', 'billing_country'])
                     .doUpdateSet(eb => ({

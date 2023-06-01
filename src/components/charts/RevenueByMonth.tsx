@@ -1,19 +1,18 @@
 import {BarChart, Card, Text, Title} from "@tremor/react";
 import {useContext} from "react";
 import {KpisContext} from "@sio/components/KpisProvider";
-import useSalesByMonth from "@sio/hooks/useSalesByMonth";
+import useRevenueByMonth from "@sio/hooks/useRevenueByMonth";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
+import formatEuro from "@sio/utils/formatEuro";
 
-export const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-export default function SalesByMonth() {
+export default function RevenueByMonth() {
     const {selectedCompany, selectedYear} = useContext(KpisContext)
 
     const {
-        salesByMonth,
+        data,
         isLoading,
         isError
-    } = useSalesByMonth({
+    } = useRevenueByMonth({
         company: String(selectedCompany?.company_id),
         year: selectedYear
     })
@@ -22,13 +21,16 @@ export default function SalesByMonth() {
         <Card>
             <Title>Sales per Month</Title>
             <Text>Number of sales per each month</Text>
-            {(isLoading || isError || salesByMonth == null) ? (
+            {(isLoading || isError || data == null) ? (
                 <ChartSkeleton/>
             ) : (
                 <BarChart
                     className="mt-4"
-                    data={salesByMonth}
+                    data={data}
                     index="month"
+                    maxValue={Math.max(...data.map(r => r["Number Of Sales"]))}
+                    valueFormatter={formatEuro}
+                    relative={false}
                     categories={['Number Of Sales']}
                     colors={["indigo"]}
                 />

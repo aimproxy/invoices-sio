@@ -1,27 +1,27 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import postgres from "@sio/postgres";
 
-export interface SalesByCity {
-    billing_city: string,
-    sales_count: number
+export interface RevenueByCountry {
+    billing_country: string,
+    net_total: number
 }
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<SalesByCity[] | undefined>
-){
+    res: NextApiResponse<RevenueByCountry[] | undefined>
+) {
     const {company, year} = req.query
 
     try {
-        const salesByCity = await postgres.selectFrom('sales_by_city')
-            .select(['billing_city', 'sales_count'])
+        const revenueByCountry = await postgres.selectFrom('revenue_by_country')
+            .select(['billing_country', 'net_total'])
             .where('fiscal_year', '=', Number(year))
             .where('company_id', '=', Number(company))
-            .orderBy('sales_count', 'desc')
+            .orderBy('net_total', 'desc')
             .limit(5)
             .execute()
 
-        res.status(200).json(salesByCity)
+        res.status(200).json(revenueByCountry)
     } catch (e) {
         console.error(e)
         res.status(400).json(undefined)

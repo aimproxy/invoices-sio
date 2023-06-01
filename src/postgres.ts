@@ -98,18 +98,18 @@ export interface RevenueByMonthTable extends Record<string, any> {
     gross_total: number
 }
 
-export interface SalesByCityTable extends Record<string, any> {
+export interface RevenueByCityTable extends Record<string, any> {
     company_id: number,
     fiscal_year: number,
     billing_city: string,
-    sales_count: number
+    net_total: number
 }
 
-export interface SalesByCountryTable extends Record<string, any> {
+export interface RevenueByCountryTable extends Record<string, any> {
     company_id: number,
     fiscal_year: number,
     billing_country: string,
-    sales_count: number
+    net_total: number
 }
 
 interface DatabaseSchema {
@@ -122,8 +122,8 @@ interface DatabaseSchema {
     invoice: InvoiceTable;
     invoice_line: InvoiceLineTable;
     revenue_by_month: RevenueByMonthTable;
-    sales_by_city: SalesByCityTable;
-    sales_by_country: SalesByCountryTable;
+    revenue_by_city: RevenueByCityTable;
+    revenue_by_country: RevenueByCountryTable;
 }
 
 

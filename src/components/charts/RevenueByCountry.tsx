@@ -2,17 +2,18 @@ import {Card, DonutChart, Legend, Title,} from "@tremor/react";
 import {useContext} from "react";
 import {KpisContext} from "@sio/components/KpisProvider";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
-import useSalesByCountry from "@sio/hooks/useSalesByCountry";
+import useRevenueByCountry from "@sio/hooks/useRevenueByCountry";
+import formatEuro from "@sio/utils/formatEuro";
 
 
-export default function SalesByCountry() {
+export default function RevenueByCountry() {
     const {selectedCompany, selectedYear} = useContext(KpisContext)
 
     const {
-        data,
+        revenueByCountry,
         isLoading,
         isError
-    } = useSalesByCountry({
+    } = useRevenueByCountry({
         company: String(selectedCompany?.company_id),
         year: selectedYear
     })
@@ -20,19 +21,20 @@ export default function SalesByCountry() {
     return (
         <Card>
             <Title>Sales by Country</Title>
-            {(isLoading || isError || data?.length === 0) ? (
+            {(isLoading || isError || revenueByCountry?.length === 0) ? (
                 <ChartSkeleton/>
             ) : (
                 <>
                     <DonutChart
-                        data={data ?? []}
-                        category="sales_count"
+                        data={revenueByCountry ?? []}
+                        category="net_total"
                         index="billing_country"
                         colors={["emerald", "violet", "indigo", "yellow", "rose", "cyan", "amber"]}
+                        valueFormatter={formatEuro}
                         className="mt-6"
                     />
                     <Legend
-                        categories={data?.map((country) => country.billing_country) ?? []}
+                        categories={revenueByCountry?.map((country) => country.billing_country) ?? []}
                         colors={["emerald", "violet", "indigo", "yellow", "rose", "cyan", "amber"]}
                         className="mt-6 justify-center"
                     />

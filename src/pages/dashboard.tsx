@@ -6,10 +6,10 @@ import AverageOrderValue from "@sio/components/kpis/AverageOrderValue";
 import RepeatPurchaseRate from "@sio/components/kpis/RepeatPurchaseRate";
 
 import CumulativeRevenueTrend from "@sio/components/charts/CumulativeRevenueTrend";
-import RevenueBySegment from "@sio/components/charts/SalesByMonth";
+import RevenueBySegment from "@sio/components/charts/RevenueByMonth";
 import Sales from "@sio/components/charts/Sales";
-import SalesByCountry from "@sio/components/charts/SalesByCountry";
-import SalesByCity from "@sio/components/charts/SalesByCity";
+import RevenueByCountry from "@sio/components/charts/RevenueByCountry";
+import RevenueByCity from "@sio/components/charts/RevenueByCity";
 import RevenueOverTime from "@sio/components/charts/RevenueOverTime";
 import TopCustomersByRevenue from "@sio/components/charts/TopCustomersByRevenue";
 
@@ -39,8 +39,8 @@ export default function Dashboard() {
             </Grid>
 
             <Grid numCols={1} numColsLg={3} className="gap-6">
-                <SalesByCountry/>
-                <SalesByCity/>
+                <RevenueByCountry/>
+                <RevenueByCity/>
                 <TopCustomersByRevenue/>
             </Grid>
         </div>

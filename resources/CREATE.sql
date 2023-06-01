@@ -1,4 +1,5 @@
-SET client_encoding = 'UTF8';
+SET
+    client_encoding = 'UTF8';
 
 DROP TABLE IF EXISTS invoice_line;
 DROP TABLE IF EXISTS invoice;
@@ -99,22 +100,22 @@ CREATE TABLE revenue_by_month
     PRIMARY KEY (month, fiscal_year, company_id)
 );
 
-CREATE TABLE sales_by_city
+CREATE TABLE revenue_by_city
 (
     company_id   BIGSERIAL,
     fiscal_year  BIGSERIAL,
     billing_city VARCHAR(50),
-    sales_count  INT DEFAULT 0,
+    net_total    DECIMAL(10, 2) NOT NULL DEFAULT 0,
     FOREIGN KEY (fiscal_year, company_id) REFERENCES fiscal_year (fiscal_year, company_id),
     PRIMARY KEY (billing_city, company_id, fiscal_year)
 );
 
-CREATE TABLE sales_by_country
+CREATE TABLE revenue_by_country
 (
     company_id      BIGSERIAL,
     fiscal_year     BIGSERIAL,
     billing_country VARCHAR(2),
-    sales_count     INT DEFAULT 0,
+    net_total       DECIMAL(10, 2) NOT NULL DEFAULT 0,
     FOREIGN KEY (fiscal_year, company_id) REFERENCES fiscal_year (fiscal_year, company_id),
     PRIMARY KEY (company_id, fiscal_year, billing_country)
 );
