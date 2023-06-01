@@ -1,21 +1,14 @@
 import {BarChart, Card, Text, Title} from "@tremor/react";
-import {useContext} from "react";
-import {KpisContext} from "@sio/components/KpisProvider";
-import useRevenueByMonth from "@sio/hooks/useRevenueByMonth";
+import useSalesByMonth from "@sio/hooks/useSalesByMonth";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
-import formatEuro from "@sio/utils/formatEuro";
+import BaseProps from "@sio/types";
 
-export default function RevenueByMonth() {
-    const {selectedCompany, selectedYear} = useContext(KpisContext)
-
+export default function RevenueByMonth({company, year}: BaseProps) {
     const {
         data,
         isLoading,
         isError
-    } = useRevenueByMonth({
-        company: String(selectedCompany?.company_id),
-        year: selectedYear
-    })
+    } = useRevenueByMonth({company, year})
 
     return (
         <Card>
@@ -31,7 +24,7 @@ export default function RevenueByMonth() {
                     maxValue={Math.max(...data.map(r => r["Number Of Sales"]))}
                     valueFormatter={formatEuro}
                     relative={false}
-                    categories={['Number Of Sales']}
+                    categories={["Number Of Sales"]}
                     colors={["indigo"]}
                 />
             )}

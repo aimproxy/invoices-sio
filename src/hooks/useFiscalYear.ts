@@ -1,5 +1,4 @@
 import {useQuery} from "@tanstack/react-query";
-import {useMemo} from "react";
 import {Year} from "@sio/pages/api/year";
 
 const useFiscalYear = ({company, year}: { company: string, year: string }) => {
@@ -8,19 +7,9 @@ const useFiscalYear = ({company, year}: { company: string, year: string }) => {
         return await res.json();
     }
 
-    const {
-        data,
-        isLoading,
-        isError
-    } = useQuery(['year', company, year], {
+    return useQuery(['year', company, year], {
         queryFn: async () => await fetchFiscalYear(company, year),
     })
-
-    return useMemo(() => ({
-        data,
-        isLoading,
-        isError
-    }), [data, isError, isLoading])
 }
 
 export default useFiscalYear

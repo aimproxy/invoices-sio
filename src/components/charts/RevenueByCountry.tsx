@@ -1,22 +1,17 @@
 import {Card, DonutChart, Legend, Title,} from "@tremor/react";
-import {useContext} from "react";
-import {KpisContext} from "@sio/components/KpisProvider";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
+import useSalesByCountry from "@sio/hooks/useSalesByCountry";
+import BaseProps from "@sio/types";
 import useRevenueByCountry from "@sio/hooks/useRevenueByCountry";
 import formatEuro from "@sio/utils/formatEuro";
 
 
-export default function RevenueByCountry() {
-    const {selectedCompany, selectedYear} = useContext(KpisContext)
-
+export default function SalesByCountry({company, year}: BaseProps) {
     const {
         revenueByCountry,
         isLoading,
         isError
-    } = useRevenueByCountry({
-        company: String(selectedCompany?.company_id),
-        year: selectedYear
-    })
+    } = useRevenueByCountry({company, year})
 
     return (
         <Card>

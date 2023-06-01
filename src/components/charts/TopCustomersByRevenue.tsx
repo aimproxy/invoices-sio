@@ -1,17 +1,11 @@
 import {BarList, Card, Flex, Text, Title} from "@tremor/react";
 import useCustomers from "@sio/hooks/useCustomers";
-import {useContext} from "react";
-import {KpisContext} from "@sio/components/KpisProvider";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
 import formatEuro from "@sio/utils/formatEuro";
+import BaseProps from "@sio/types";
 
-export default function TopCustomersByRevenue() {
-    const {selectedCompany, selectedYear} = useContext(KpisContext)
-
-    const {data, isLoading, isError} = useCustomers({
-        company: String(selectedCompany?.company_id),
-        year: selectedYear
-    })
+export default function TopCustomersByRevenue({company, year}: BaseProps) {
+    const {data, isLoading, isError} = useCustomers({company, year})
 
     return (
         <Card>
@@ -25,7 +19,7 @@ export default function TopCustomersByRevenue() {
                         <Text className="text-right">Revenue</Text>
                     </Flex>
                     <BarList
-                        color={"emerald"}
+                        color="emerald"
                         data={data!.slice(0, 5).map(customer => ({
                             name: customer.company_name,
                             value: customer.customer_net_total

@@ -68,7 +68,7 @@ const SAFT = () => {
             }
             reader.readAsArrayBuffer(file)
         })
-    }, [])
+    }, [queryClient])
 
     const {getRootProps, getInputProps, isDragAccept, isDragReject} = useDropzone({
         onDrop,

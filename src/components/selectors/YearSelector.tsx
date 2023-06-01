@@ -1,8 +1,10 @@
-import {useContext} from "react";
-import {KpisContext} from "@sio/components/KpisProvider";
-import {Button, Dropdown, DropdownItem} from "@tremor/react";
+import BaseProps from "@sio/types";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {Button, Dropdown, DropdownItem} from "@tremor/react";
 import {VariableIcon} from "@heroicons/react/24/solid";
+import {useCallback, useMemo, useState} from "react";
+import {useRouter} from "next/router";
+import useCompanies from "@sio/hooks/useCompanies";
 
 interface DoMathProps {
     company: string
@@ -13,50 +15,56 @@ const doMath = async ({company, year}: DoMathProps) => {
     return await fetch(`/api/saft/kpis?company=${company}&year=${year}`)
 }
 
-const YearSelector = () => {
+const YearSelector = ({company, year}: BaseProps) => {
+    const router = useRouter()
     const queryClient = useQueryClient();
 
-    const {selectedCompany, selectedYear, setSelectedYear} = useContext(KpisContext)
+    const {data: companies, isLoading, isError} = useCompanies()
+    const [loading, setIsLoading] = useState(false)
 
-    const dropdownItems = selectedCompany?.fiscal_years.map((year, k) => (
-        <DropdownItem value={String(year)} text={String(year)} key={k}/>
-    ))
+    const years = useMemo(
+        () => companies?.find(c => c.company_id == Number(company))?.fiscal_years.map(String),
+        [companies, company]
+    )
 
     const {mutate} = useMutation(doMath, {
-        onSuccess: data => {
-            console.log(data);
-        },
-        onError: () => {
-            console.error("there was an error")
-        },
+        onError: console.error,
+        onSuccess: () => setIsLoading(false),
+        onMutate: () => setIsLoading(true),
         onSettled: async () => {
             await Promise.all([
-                queryClient.invalidateQueries({queryKey: ['year', selectedCompany, selectedYear]}),
-                queryClient.invalidateQueries({queryKey: ['products', selectedCompany, selectedYear]}),
-                queryClient.invalidateQueries({queryKey: ['customers', selectedCompany, selectedYear]}),
-                queryClient.invalidateQueries({queryKey: ['revenue_over_time', selectedCompany, selectedYear]}),
-                queryClient.invalidateQueries({queryKey: ['sales_by_city', selectedCompany, selectedYear]}),
-                queryClient.invalidateQueries({queryKey: ['sales_by_country', selectedCompany, selectedYear]}),
-            ]).then(console.log).catch(console.error)
+                queryClient.invalidateQueries({queryKey: ['year', company, year]}),
+                queryClient.invalidateQueries({queryKey: ['products', company, year]}),
+                queryClient.invalidateQueries({queryKey: ['customers', company, year]}),
+                queryClient.invalidateQueries({queryKey: ['revenue_over_time', company, year]}),
+                queryClient.invalidateQueries({queryKey: ['sales_by_city', company, year]}),
+                queryClient.invalidateQueries({queryKey: ['sales_by_country', company, year]}),
+            ])
         }
     });
+
+    const pushYearToRoute = useCallback(async (value: string) => {
+        await router.push({
+            pathname: router.pathname.replace('[company]', company).replace('[year]', value),
+        })
+    }, [company, router])
 
     return (
         <div className="flex flex-row space-x-4 items-center mt-4 sm:mt-0">
             <Dropdown
-                value={String(selectedYear)}
-                onValueChange={setSelectedYear}
+                value={year}
+                onValueChange={pushYearToRoute}
                 placeholder="Select Year">
-                {dropdownItems ?? []}
+                {years?.map(year => (
+                    <DropdownItem value={year} text={year} key={year}/>
+                )) || []}
             </Dropdown>
             <Button size="sm"
                     color="teal"
                     icon={VariableIcon}
-                    disabled={selectedYear == undefined}
-                    onClick={() => mutate({
-                        company: String(selectedCompany?.company_id),
-                        year: String(selectedYear)
-                    })}>
+                    disabled={isError}
+                    loading={loading || isLoading || isError}
+                    onClick={() => mutate({company, year})}>
                 Run Calculations
             </Button>
         </div>

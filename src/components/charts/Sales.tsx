@@ -1,31 +1,23 @@
 import {Bold, Card, DonutChart, Flex, Metric, Text, Title} from "@tremor/react";
-import {useContext} from "react";
 import TextSkeleton from "@sio/components/skeletons/TextSkeleton";
-import {KpisContext} from "@sio/components/KpisProvider";
 import useFiscalYear from "@sio/hooks/useFiscalYear";
 import useProducts from "@sio/hooks/useProducts";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
 import formatEuro from "@sio/utils/formatEuro";
+import BaseProps from "@sio/types";
 
-export default function Sales() {
-    const {selectedCompany, selectedYear} = useContext(KpisContext)
+export default function Sales({company, year}: BaseProps) {
     const {
-        data: year,
+        data: fiscalYear,
         isLoading: isLoadingYear,
         isError: isErrorYear
-    } = useFiscalYear({
-        company: String(selectedCompany?.company_id),
-        year: selectedYear
-    })
+    } = useFiscalYear({company, year})
 
     const {
         products,
         isLoading: isLoadingProducts,
         isError: isErrorProducts
-    } = useProducts({
-        company: String(selectedCompany?.company_id),
-        year: selectedYear
-    })
+    } = useProducts({company, year})
 
     const topProducts = products?.slice(0, 5).map(product => ({
         name: product.product_description.slice(0, 30),
@@ -43,8 +35,8 @@ export default function Sales() {
 
                 ) : (
                     <>
-                        <Metric>{formatEuro(year!.net_sales)}{' '}</Metric>
-                        <Text>/{' '}{formatEuro(year!.gross_sales)}</Text>
+                        <Metric>{formatEuro(fiscalYear!.net_sales)}{' '}</Metric>
+                        <Text>/{' '}{formatEuro(fiscalYear!.gross_sales)}</Text>
                     </>
                 )}
             </Flex>
