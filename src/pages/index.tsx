@@ -1,20 +1,11 @@
 import {Card, Grid, Subtitle, Text, Title} from "@tremor/react";
 import TextSkeleton from "@sio/components/skeletons/TextSkeleton";
-import {useContext} from "react"
 import useCompanies from "@sio/hooks/useCompanies";
 import Link from "next/link";
-import {KpisContext} from "@sio/components/KpisProvider";
-import {Company} from "@sio/pages/api/companies";
 import Tabs from "@sio/components/Tabs";
 
 export default function Home() {
-    const {setSelectedCompany, setSelectedYear} = useContext(KpisContext);
     const {data, isLoading, isError} = useCompanies();
-
-    const handleCompanySelection = (company: Company) => {
-        setSelectedCompany(company)
-        setSelectedYear(String(company.fiscal_years[0]))
-    };
 
     return (
         <main className="max-w-6xl mx-auto pt-16 sm:pt-8 px-8">
@@ -35,10 +26,8 @@ export default function Home() {
                     ))}
 
                     {data?.map((company, k) => (
-                        <Link href='/dashboard'
-                              onClick={() => handleCompanySelection(company)}
-                              key={k}>
-                            <Card className="h-22">
+                        <Link href={`${company.company_id}/${company.fiscal_years[0]}/dashboard`} key={k}>
+                            <Card>
                                 <Title>{company.company_name}</Title>
                                 <Subtitle>{company.company_id}</Subtitle>
                             </Card>

@@ -1,16 +1,11 @@
 import TextSkeleton from "@sio/components/skeletons/TextSkeleton";
 import {Card, Metric, Text, Title} from "@tremor/react";
-import {useContext} from "react";
-import {KpisContext} from "@sio/components/KpisProvider";
 import useFiscalYear from "@sio/hooks/useFiscalYear";
 import formatEuro from "@sio/utils/formatEuro";
+import BaseKpiProps from "@sio/types";
 
-export default function AverageOrderValue() {
-    const {selectedCompany, selectedYear} = useContext(KpisContext)
-    const {data, isLoading, isError} = useFiscalYear({
-        company: String(selectedCompany?.company_id),
-        year: selectedYear
-    })
+export default function AverageOrderValue({company, year}: BaseKpiProps) {
+    const {data, isLoading, isError} = useFiscalYear({company, year})
 
     return (
         <Card>

@@ -1,16 +1,11 @@
 import {AreaChart, Card, Text, Title} from "@tremor/react";
-import {useContext} from "react";
-import {KpisContext} from "@sio/components/KpisProvider";
 import useRevenueOverTime from "@sio/hooks/useRevenueOverTime";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
 import formatEuro from "@sio/utils/formatEuro";
+import BaseKpiProps from "@sio/types";
 
-const RevenueOverTime = () => {
-    const {selectedCompany, selectedYear} = useContext(KpisContext)
-    const {revenueOverTime, isLoading, isError} = useRevenueOverTime({
-        company: String(selectedCompany?.company_id),
-        year: selectedYear
-    })
+const RevenueOverTime = ({company, year}: BaseKpiProps) => {
+    const {revenueOverTime, isLoading, isError} = useRevenueOverTime({company, year})
 
     return (
         <Card>

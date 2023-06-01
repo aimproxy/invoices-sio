@@ -1,23 +1,14 @@
 import {createColumnHelper} from "@tanstack/table-core";
 import Table from "@sio/components/Table";
 import ListSkeleton from "@sio/components/skeletons/ListSkeleton";
-import {useRouter} from "next/router";
 import useCustomers from "@sio/hooks/useCustomers";
-import {useContext} from "react";
-import {KpisContext} from "@sio/components/KpisProvider";
 import {Customer} from "@sio/pages/api/customers";
 import Tabs from "@sio/components/Tabs";
 import Welcome from "@sio/components/Welcome";
+import {GetServerSideProps, InferGetServerSidePropsType} from "next";
 
-export default function Customers() {
-    const router = useRouter()
-
-    const {selectedCompany, selectedYear} = useContext(KpisContext)
-    const {data, isLoading, isError} = useCustomers({
-        company: String(selectedCompany?.company_id),
-        year: String(selectedYear)
-    })
-
+export default function Customers({company, year}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+    const {data, isLoading, isError} = useCustomers({company, year})
     const columnHelper = createColumnHelper<Customer>()
 
     const customerColumns = [
@@ -55,7 +46,7 @@ export default function Customers() {
 
     return (
         <main className="max-w-6xl mx-auto pt-16 sm:pt-8 px-8">
-            <Welcome/>
+            <Welcome company={company}/>
             <Tabs tabs={[
                 {route: 'dashboard', name: 'Dashboard'},
                 {route: 'customers', name: 'Customers'},
@@ -71,4 +62,13 @@ export default function Customers() {
             </div>
         </main>
     )
+}
+
+export const getServerSideProps: GetServerSideProps = async ({params}) => {
+    return {
+        props: {
+            company: params?.company || undefined,
+            year: params?.year || undefined
+        }
+    }
 }

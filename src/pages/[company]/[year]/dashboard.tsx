@@ -13,35 +13,36 @@ import SalesByCity from "@sio/components/charts/SalesByCity";
 import RevenueOverTime from "@sio/components/charts/RevenueOverTime";
 import TopCustomersByRevenue from "@sio/components/charts/TopCustomersByRevenue";
 
-import YearSelector from "@sio/components/selectors/YearSelector";
-
 import Tabs from "@sio/components/Tabs";
 import Welcome from "@sio/components/Welcome";
 
-export default function Dashboard() {
+import {GetServerSideProps, InferGetServerSidePropsType} from "next";
+
+export default function Dashboard({company, year}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+
     const dashMarkup = (
         <div className="space-y-4">
             <Grid numCols={1} numColsLg={4} className="gap-6">
-                <Orders/>
-                <AverageOrderValue/>
-                <CustomerLifetimeValue/>
-                <RepeatPurchaseRate/>
+                <Orders company={company} year={year}/>
+                <AverageOrderValue company={company} year={year}/>
+                <CustomerLifetimeValue company={company} year={year}/>
+                <RepeatPurchaseRate company={company} year={year}/>
             </Grid>
             <Grid numCols={1} numColsLg={3} className="gap-6">
-                <div className={"col-span-2"}>
-                    <RevenueOverTime/>
+                <div className="col-span-2">
+                    <RevenueOverTime company={company} year={year}/>
                 </div>
-                <Sales/>
+                <Sales company={company} year={year}/>
             </Grid>
             <Grid numCols={1} numColsLg={2} className="gap-6">
-                <CumulativeRevenueTrend/>
-                <RevenueBySegment/>
+                <CumulativeRevenueTrend company={company} year={year}/>
+                <RevenueBySegment company={company} year={year}/>
             </Grid>
 
             <Grid numCols={1} numColsLg={3} className="gap-6">
-                <SalesByCountry/>
-                <SalesByCity/>
-                <TopCustomersByRevenue/>
+                <SalesByCountry company={company} year={year}/>
+                <SalesByCity company={company} year={year}/>
+                <TopCustomersByRevenue company={company} year={year}/>
             </Grid>
         </div>
     )
@@ -49,8 +50,7 @@ export default function Dashboard() {
     return (
         <main className="max-w-6xl mx-auto pt-16 sm:pt-8 px-8">
             <div className="flex justify-between">
-                <Welcome/>
-                <YearSelector/>
+                <Welcome company={company}/>
             </div>
 
             <Tabs tabs={[
@@ -64,4 +64,13 @@ export default function Dashboard() {
             </div>
         </main>
     );
+}
+
+export const getServerSideProps: GetServerSideProps = async ({params}) => {
+    return {
+        props: {
+            company: params?.company || undefined,
+            year: params?.year || undefined
+        }
+    }
 }

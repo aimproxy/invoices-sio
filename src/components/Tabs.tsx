@@ -3,10 +3,11 @@ import {Tab, TabList} from "@tremor/react";
 
 const Tabs = ({tabs}: { tabs: { route: string, name: string }[] }) => {
     const router = useRouter()
+    const route = /\/([^/]+)$/.exec(router.route)
 
     return (
         <TabList
-            value={router.route.replace('/', '')}
+            value={route?.[1] ?? ''}
             onValueChange={(value) => router.push({
                 pathname: value,
                 query: router.query,

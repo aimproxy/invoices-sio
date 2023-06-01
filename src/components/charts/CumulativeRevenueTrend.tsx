@@ -1,16 +1,11 @@
 import {Card, LineChart, Text, Title} from "@tremor/react";
 import useRevenueOverTime from "@sio/hooks/useRevenueOverTime";
-import {useContext} from "react";
-import {KpisContext} from "@sio/components/KpisProvider";
 import formatEuro from "@sio/utils/formatEuro";
+import BaseKpiProps from "@sio/types";
 
 
-export default function CumulativeRevenueTrend() {
-    const {selectedCompany, selectedYear} = useContext(KpisContext)
-    const {revenueOverTime, isLoading, isError} = useRevenueOverTime({
-        company: String(selectedCompany?.company_id),
-        year: selectedYear
-    })
+export default function CumulativeRevenueTrend({company, year}: BaseKpiProps) {
+    const {revenueOverTime, isLoading, isError} = useRevenueOverTime({company, year})
 
     // TODO Show loading state
     return (

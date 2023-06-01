@@ -1,28 +1,20 @@
 import {BarChart, Card, Text, Title} from "@tremor/react";
-import {useContext} from "react";
-import {KpisContext} from "@sio/components/KpisProvider";
 import useSalesByMonth from "@sio/hooks/useSalesByMonth";
 import ChartSkeleton from "@sio/components/skeletons/ChartSkeleton";
+import BaseKpiProps from "@sio/types";
 
-export const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-export default function SalesByMonth() {
-    const {selectedCompany, selectedYear} = useContext(KpisContext)
-
+export default function SalesByMonth({company, year}: BaseKpiProps) {
     const {
         salesByMonth,
         isLoading,
         isError
-    } = useSalesByMonth({
-        company: String(selectedCompany?.company_id),
-        year: selectedYear
-    })
+    } = useSalesByMonth({company, year})
 
     return (
         <Card>
             <Title>Sales per Month</Title>
             <Text>Number of sales per each month</Text>
-            {(isLoading || isError || salesByMonth == null) ? (
+            {(isLoading || isError || salesByMonth == undefined) ? (
                 <ChartSkeleton/>
             ) : (
                 <BarChart

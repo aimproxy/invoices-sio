@@ -1,9 +1,3 @@
-import {useContext} from "react";
-import {KpisContext} from "@sio/components/KpisProvider";
-import {Button, Dropdown, DropdownItem} from "@tremor/react";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {VariableIcon} from "@heroicons/react/24/solid";
-
 interface DoMathProps {
     company: string
     year: string
@@ -13,10 +7,10 @@ const doMath = async ({company, year}: DoMathProps) => {
     return await fetch(`/api/saft/kpis?company=${company}&year=${year}`)
 }
 
+/*
 const YearSelector = () => {
     const queryClient = useQueryClient();
 
-    const {selectedCompany, selectedYear, setSelectedYear} = useContext(KpisContext)
 
     const dropdownItems = selectedCompany?.fiscal_years.map((year, k) => (
         <DropdownItem value={String(year)} text={String(year)} key={k}/>
@@ -64,3 +58,4 @@ const YearSelector = () => {
 }
 
 export default YearSelector
+ */
