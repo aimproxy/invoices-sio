@@ -3,8 +3,8 @@ SET
 
 DROP TABLE IF EXISTS invoice_line;
 DROP TABLE IF EXISTS invoice;
-DROP TABLE IF EXISTS sales_by_country;
-DROP TABLE IF EXISTS sales_by_city;
+DROP TABLE IF EXISTS revenue_by_country;
+DROP TABLE IF EXISTS revenue_by_city;
 DROP TABLE IF EXISTS revenue_by_month;
 DROP TABLE IF EXISTS product_fiscal_year;
 DROP TABLE IF EXISTS product;
