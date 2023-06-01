@@ -22,8 +22,12 @@ export default function Products({company, year}: InferGetServerSidePropsType<ty
             header: () => 'Product',
             cell: info => info.getValue(),
         }),
-        columnHelper.accessor('amount_spent', {
-            header: () => 'Amount Spent',
+        columnHelper.accessor('total_sales', {
+            header: () => 'Total Sales',
+            cell: info => info.getValue(),
+        }),
+        columnHelper.accessor('revenue', {
+            header: () => 'Revenue',
             cell: info => `${info.getValue()} €`,
         }),
     ]
