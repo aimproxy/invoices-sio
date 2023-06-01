@@ -11,7 +11,7 @@ const Welcome = ({company, year}: BaseProps) => {
                 <ArrowLeftIcon className="text-gray-900 font-semibold w-5 h-5"/>
             </Link>
             <div className="flex flex-col">
-                <Title>{company}, Serie {year}</Title>
+                <Title>Empresa {company}, Exercício de {year}</Title>
                 <Text>Aqui o especialista és sempre tu!</Text>
             </div>
         </div>
