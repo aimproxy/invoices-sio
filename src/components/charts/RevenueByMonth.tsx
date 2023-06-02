@@ -9,7 +9,7 @@ export default function RevenueByMonth({company, year}: BaseProps) {
 
     return (
         <Card>
-            <Title>Sales per Month</Title>
+            <Title>Revenue per Month</Title>
             <Text>Revenue per each month</Text>
             {(isLoading || isError || data == null) ? (
                 <ChartSkeleton/>
@@ -18,10 +18,10 @@ export default function RevenueByMonth({company, year}: BaseProps) {
                     className="mt-4"
                     data={data}
                     index="month"
-                    maxValue={Math.max(...data.map((r: any) => r["Number Of Sales"]))}
+                    maxValue={Math.max(...data.map((r: any) => r["Revenue"]))}
                     valueFormatter={formatEuro}
                     relative={false}
-                    categories={["Number Of Sales"]}
+                    categories={["Revenue"]}
                     colors={["indigo"]}
                 />
             )}

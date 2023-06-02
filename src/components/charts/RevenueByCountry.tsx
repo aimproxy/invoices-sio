@@ -10,7 +10,7 @@ export default function SalesByCountry({company, year}: BaseProps) {
 
     return (
         <Card>
-            <Title>Sales by Country</Title>
+            <Title>Revenue by Country</Title>
             {(isLoading || isError || revenueByCountry?.length === 0) ? (
                 <ChartSkeleton/>
             ) : (

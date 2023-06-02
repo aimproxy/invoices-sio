@@ -9,7 +9,7 @@ export default function SalesByCity({company, year}: BaseProps) {
 
     return (
         <Card>
-            <Title>Sales by City</Title>
+            <Title>Revenue by City</Title>
             {(isLoading || isError || revenueByCity?.length === 0) ? (
                 <ChartSkeleton/>
             ) : (

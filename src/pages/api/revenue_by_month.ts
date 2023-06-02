@@ -11,7 +11,7 @@ export default async function handler(
     try {
         const revenueByMonth = await sql`
             SELECT to_char(to_date(month::text, 'MM'), 'Month') as month,
-                   sum(net_total)                               as "Number Of Sales"
+                   sum(net_total)                               as "Revenue"
             FROM revenue_by_month
             WHERE company_id = ${Number(company)}
               AND fiscal_year = ${Number(year)}
