@@ -2,12 +2,105 @@ import {NextApiRequest, NextApiResponse} from "next";
 import postgres from "@sio/postgres";
 import {sql} from "kysely"
 
+const {count, sum} = postgres.fn
+
+const yearOf = (company: number, year: number) => postgres
+    .selectFrom('fiscal_year')
+    .select('number_of_entries')
+    .where('company_id', '=', company)
+    .where('fiscal_year', '=', year)
+    .executeTakeFirstOrThrow()
+
+const invoicesOf = (company: number, year: number) => postgres
+    .selectFrom("invoice")
+    .select([
+        count('hash').as('invoices_count'),
+        sum('net_total').as('customer_net_total'),
+        'customer_tax_id',
+        'fiscal_year',
+        'company_id'
+    ])
+    .where('fiscal_year', '=', year)
+    .where('company_id', '=', company)
+    .groupBy(['customer_tax_id', 'fiscal_year', 'company_id'])
+    .execute()
+
+const revenueByMonthOf = (company: number, year: number) => sql<{
+    invoices_count: number,
+    month: number,
+    net_total: number,
+    gross_total: number,
+    fiscal_year: number,
+    company_id: number
+}>`
+    SELECT COUNT(*)                         AS invoices_count,
+           EXTRACT(MONTH FROM invoice_date) AS month,
+           SUM(net_total)                   AS net_total,
+           SUM(gross_total)                 AS gross_total,
+           fiscal_year,
+           company_id
+    FROM invoice
+    WHERE fiscal_year = ${year}
+      AND company_id = ${company}
+    GROUP BY month, fiscal_year, company_id`.execute(postgres)
+
+const revenueByProductsOf = (company: number, year: number) => sql<{
+    product_code: number,
+    revenue: number,
+    total_sales: number
+}>`
+    SELECT product_code,
+           MAX(quantity * unit_price) AS revenue,
+           count(product_code)        AS total_sales
+    FROM invoice_line
+    WHERE fiscal_year = ${year}
+      AND company_id = ${company}
+    GROUP BY product_code
+    ORDER BY revenue DESC`.execute(postgres)
+
+const revenueByCityOf = (company: number, year: number) => sql<{
+    company_id: number,
+    fiscal_year: number,
+    billing_city: string,
+    net_total: number
+}>`
+    SELECT sum(i.net_total) as net_total, c.billing_city, i.fiscal_year, c.company_id
+    FROM customer_fiscal_year c
+             INNER JOIN invoice i ON i.customer_tax_id = c.customer_tax_id
+    WHERE i.company_id = ${company}
+      AND i.fiscal_year = ${year}
+    GROUP BY c.billing_city, i.fiscal_year, c.company_id`.execute(postgres)
+
+const revenueByCountryOf = (company: number, year: number) => sql<{
+    company_id: number,
+    fiscal_year: number,
+    billing_country: string,
+    net_total: number
+}>`
+    SELECT sum(i.net_total) as net_total, c.billing_country, i.fiscal_year, c.company_id
+    FROM customer_fiscal_year c
+             INNER JOIN invoice i ON i.customer_tax_id = c.customer_tax_id
+    WHERE i.company_id = ${company}
+      AND i.fiscal_year = ${year}
+    GROUP BY c.billing_country, i.fiscal_year, c.company_id`.execute(postgres)
+
+const averageCustomersLifespanOf = (company: number, year: number) => sql<{
+    average_months_active: number
+}>`
+    SELECT AVG(months_active) AS average_months_active
+    FROM (SELECT COUNT(DISTINCT EXTRACT(MONTH FROM i.invoice_date)) AS months_active
+          FROM customer_fiscal_year c
+                   INNER JOIN invoice i ON i.customer_tax_id = c.customer_tax_id
+          WHERE i.company_id = ${company}
+            AND i.fiscal_year = ${year}
+          GROUP BY c.customer_tax_id) AS customer_months_active`.execute(postgres)
+
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<{ ok: boolean, e?: any }>
+    res: NextApiResponse
 ) {
-    const {company, year} = req.query
-    const {count, sum} = postgres.fn
+    const company = Number(req.query.company)
+    const year = Number(req.query.year)
 
     try {
         const [
@@ -17,136 +110,59 @@ export default async function handler(
             revenueByProducts,
             revenueByCity,
             revenueByCountry,
-            averageMonthsActive,
+            averageCustomersLifespan,
         ] = await Promise.all([
-
-            postgres.selectFrom('fiscal_year')
-                .select(['number_of_entries', 'customers_count'])
-                .where('company_id', '=', Number(company))
-                .where('fiscal_year', '=', Number(year))
-                .executeTakeFirstOrThrow(),
-
-            postgres.selectFrom("invoice")
-                .select([
-                    count('hash').as('invoices_count'),
-                    sum('net_total').as('customer_net_total'),
-                    'saft_customer_id',
-                    'fiscal_year',
-                    'company_id'
-                ])
-                .where('fiscal_year', '=', Number(year))
-                .where('company_id', '=', Number(company))
-                .groupBy(['saft_customer_id', 'fiscal_year', 'company_id'])
-                .execute(),
-
-            sql<{
-                invoices_count: number,
-                month: number,
-                net_total: number,
-                gross_total: number,
-                fiscal_year: number,
-                company_id: number
-            }>`
-                SELECT COUNT(*)                         AS invoices_count,
-                       EXTRACT(MONTH FROM invoice_date) AS month,
-                       SUM(net_total)                   AS net_total,
-                       SUM(gross_total)                 AS gross_total,
-                       fiscal_year,
-                       company_id
-                FROM invoice
-                WHERE fiscal_year = ${Number(year)}
-                  AND company_id = ${Number(company)}
-                GROUP BY month, fiscal_year, company_id`.execute(postgres),
-
-            sql<{ product_code: number, revenue: number, total_sales: number }>`
-                SELECT product_code,
-                       MAX(quantity * unit_price) AS revenue,
-                       count(product_code)        as total_sales
-                FROM invoice_line
-                WHERE fiscal_year = ${Number(year)}
-                  AND company_id = ${Number(company)}
-                GROUP BY product_code
-                ORDER BY revenue DESC`.execute(postgres),
-
-            sql<{ company_id: number, fiscal_year: number, billing_city: string, net_total: number }>`
-                SELECT sum(i.net_total) as net_total, customer.billing_city, i.fiscal_year, customer.company_id
-                FROM customer
-                         INNER JOIN invoice i ON i.saft_customer_id = customer.saft_customer_id
-                WHERE i.company_id = ${Number(company)}
-                  AND fiscal_year = ${Number(year)}
-                GROUP BY customer.billing_city, i.fiscal_year, customer.company_id`.execute(postgres),
-
-            sql<{ company_id: number, fiscal_year: number, billing_country: string, net_total: number }>`
-                SELECT sum(i.net_total) as net_total, customer.billing_country, i.fiscal_year, customer.company_id
-                FROM customer
-                         INNER JOIN invoice i ON i.saft_customer_id = customer.saft_customer_id
-                WHERE i.company_id = ${Number(company)}
-                  AND fiscal_year = ${Number(year)}
-                GROUP BY customer.billing_country, i.fiscal_year, customer.company_id`.execute(postgres),
-
-            sql<{ average_months_active: number }>`
-                SELECT AVG(months_active) AS average_months_active
-                FROM (SELECT COUNT(DISTINCT EXTRACT(MONTH FROM i.invoice_date)) AS months_active
-                      FROM customer c
-                               INNER JOIN invoice i ON i.saft_customer_id = c.saft_customer_id
-                      WHERE i.company_id = ${Number(company)}
-                        AND fiscal_year = ${Number(year)}
-                      GROUP BY c.saft_customer_id) AS customer_months_active`.execute(postgres),
-
+            yearOf(company, year),
+            invoicesOf(company, year),
+            revenueByMonthOf(company, year),
+            revenueByProductsOf(company, year),
+            revenueByCityOf(company, year),
+            revenueByCountryOf(company, year),
+            averageCustomersLifespanOf(company, year)
         ])
 
         const totalCustomersCount = invoicesByCustomer.length
         const customerWithInvoices = invoicesByCustomer.filter(c => Number(c.invoices_count) > 1).length
 
-        const net = revenueByMonth.rows.reduce((sum, current) => sum + Number(current.net_total), 0);
-        const gross = revenueByMonth.rows.reduce((sum, current) => sum + Number(current.gross_total), 0);
-        const aov = net / fiscal_year.number_of_entries
+        const net_sales = revenueByMonth.rows.reduce((sum, current) => sum + Number(current.net_total), 0)
+        const gross_sales = revenueByMonth.rows.reduce((sum, current) => sum + Number(current.gross_total), 0)
+        const aov = net_sales / fiscal_year.number_of_entries
         const rpr = (customerWithInvoices / totalCustomersCount) * 100
 
-        const averageTransactionsPerMonth = revenueByMonth.rows.reduce((sum, current) =>
-            sum + Number(current.invoices_count), 0) / 12
+        const averageTransactionsPerMonth = revenueByMonth.rows.reduce(
+            (sum, current) => sum + Number(current.invoices_count), 0
+        ) / 12
 
-        const clv = (averageTransactionsPerMonth * aov * averageMonthsActive.rows[0].average_months_active) / fiscal_year.customers_count
+        /*
+        const clv = (
+            aov *
+            averageTransactionsPerMonth *
+            averageCustomersLifespan.rows[0].average_months_active
+        ) / fiscal_year.customers_count */
 
         await Promise.all([
             postgres.updateTable('fiscal_year')
-                .set({
-                    net_sales: net,
-                    gross_sales: gross,
-                    aov,
-                    rpr,
-                    clv
-                })
+                .set({net_sales, gross_sales, aov, rpr, clv: 0})
                 .where('company_id', '=', Number(company))
                 .where('fiscal_year', '=', Number(year))
                 .executeTakeFirstOrThrow(),
 
-            postgres.insertInto('customer_fiscal_year')
-                .values(invoicesByCustomer)
-                .onConflict(oc => oc
-                    .columns(['saft_customer_id', 'company_id', 'fiscal_year'])
-                    .doUpdateSet(eb => ({
-                        saft_customer_id: eb.ref('excluded.saft_customer_id'),
-                        company_id: eb.ref('excluded.company_id'),
-                        fiscal_year: eb.ref('excluded.fiscal_year'),
-                    })))
-                .executeTakeFirstOrThrow(),
-
-            postgres.insertInto('product_fiscal_year')
-                .values(revenueByProducts.rows.map(p => ({
+            /*
+            ...invoicesByCustomer.map(invoice => postgres
+                .updateTable('customer_fiscal_year')
+                .set({...invoice})
+                .where({})
+                .executeTakeFirstOrThrow()),
+*/
+            /*
+            postgres.updateTable('product_fiscal_year')
+                .set(revenueByProducts.rows.map(p => ({
                     ...p,
                     company_id: company,
                     fiscal_year: year
                 })))
-                .onConflict(oc => oc
-                    .columns(['product_code', 'fiscal_year', 'company_id'])
-                    .doUpdateSet(eb => ({
-                        product_code: eb.ref('excluded.product_code'),
-                        fiscal_year: eb.ref('excluded.fiscal_year'),
-                        company_id: eb.ref('excluded.company_id')
-                    }))
-                )
                 .executeTakeFirstOrThrow(),
+*/
 
             postgres.insertInto('revenue_by_month')
                 .values(revenueByMonth.rows)

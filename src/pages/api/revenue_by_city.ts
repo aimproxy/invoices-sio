@@ -1,14 +1,9 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import postgres from "@sio/postgres";
 
-export interface RevenueByCity {
-    billing_city: string,
-    net_total: number
-}
-
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<RevenueByCity[] | undefined>
+    res: NextApiResponse
 ){
     const {company, year} = req.query
 
