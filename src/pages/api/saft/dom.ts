@@ -23,7 +23,6 @@ const insertCompany = async (company: KeyValue, res: NextApiResponse) => {
 
 const insertProducts = async (products: KeyValue[], res: NextApiResponse) => {
     try {
-        console.log(products)
         await postgres.insertInto('product_fiscal_year')
             .values(products)
             .onConflict(oc => oc
