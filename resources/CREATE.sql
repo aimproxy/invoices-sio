@@ -6,9 +6,7 @@ DROP TABLE IF EXISTS revenue_by_country;
 DROP TABLE IF EXISTS revenue_by_city;
 DROP TABLE IF EXISTS revenue_by_month;
 DROP TABLE IF EXISTS product_fiscal_year;
-DROP TABLE IF EXISTS product;
 DROP TABLE IF EXISTS customer_fiscal_year;
-DROP TABLE IF EXISTS customer;
 DROP TABLE IF EXISTS fiscal_year;
 DROP TABLE IF EXISTS company;
 
@@ -38,7 +36,7 @@ CREATE TABLE fiscal_year
 
 CREATE TABLE customer_fiscal_year
 (
-    customer_tax_id        BIGSERIAL,
+    customer_tax_id        VARCHAR(50),
     company_name           VARCHAR(255),
     billing_address_detail VARCHAR(255),
     billing_city           VARCHAR(255),
@@ -103,7 +101,7 @@ CREATE TABLE invoice
     tax_payable     DECIMAL(10, 2) NOT NULL DEFAULT 0,
     net_total       DECIMAL(10, 2) NOT NULL DEFAULT 0,
     gross_total     DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    customer_tax_id BIGSERIAL,
+    customer_tax_id VARCHAR(50),
     fiscal_year     BIGSERIAL,
     company_id      BIGSERIAL,
     FOREIGN KEY (customer_tax_id, fiscal_year, company_id) REFERENCES customer_fiscal_year (customer_tax_id, fiscal_year, company_id),
