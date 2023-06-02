@@ -19,7 +19,7 @@ export default function Sales({company, year}: BaseProps) {
         isError: isErrorProducts
     } = useProducts({company, year})
 
-    const topProducts = products?.slice(0, 5).map(product => ({
+    const topProducts = products?.slice(0, 5).map((product: any) => ({
         name: product.product_description.slice(0, 30),
         value: Number(product.revenue)
     }))

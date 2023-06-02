@@ -1,9 +1,8 @@
 import {useQuery} from "@tanstack/react-query";
 import {useMemo} from "react";
-import {RevenueOverTime} from "@sio/pages/api/revenue_over_time";
 
 const useRevenueOverTime = ({company, year}: { company: string, year: string }) => {
-    const fetchRevenueOverTime = async (company: string, year: string): Promise<RevenueOverTime[]> => {
+    const fetchRevenueOverTime = async (company: string, year: string) => {
         const res = await fetch(`/api/revenue_over_time?company=${company}&year=${year}`)
         return await res.json();
     }
@@ -22,7 +21,7 @@ const useRevenueOverTime = ({company, year}: { company: string, year: string }) 
 
     return useMemo(() => {
         let cumulativeNetTotal = 0
-        const revenueOverTime = data?.map((revenue) => {
+        const revenueOverTime = data?.map((revenue: any) => {
             cumulativeNetTotal += Number(revenue.net_total);
 
             return {

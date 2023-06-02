@@ -18,7 +18,7 @@ export default function RevenueByMonth({company, year}: BaseProps) {
                     className="mt-4"
                     data={data}
                     index="month"
-                    maxValue={Math.max(...data.map(r => r["Number Of Sales"]))}
+                    maxValue={Math.max(...data.map((r: any) => r["Number Of Sales"]))}
                     valueFormatter={formatEuro}
                     relative={false}
                     categories={["Number Of Sales"]}

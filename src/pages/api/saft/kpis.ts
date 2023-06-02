@@ -33,7 +33,7 @@ const revenueByMonthOf = (company: number, year: number) => sql<{
     fiscal_year: number,
     company_id: number
 }>`
-    SELECT COUNT(*)                         AS invoices_count,
+    SELECT COUNT(*) AS invoices_count,
            EXTRACT(MONTH FROM invoice_date) AS month,
            SUM(net_total)                   AS net_total,
            SUM(gross_total)                 AS gross_total,
@@ -45,7 +45,7 @@ const revenueByMonthOf = (company: number, year: number) => sql<{
     GROUP BY month, fiscal_year, company_id`.execute(postgres)
 
 const revenueByProductsOf = (company: number, year: number) => sql<{
-    product_code: number,
+    product_code: string,
     revenue: number,
     total_sales: number
 }>`
@@ -95,6 +95,12 @@ const averageCustomersLifespanOf = (company: number, year: number) => sql<{
             AND i.fiscal_year = ${year}
           GROUP BY c.customer_tax_id) AS customer_months_active`.execute(postgres)
 
+const numberOfCustomersOf = (company: number, year: number) => sql<{ customers_count: number }>`
+    SELECT count(customer_tax_id) as customers_count
+    FROM customer_fiscal_year
+    WHERE company_id = ${company}
+      AND fiscal_year = ${year}`.execute(postgres)
+
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
@@ -111,6 +117,7 @@ export default async function handler(
             revenueByCity,
             revenueByCountry,
             averageCustomersLifespan,
+            customersCount,
         ] = await Promise.all([
             yearOf(company, year),
             invoicesOf(company, year),
@@ -118,7 +125,8 @@ export default async function handler(
             revenueByProductsOf(company, year),
             revenueByCityOf(company, year),
             revenueByCountryOf(company, year),
-            averageCustomersLifespanOf(company, year)
+            averageCustomersLifespanOf(company, year),
+            numberOfCustomersOf(company, year),
         ])
 
         const totalCustomersCount = invoicesByCustomer.length
@@ -133,36 +141,42 @@ export default async function handler(
             (sum, current) => sum + Number(current.invoices_count), 0
         ) / 12
 
-        /*
         const clv = (
             aov *
             averageTransactionsPerMonth *
             averageCustomersLifespan.rows[0].average_months_active
-        ) / fiscal_year.customers_count */
+        ) / customersCount.rows[0].customers_count
 
         await Promise.all([
             postgres.updateTable('fiscal_year')
-                .set({net_sales, gross_sales, aov, rpr, clv: 0})
+                .set({net_sales, gross_sales, aov, rpr, clv})
                 .where('company_id', '=', Number(company))
                 .where('fiscal_year', '=', Number(year))
                 .executeTakeFirstOrThrow(),
 
-            /*
             ...invoicesByCustomer.map(invoice => postgres
                 .updateTable('customer_fiscal_year')
-                .set({...invoice})
-                .where({})
+                .set({
+                    invoices_count: Number(invoice.invoices_count),
+                    customer_net_total: Number(invoice.customer_net_total)
+                })
+                .where('customer_tax_id', '=', invoice.customer_tax_id)
+                .where('company_id', '=', company)
+                .where('fiscal_year', '=', year)
                 .executeTakeFirstOrThrow()),
-*/
-            /*
-            postgres.updateTable('product_fiscal_year')
-                .set(revenueByProducts.rows.map(p => ({
-                    ...p,
-                    company_id: company,
-                    fiscal_year: year
-                })))
+
+
+            revenueByProducts.rows.map(p => postgres
+                .updateTable('product_fiscal_year')
+                .set({
+                    revenue: Number(p.revenue),
+                    total_sales: Number(p.total_sales),
+                })
+                .where('product_code', '=', p.product_code)
+                .where('company_id', '=', company)
+                .where('fiscal_year', '=', year)
                 .executeTakeFirstOrThrow(),
-*/
+            ),
 
             postgres.insertInto('revenue_by_month')
                 .values(revenueByMonth.rows)

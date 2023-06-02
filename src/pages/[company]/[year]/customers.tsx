@@ -2,7 +2,6 @@ import {createColumnHelper} from "@tanstack/table-core";
 import Table from "@sio/components/Table";
 import ListSkeleton from "@sio/components/skeletons/ListSkeleton";
 import useCustomers from "@sio/hooks/useCustomers";
-import {Customer} from "@sio/pages/api/customers";
 import Tabs from "@sio/components/Tabs";
 import Welcome from "@sio/components/Welcome";
 import {GetServerSideProps, InferGetServerSidePropsType} from "next";
@@ -10,7 +9,7 @@ import YearSelector from "@sio/components/selectors/YearSelector";
 
 export default function Customers({company, year}: InferGetServerSidePropsType<typeof getServerSideProps>) {
     const {data, isLoading, isError} = useCustomers({company, year})
-    const columnHelper = createColumnHelper<Customer>()
+    const columnHelper = createColumnHelper<any>()
 
     const customerColumns = [
         columnHelper.accessor('company_name', {
@@ -21,15 +20,15 @@ export default function Customers({company, year}: InferGetServerSidePropsType<t
             header: () => 'NIF',
             cell: info => info.getValue(),
         }),
-        columnHelper.accessor('ship_to_city', {
+        columnHelper.accessor('billing_city', {
             header: () => 'City',
             cell: info => info.getValue(),
         }),
-        columnHelper.accessor('ship_to_postal_code', {
+        columnHelper.accessor('billing_postal_code', {
             header: () => 'Postal Code',
             cell: info => info.getValue(),
         }),
-        columnHelper.accessor('ship_to_country', {
+        columnHelper.accessor('billing_country', {
             header: () => 'Country',
             cell: info => info.getValue(),
         }),

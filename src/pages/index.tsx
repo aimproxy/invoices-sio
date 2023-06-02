@@ -7,6 +7,7 @@ import Tabs from "@sio/components/Tabs";
 export default function Home() {
     const {data, isLoading, isError} = useCompanies();
 
+    // @ts-ignore
     return (
         <main className="max-w-6xl mx-auto pt-16 sm:pt-8 px-8">
             <Title>Empresas</Title>
@@ -24,9 +25,9 @@ export default function Home() {
                             <TextSkeleton/>
                         </Card>
                     ))}
-
+                    {/*@ts-ignore*/}
                     {data?.map((company, k) => (
-                        <Link href={`${company.company_id}/${company.fiscal_years[0]}/dashboard`} key={k}>
+                        <Link href={`${company.company_id}/${company.fiscal_year}/dashboard`} key={k}>
                             <Card>
                                 <Title>{company.company_name}</Title>
                                 <Subtitle>{company.company_id}</Subtitle>

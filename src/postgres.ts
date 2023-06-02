@@ -1,12 +1,12 @@
 import {createKysely} from "@vercel/postgres-kysely";
 
-interface Company {
+interface Company extends Record<string, any> {
     company_id: number;
     company_name: string;
     currency_code: string;
 }
 
-interface FiscalYear {
+interface FiscalYear extends Record<string, any> {
     fiscal_year: number;
     company_id: number;
     start_date: Date;
@@ -20,7 +20,7 @@ interface FiscalYear {
     clv: number;
 }
 
-interface CustomerFiscalYear {
+interface CustomerFiscalYear extends Record<string, any> {
     customer_tax_id: number;
     company_name: string;
     billing_address_detail: string;
@@ -33,7 +33,7 @@ interface CustomerFiscalYear {
     customer_net_total: number;
 }
 
-interface ProductFiscalYear {
+interface ProductFiscalYear extends Record<string, any> {
     product_code: string;
     product_description: string;
     fiscal_year: number;
@@ -42,7 +42,7 @@ interface ProductFiscalYear {
     total_sales: number;
 }
 
-interface RevenueByMonth {
+interface RevenueByMonth extends Record<string, any> {
     company_id: number;
     fiscal_year: number;
     month: number;
@@ -51,21 +51,21 @@ interface RevenueByMonth {
     gross_total: number;
 }
 
-interface RevenueByCity {
+interface RevenueByCity extends Record<string, any> {
     company_id: number;
     fiscal_year: number;
     billing_city: string;
     net_total: number;
 }
 
-interface RevenueByCountry {
+interface RevenueByCountry extends Record<string, any> {
     company_id: number;
     fiscal_year: number;
     billing_country: string;
     net_total: number;
 }
 
-interface Invoice {
+interface Invoice extends Record<string, any> {
     hash: Buffer;
     invoice_date: Date;
     tax_payable: number;
@@ -76,7 +76,7 @@ interface Invoice {
     company_id: number;
 }
 
-interface InvoiceLine {
+interface InvoiceLine extends Record<string, any> {
     line_id: number;
     fiscal_year: number;
     company_id: number;

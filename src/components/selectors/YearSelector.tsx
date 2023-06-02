@@ -2,9 +2,9 @@ import BaseProps from "@sio/types";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {Button, Dropdown, DropdownItem} from "@tremor/react";
 import {VariableIcon} from "@heroicons/react/24/solid";
-import {useCallback, useMemo, useState} from "react";
+import {useCallback, useState} from "react";
 import {useRouter} from "next/router";
-import useCompanies from "@sio/hooks/useCompanies";
+import useCompany from "@sio/hooks/useCompany";
 
 interface DoMathProps {
     company: string
@@ -19,13 +19,8 @@ const YearSelector = ({company, year}: BaseProps) => {
     const router = useRouter()
     const queryClient = useQueryClient();
 
-    const {data: companies, isLoading, isError} = useCompanies()
+    const {data, isLoading, isError} = useCompany({company})
     const [loading, setIsLoading] = useState(false)
-
-    const years = useMemo(
-        () => companies?.find(c => c.company_id == Number(company))?.fiscal_years.map(String),
-        [companies, company]
-    )
 
     const {mutate} = useMutation(doMath, {
         onError: console.error,
@@ -45,7 +40,7 @@ const YearSelector = ({company, year}: BaseProps) => {
 
     const pushYearToRoute = useCallback(async (value: string) => {
         await router.push({
-            pathname: router.pathname.replace('[company]', company).replace('[year]', value),
+            pathname: router.pathname.replace('[companies]', company).replace('[year]', value),
         })
     }, [company, router])
 
@@ -55,8 +50,8 @@ const YearSelector = ({company, year}: BaseProps) => {
                 value={year}
                 onValueChange={pushYearToRoute}
                 placeholder="Select Year">
-                {years?.map(year => (
-                    <DropdownItem value={year} text={year} key={year}/>
+                {data?.map(({fiscal_year}: { fiscal_year: string }) => (
+                    <DropdownItem value={fiscal_year} text={fiscal_year} key={fiscal_year}/>
                 )) || []}
             </Dropdown>
             <Button size="sm"

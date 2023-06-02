@@ -24,7 +24,7 @@ export default function SalesByCountry({company, year}: BaseProps) {
                         className="mt-6"
                     />
                     <Legend
-                        categories={revenueByCountry?.map((country) => country.billing_country) ?? []}
+                        categories={revenueByCountry?.map((country: any) => country.billing_country) ?? []}
                         colors={["emerald", "violet", "indigo", "yellow", "rose", "cyan", "amber"]}
                         className="mt-6 justify-center"
                     />

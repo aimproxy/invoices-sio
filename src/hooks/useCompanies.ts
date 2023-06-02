@@ -1,8 +1,7 @@
 import {useQuery} from "@tanstack/react-query";
-import {Company} from "@sio/pages/api/companies";
 
 const useCompanies = () => {
-    const fetchCompanies = async (): Promise<Company[]> => {
+    const fetchCompanies = async () => {
         const res = await fetch('/api/companies')
         return await res.json();
     }

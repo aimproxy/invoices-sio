@@ -20,7 +20,7 @@ export default function TopCustomersByRevenue({company, year}: BaseProps) {
                     </Flex>
                     <BarList
                         color="emerald"
-                        data={data!.slice(0, 5).map(customer => ({
+                        data={data!.slice(0, 5).map((customer: any) => ({
                             name: customer.company_name,
                             value: customer.customer_net_total
                         }))}

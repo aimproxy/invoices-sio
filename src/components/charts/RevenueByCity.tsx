@@ -23,7 +23,7 @@ export default function SalesByCity({company, year}: BaseProps) {
                         className="mt-6"
                     />
                     <Legend
-                        categories={revenueByCity?.map((city) => city.billing_city) ?? []}
+                        categories={revenueByCity?.map((city: any) => city.billing_city) ?? []}
                         colors={["emerald", "violet", "indigo", "yellow", "rose", "cyan", "amber"]}
                         className="mt-6 justify-center"
                     />

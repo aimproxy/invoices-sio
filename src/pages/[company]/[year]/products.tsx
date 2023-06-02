@@ -1,5 +1,4 @@
 import {createColumnHelper} from "@tanstack/table-core";
-import {Product} from "@sio/pages/api/products";
 import ListSkeleton from "@sio/components/skeletons/ListSkeleton";
 import Table from "@sio/components/Table";
 import useProducts from "@sio/hooks/useProducts";
@@ -11,7 +10,7 @@ import YearSelector from "@sio/components/selectors/YearSelector";
 export default function Products({company, year}: InferGetServerSidePropsType<typeof getServerSideProps>) {
     const {products, isLoading, isError} = useProducts({company, year})
 
-    const columnHelper = createColumnHelper<Product>()
+    const columnHelper = createColumnHelper<any>()
 
     const productColumns = [
         columnHelper.accessor('product_code', {

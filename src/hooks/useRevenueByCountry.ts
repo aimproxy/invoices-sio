@@ -1,9 +1,8 @@
 import {useQuery} from "@tanstack/react-query";
 import {useMemo} from "react";
-import {RevenueByCountry} from "@sio/pages/api/revenue_by_country";
 
 const useRevenueByCountry = ({company, year}: { company: string, year: string }) => {
-    const fetchSalesByCountry = async (company: string, year: string): Promise<RevenueByCountry[]> => {
+    const fetchSalesByCountry = async (company: string, year: string) => {
         const res = await fetch(`/api/revenue_by_country?company=${company}&year=${year}`)
         return await res.json();
     }
@@ -14,7 +13,7 @@ const useRevenueByCountry = ({company, year}: { company: string, year: string })
         })
 
     return useMemo(() => {
-        const revenueByCountry = data?.map((rc) => ({
+        const revenueByCountry = data?.map((rc: any) => ({
             billing_country: rc.billing_country,
             net_total: Number(rc.net_total)
         }))
