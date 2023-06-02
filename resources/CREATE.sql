@@ -27,7 +27,6 @@ CREATE TABLE fiscal_year
     end_date          DATE,
     date_created      DATE,
     number_of_entries INT            NOT NULL DEFAULT 0,
-    customers_count   INT            NOT NULL DEFAULT 0,
     net_sales         DECIMAL(10, 2) NOT NULL DEFAULT 0,
     gross_sales       DECIMAL(10, 2) NOT NULL DEFAULT 0,
     aov               DECIMAL(10, 2) NOT NULL DEFAULT 0,
@@ -55,12 +54,12 @@ CREATE TABLE customer_fiscal_year
 
 CREATE TABLE product_fiscal_year
 (
-    product_code BIGSERIAL,
-    fiscal_year  BIGSERIAL,
-    company_id   BIGSERIAL,
-    revenue      DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    total_sales  INT            NOT NULL DEFAULT 0,
-    FOREIGN KEY (product_code) REFERENCES product (product_code),
+    product_code        VARCHAR(50),
+    product_description VARCHAR(255),
+    fiscal_year         BIGSERIAL,
+    company_id          BIGSERIAL,
+    revenue             DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    total_sales         INT            NOT NULL DEFAULT 0,
     FOREIGN KEY (fiscal_year, company_id) REFERENCES fiscal_year (fiscal_year, company_id),
     PRIMARY KEY (product_code, fiscal_year, company_id)
 );
@@ -121,7 +120,6 @@ CREATE TABLE invoice_line
     unit_price    DECIMAL(18, 5) NOT NULL DEFAULT 0,
     credit_amount DECIMAL(10, 2) NOT NULL DEFAULT 0,
     debit_amount  DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    product_code  BIGSERIAL,
-    FOREIGN KEY (fiscal_year, company_id) REFERENCES fiscal_year (fiscal_year, company_id),
-    FOREIGN KEY (product_code) REFERENCES product (product_code)
+    product_code  VARCHAR(50),
+    FOREIGN KEY (product_code, fiscal_year, company_id) REFERENCES product_fiscal_year (product_code, fiscal_year, company_id)
 );
