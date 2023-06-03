@@ -2,8 +2,12 @@ import {Text, Title} from "@tremor/react";
 import {ArrowLeftIcon} from "@heroicons/react/24/solid";
 import Link from "next/link";
 import BaseProps from "@sio/types";
+import useCompany from "@sio/hooks/useCompany";
+import TextSkeleton from "@sio/components/skeletons/TextSkeleton";
 
 const Welcome = ({company, year}: BaseProps) => {
+    const {data, isLoading, isError} = useCompany({company})
+
     return (
         <div className="flex space-x-4">
             <Link href="/"
@@ -11,8 +15,15 @@ const Welcome = ({company, year}: BaseProps) => {
                 <ArrowLeftIcon className="text-gray-900 font-semibold w-5 h-5"/>
             </Link>
             <div className="flex flex-col">
-                <Title>Empresa {company}, Exercício de {year}</Title>
-                <Text>Aqui o especialista és sempre tu!</Text>
+                {(isLoading || isError) ?
+                    <TextSkeleton/>
+                    :
+                    <>
+                        <Title>{data?.[0].company_name}</Title>
+                        <Text>Fiscal year of {year}</Text>
+                    </>
+                }
+
             </div>
         </div>
     )

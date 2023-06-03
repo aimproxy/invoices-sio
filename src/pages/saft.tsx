@@ -98,12 +98,12 @@ const SAFT = () => {
 
     return (
         <main className="max-w-6xl mx-auto pt-16 sm:pt-8 px-8">
-            <Title>Importar</Title>
-            <Text>Importa um SAF-T para criar uma empresa ou importar mais dados!</Text>
+            <Title>Import</Title>
+            <Text>Import a SAF-T file to add a new company or update data of an existing company!</Text>
 
             <Tabs tabs={[
-                {route: '/', name: 'As minhas empresas'},
-                {route: 'saft', name: 'Importar SAF-T'}
+                {route: '/', name: 'My companies'},
+                {route: 'saft', name: 'Import SAF-T'}
             ]}/>
 
             {showCallout != undefined && <Callout

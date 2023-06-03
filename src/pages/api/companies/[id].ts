@@ -10,7 +10,7 @@ export default async function handler(
 
     try {
         const company = await sql`
-            SELECT fiscal_year
+            SELECT fiscal_year, company_name
             FROM company
                      INNER JOIN fiscal_year fy on company.company_id = fy.company_id
             WHERE company.company_id = ${id}`.execute(postgres)
